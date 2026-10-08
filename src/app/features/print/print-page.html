@@ -1,0 +1,6 @@
+<!-- Erst rendern, wenn Druckauftrag und Optionen (inkl. Foto) geladen sind. -->
+@if (job(); as job) {
+  @if (options(); as options) {
+    <app-template-host [data]="job.data" [templateId]="job.templateId" [options]="options" />
+  }
+}

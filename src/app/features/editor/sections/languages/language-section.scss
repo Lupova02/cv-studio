@@ -1,0 +1,81 @@
+:host {
+  display: block;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.hint {
+  margin: 0.3rem 0 0.85rem;
+  color: #78716c;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+// Zeile „Sprache wählen + Hinzufügen“
+.add-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: end;
+}
+
+.add-row select,
+.add-row button {
+  min-height: 2.5rem;
+}
+
+.pick {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  color: #44403c;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+// Karten der gewählten Sprachen
+ul {
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+  margin: 0.85rem 0 0;
+  padding: 0;
+}
+
+li {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.row-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+strong {
+  color: #1c1917;
+  font-size: 1rem;
+}
+
+// Erklärung, was das gewählte Niveau bedeutet
+.why {
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  background: #f5f5f4;
+  color: #44403c;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}

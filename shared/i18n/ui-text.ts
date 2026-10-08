@@ -1,0 +1,628 @@
+// Texte der Bedienoberfläche (Editor, Werkzeugleiste, Dialoge, Meldungen) in de/en/tr.
+// Die Oberfläche folgt der gewählten Lebenslauf-Sprache; Beschriftungen im gedruckten Lebenslauf stehen in labels.ts.
+import type { AddressLabelKey } from '../format/address-format';
+import type { CvLanguage, TemplateId } from '../cv/cv-data';
+
+/** Alle Oberflächentexte einer Sprache; jede Sprache in UI_TEXT muss jeden Schlüssel liefern. */
+export interface UiText {
+  // --- Status, Muster-Lebenslauf und Werkzeugleiste ---
+  loading: string;
+  startEmpty: string;
+  saving: string;
+  saved: string;
+  unsaved: string;
+  ready: string;
+  sample: string;
+  sampleOnHint: string;
+  sampleOffHint: string;
+  sampleStatus: string;
+  pdfHint: string;
+  pdf: string;
+  importJson: string;
+  exportJson: string;
+  deleteAll: string;
+  version: string;
+  // --- Persönliche Daten, Kontakt und Adresse ---
+  personal: string;
+  photo: string;
+  choose: string;
+  remove: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  /** Schaltet die Staatsangehörigkeit auf Freitext um („Sonstiges“). */
+  other: string;
+  /** Schaltet vom Freitext zurück zur Länderliste. */
+  useList: string;
+  addNationality: string;
+  addPhone: string;
+  dialCode: string;
+  number: string;
+  phoneKind: string;
+  country: string;
+  /** Beschriftungen der Adressfelder; welche davon ein Land nutzt, bestimmt address-format.ts. */
+  addressLabel: Record<AddressLabelKey, string>;
+  linkedIn: string;
+  github: string;
+  website: string;
+  links: string;
+  // --- Listeneinträge bearbeiten (Hinzufügen, Ziehen, Verschieben) ---
+  add: string;
+  drag: string;
+  up: string;
+  down: string;
+  // --- Felder der Lebenslauf-Abschnitte ---
+  position: string;
+  company: string;
+  location: string;
+  city: string;
+  from: string;
+  until: string;
+  current: string;
+  description: string;
+  bullet: string;
+  addBullet: string;
+  degree: string;
+  institution: string;
+  name: string;
+  level: string;
+  category: string;
+  spokenLanguage: string;
+  issuer: string;
+  date: string;
+  url: string;
+  // --- Leere Abschnitte, Auswahl und Hinweise ---
+  emptyExperience: string;
+  emptyEducation: string;
+  emptySkills: string;
+  skillHint: string;
+  chooseCategory: string;
+  chooseLanguage: string;
+  chooseLevel: string;
+  languageHint: string;
+  emptyLanguages: string;
+  emptyCertificates: string;
+  emptyProjects: string;
+  // --- Sprache, Ansicht und Gestaltung der Vorlage ---
+  language: string;
+  /** Bedienhilfe-Beschriftung des Trenners zwischen Editor und Vorschau. */
+  resizePanes: string;
+  accent: string;
+  showPhoto: string;
+  skillScale: string;
+  skillStars: string;
+  skillBars: string;
+  datePlace: string;
+  dateAside: string;
+  dateBelow: string;
+  timeline: string;
+  timelineOff: string;
+  timelineLine: string;
+  font: string;
+  pageNumbers: string;
+  pageNumbersHint: string;
+  pageNumbersOff: string;
+  pageBadge: string;
+  pagePill: string;
+  pageNumberPlace: string;
+  placeLeft: string;
+  placeCenter: string;
+  placeRight: string;
+  // --- Bestätigungen und Meldungen (Sicherung, Löschen, Foto) ---
+  confirmImport: string;
+  confirmRemovePhoto: string;
+  confirmEmpty: string;
+  confirmDeleteAll: string;
+  invalidExport: string;
+  invalidLength: string;
+  backupImported: string;
+  backupSaved: string;
+  backupInvalid: string;
+  backupTooNew: string;
+  backupTooLarge: string;
+  dataDeleted: string;
+  photoUnreadable: string;
+  // --- Offline-Übersetzung eigener Texte ---
+  translate: string;
+  translateIntro: string;
+  translateFrom: string;
+  translateTo: string;
+  /** Steht hinter der Anzahl übersetzbarer Texte, z. B. '12 Texte'. */
+  translateTexts: string;
+  translateNothing: string;
+  translateReview: string;
+  translateStart: string;
+  translating: string;
+  cancel: string;
+  translated: string;
+  undo: string;
+  translateUndone: string;
+  translateFailed: string;
+  translateStale: string;
+  // --- PDF-Export und Dateidialoge ---
+  pdfSaved: string;
+  pdfFailed: string;
+  dialogImport: string;
+  dialogExport: string;
+  dialogPhoto: string;
+  dialogImages: string;
+  dialogPdf: string;
+  /** Vorgeschlagener Dateiname (ohne Endung) für JSON-Sicherungen. */
+  backupFileBase: string;
+  // --- Namen von Vorlagen und Sprachen ---
+  design: Record<TemplateId, string>;
+  languageName: Record<CvLanguage, string>;
+}
+
+/** Die Oberflächentexte aller drei Sprachen. */
+const UI_TEXT: Record<CvLanguage, UiText> = {
+  de: {
+    loading: 'Lebenslauf wird geladen…',
+    startEmpty: 'Mit leerem Lebenslauf neu beginnen',
+    saving: 'Speichert…',
+    saved: 'Gespeichert',
+    unsaved: 'Nicht gespeichert',
+    ready: 'Bereit',
+    sample: 'Muster',
+    sampleOnHint: 'Muster-Lebenslauf ist aktiv. Klicken, um ihn zu entfernen und die eigenen Eingaben zurückzuholen.',
+    sampleOffHint: 'Muster-Lebenslauf einblenden. Die eigenen Eingaben bleiben erhalten.',
+    sampleStatus: 'Muster aktiv · wird nicht gespeichert',
+    pdfHint: 'Lebenslauf als PDF herunterladen',
+    pdf: 'PDF',
+    importJson: 'Sicherung (JSON) importieren',
+    exportJson: 'Sicherung (JSON) exportieren',
+    deleteAll: 'Alle Daten löschen',
+    version: 'Version',
+    personal: 'Persönliches',
+    photo: 'Foto',
+    choose: 'Wählen',
+    remove: 'Entfernen',
+    firstName: 'Vorname',
+    lastName: 'Nachname',
+    email: 'E-Mail',
+    phone: 'Telefon',
+    address: 'Adresse',
+    other: 'Sonstiges',
+    useList: 'Liste',
+    addNationality: 'Zweite Staatsangehörigkeit',
+    addPhone: 'Weitere Nummer',
+    dialCode: 'Vorwahl',
+    number: 'Nummer',
+    phoneKind: 'Art',
+    country: 'Land',
+    addressLabel: {
+      street: 'Straße',
+      houseNumber: 'Hausnummer',
+      postalCode: 'PLZ',
+      city: 'Stadt',
+      region: 'Region',
+      state: 'Bundesstaat',
+      province: 'Provinz',
+      prefecture: 'Präfektur',
+      emirate: 'Emirat',
+      neighborhood: 'Mahalle',
+      buildingNumber: 'Gebäudenummer',
+      apartment: 'Wohnung',
+      district: 'İlçe',
+      provinceTr: 'İl',
+      postcode: 'Postleitzahl',
+      zip: 'ZIP',
+      poBox: 'Postfach',
+      area: 'Gebiet',
+    },
+    linkedIn: 'LinkedIn',
+    github: 'GitHub',
+    website: 'Website',
+    links: 'Links',
+    add: 'Hinzufügen',
+    drag: 'Ziehen',
+    up: 'Hoch',
+    down: 'Runter',
+    position: 'Position',
+    company: 'Firma',
+    location: 'Ort',
+    city: 'Stadt',
+    from: 'Von',
+    until: 'Bis',
+    current: 'Aktuell',
+    description: 'Beschreibung',
+    bullet: 'Stichpunkt',
+    addBullet: 'Stichpunkt hinzufügen',
+    degree: 'Abschluss',
+    institution: 'Institution',
+    name: 'Name',
+    level: 'Niveau',
+    category: 'Kategorie',
+    spokenLanguage: 'Sprache',
+    issuer: 'Aussteller',
+    date: 'Datum',
+    url: 'URL',
+    emptyExperience: 'Noch keine Stationen.',
+    emptyEducation: 'Noch keine Ausbildung.',
+    emptySkills: 'Noch keine Kenntnisse.',
+    skillHint: 'Zuerst eine Kategorie wählen, dann die Kenntnisse mit Sternen bewerten.',
+    chooseCategory: 'Kategorie wählen',
+    chooseLanguage: 'Sprache wählen',
+    chooseLevel: 'Stufe wählen',
+    languageHint: 'Sprache auswählen und die passende Stufe setzen. Die Liste sortiert sich alphabetisch.',
+    emptyLanguages: 'Noch keine Sprachen.',
+    emptyCertificates: 'Noch keine Zertifikate.',
+    emptyProjects: 'Noch keine Projekte.',
+    language: 'Sprache',
+    resizePanes: 'Bereichsbreite',
+    accent: 'Akzentfarbe',
+    showPhoto: 'Foto anzeigen',
+    skillScale: 'Niveau',
+    skillStars: 'Sterne',
+    skillBars: 'Balken',
+    datePlace: 'Datum',
+    dateAside: 'Neben Titel',
+    dateBelow: 'Unter Titel',
+    timeline: 'Zeitachse',
+    timelineOff: 'Ohne',
+    timelineLine: 'Linie',
+    font: 'Schrift',
+    pageNumbers: 'Seitenzahl',
+    pageNumbersHint: 'Erscheint, sobald der Lebenslauf mehr als eine Seite hat.',
+    pageNumbersOff: 'Keine',
+    pageBadge: 'Kreis',
+    pagePill: 'Rahmen',
+    pageNumberPlace: 'Position',
+    placeLeft: 'Links',
+    placeCenter: 'Mitte',
+    placeRight: 'Rechts',
+    confirmImport: 'Die aktuellen Eingaben werden durch die Sicherungsdatei ersetzt.',
+    confirmRemovePhoto: 'Das Profilfoto wird entfernt.',
+    confirmEmpty: 'Die vorhandene Datei wird mit einem leeren Lebenslauf überschrieben.',
+    confirmDeleteAll: 'Alle Eingaben und das Foto werden dauerhaft gelöscht. Tipp: Vorher eine Sicherung (JSON) exportieren.',
+    invalidExport: 'Bitte die zu langen Felder kürzen, bevor exportiert wird.',
+    invalidLength: 'Einige Felder überschreiten die erlaubte Länge.',
+    backupImported: 'Sicherung übernommen.',
+    backupSaved: 'Sicherung gespeichert.',
+    backupInvalid: 'Die Datei ist keine gültige CV-Studio-Sicherung.',
+    backupTooNew: 'Diese Sicherung stammt aus einer neueren Programmversion und kann nicht geöffnet werden.',
+    backupTooLarge: 'Die Sicherungsdatei ist zu groß.',
+    dataDeleted: 'Alle Daten wurden gelöscht.',
+    photoUnreadable: 'Das Bild konnte nicht gelesen werden.',
+    translate: 'Eigene Texte übersetzen',
+    translateIntro: 'Positionen, Abschlüsse, Beschreibungen und Stichpunkte werden direkt auf diesem Gerät übersetzt. Es werden keine Daten verschickt.',
+    translateFrom: 'Von',
+    translateTo: 'Nach',
+    translateTexts: 'Texte',
+    translateNothing: 'Noch keine eigenen Texte zum Übersetzen vorhanden.',
+    translateReview: 'Maschinelle Übersetzung – bitte danach gegenlesen. Die Sprache des Lebenslaufs wird mit umgestellt.',
+    translateStart: 'Übersetzen',
+    translating: 'Übersetzt…',
+    cancel: 'Abbrechen',
+    translated: 'Texte übersetzt. Bitte gegenlesen.',
+    undo: 'Rückgängig',
+    translateUndone: 'Übersetzung rückgängig gemacht.',
+    translateFailed: 'Die Übersetzung ist fehlgeschlagen. Bitte erneut versuchen.',
+    translateStale: 'Während der Übersetzung wurde etwas geändert. Bitte erneut übersetzen.',
+    pdfSaved: 'PDF gespeichert.',
+    pdfFailed: 'Die PDF konnte nicht vorbereitet werden. Bitte erneut versuchen.',
+    dialogImport: 'Lebenslauf importieren',
+    dialogExport: 'Lebenslauf exportieren',
+    dialogPhoto: 'Profilfoto wählen',
+    dialogImages: 'Bilder',
+    dialogPdf: 'Lebenslauf als PDF speichern',
+    backupFileBase: 'lebenslauf-sicherung',
+    design: { classic: 'Klassisch', modern: 'Modern', minimal: 'Minimal' },
+    languageName: { de: 'Deutsch', en: 'Englisch', tr: 'Türkisch' },
+  },
+  en: {
+    loading: 'Loading the CV…',
+    startEmpty: 'Start again with an empty CV',
+    saving: 'Saving…',
+    saved: 'Saved',
+    unsaved: 'Not saved',
+    ready: 'Ready',
+    sample: 'Sample',
+    sampleOnHint: 'The sample CV is active. Click to remove it and bring back your own entries.',
+    sampleOffHint: 'Show the sample CV. Your own entries are kept.',
+    sampleStatus: 'Sample active · not saved',
+    pdfHint: 'Download the CV as PDF',
+    pdf: 'PDF',
+    importJson: 'Import backup (JSON)',
+    exportJson: 'Export backup (JSON)',
+    deleteAll: 'Delete all data',
+    version: 'Version',
+    personal: 'Personal details',
+    photo: 'Photo',
+    choose: 'Choose',
+    remove: 'Remove',
+    firstName: 'First name',
+    lastName: 'Last name',
+    email: 'Email',
+    phone: 'Phone',
+    address: 'Address',
+    other: 'Other',
+    useList: 'List',
+    addNationality: 'Second nationality',
+    addPhone: 'Another number',
+    dialCode: 'Dial code',
+    number: 'Number',
+    phoneKind: 'Type',
+    country: 'Country',
+    addressLabel: {
+      street: 'Street',
+      houseNumber: 'House number',
+      postalCode: 'Postal code',
+      city: 'City',
+      region: 'Region',
+      state: 'State',
+      province: 'Province',
+      prefecture: 'Prefecture',
+      emirate: 'Emirate',
+      neighborhood: 'Neighbourhood',
+      buildingNumber: 'Building no.',
+      apartment: 'Apartment',
+      district: 'District',
+      provinceTr: 'Province',
+      postcode: 'Postcode',
+      zip: 'ZIP',
+      poBox: 'PO Box',
+      area: 'Area',
+    },
+    linkedIn: 'LinkedIn',
+    github: 'GitHub',
+    website: 'Website',
+    links: 'Links',
+    add: 'Add',
+    drag: 'Drag',
+    up: 'Up',
+    down: 'Down',
+    position: 'Position',
+    company: 'Company',
+    location: 'Location',
+    city: 'City',
+    from: 'From',
+    until: 'To',
+    current: 'Current',
+    description: 'Description',
+    bullet: 'Bullet',
+    addBullet: 'Add bullet',
+    degree: 'Degree',
+    institution: 'Institution',
+    name: 'Name',
+    level: 'Level',
+    category: 'Category',
+    spokenLanguage: 'Language',
+    issuer: 'Issuer',
+    date: 'Date',
+    url: 'URL',
+    emptyExperience: 'No positions yet.',
+    emptyEducation: 'No education yet.',
+    emptySkills: 'No skills yet.',
+    skillHint: 'Choose a category first, then rate its skills with stars.',
+    chooseCategory: 'Choose a category',
+    chooseLanguage: 'Choose a language',
+    chooseLevel: 'Choose a level',
+    languageHint: 'Choose a language and the level that fits. The list stays alphabetical.',
+    emptyLanguages: 'No languages yet.',
+    emptyCertificates: 'No certificates yet.',
+    emptyProjects: 'No projects yet.',
+    language: 'Language',
+    resizePanes: 'Pane width',
+    accent: 'Accent color',
+    showPhoto: 'Show photo',
+    skillScale: 'Level',
+    skillStars: 'Stars',
+    skillBars: 'Bars',
+    datePlace: 'Dates',
+    dateAside: 'Beside title',
+    dateBelow: 'Under title',
+    timeline: 'Timeline',
+    timelineOff: 'Off',
+    timelineLine: 'Line',
+    font: 'Font',
+    pageNumbers: 'Page number',
+    pageNumbersHint: 'Appears as soon as the CV has more than one page.',
+    pageNumbersOff: 'None',
+    pageBadge: 'Circle',
+    pagePill: 'Outline',
+    pageNumberPlace: 'Position',
+    placeLeft: 'Left',
+    placeCenter: 'Center',
+    placeRight: 'Right',
+    confirmImport: 'The current entries will be replaced by the backup file.',
+    confirmRemovePhoto: 'The profile photo will be removed.',
+    confirmEmpty: 'The existing file will be overwritten with an empty CV.',
+    confirmDeleteAll: 'All entries and the photo will be deleted permanently. Tip: export a backup (JSON) first.',
+    invalidExport: 'Shorten the fields that are too long before exporting.',
+    invalidLength: 'Some fields exceed the allowed length.',
+    backupImported: 'Backup imported.',
+    backupSaved: 'Backup saved.',
+    backupInvalid: 'The file is not a valid CV-Studio backup.',
+    backupTooNew: 'This backup comes from a newer version of the app and cannot be opened.',
+    backupTooLarge: 'The backup file is too large.',
+    dataDeleted: 'All data has been deleted.',
+    photoUnreadable: 'The image could not be read.',
+    translate: 'Translate your texts',
+    translateIntro: 'Positions, degrees, descriptions and bullet points are translated directly on this device. No data is sent anywhere.',
+    translateFrom: 'From',
+    translateTo: 'To',
+    translateTexts: 'texts',
+    translateNothing: 'There are no texts of your own to translate yet.',
+    translateReview: 'Machine translation – please proofread afterwards. The CV language is switched as well.',
+    translateStart: 'Translate',
+    translating: 'Translating…',
+    cancel: 'Cancel',
+    translated: 'Texts translated. Please proofread.',
+    undo: 'Undo',
+    translateUndone: 'Translation undone.',
+    translateFailed: 'The translation failed. Please try again.',
+    translateStale: 'Something changed during the translation. Please translate again.',
+    pdfSaved: 'PDF saved.',
+    pdfFailed: 'The PDF could not be prepared. Please try again.',
+    dialogImport: 'Import CV',
+    dialogExport: 'Export CV',
+    dialogPhoto: 'Choose profile photo',
+    dialogImages: 'Images',
+    dialogPdf: 'Save CV as PDF',
+    backupFileBase: 'cv-backup',
+    design: { classic: 'Classic', modern: 'Modern', minimal: 'Minimal' },
+    languageName: { de: 'German', en: 'English', tr: 'Turkish' },
+  },
+  tr: {
+    loading: 'Özgeçmiş yükleniyor…',
+    startEmpty: 'Boş bir özgeçmişle yeniden başla',
+    saving: 'Kaydediliyor…',
+    saved: 'Kaydedildi',
+    unsaved: 'Kaydedilmedi',
+    ready: 'Hazır',
+    sample: 'Örnek',
+    sampleOnHint: 'Örnek özgeçmiş etkin. Kaldırmak ve kendi girişlerinizi geri getirmek için tıklayın.',
+    sampleOffHint: 'Örnek özgeçmişi göster. Kendi girişleriniz korunur.',
+    sampleStatus: 'Örnek etkin · kaydedilmiyor',
+    pdfHint: 'Özgeçmişi PDF olarak indir',
+    pdf: 'PDF',
+    importJson: 'Yedeği (JSON) içe aktar',
+    exportJson: 'Yedeği (JSON) dışa aktar',
+    deleteAll: 'Tüm verileri sil',
+    version: 'Sürüm',
+    personal: 'Kişisel bilgiler',
+    photo: 'Fotoğraf',
+    choose: 'Seç',
+    remove: 'Kaldır',
+    firstName: 'Ad',
+    lastName: 'Soyad',
+    email: 'E-posta',
+    phone: 'Telefon',
+    address: 'Adres',
+    other: 'Diğer',
+    useList: 'Liste',
+    addNationality: 'İkinci uyruk',
+    addPhone: 'Başka numara',
+    dialCode: 'Alan kodu',
+    number: 'Numara',
+    phoneKind: 'Tür',
+    country: 'Ülke',
+    addressLabel: {
+      street: 'Sokak / Cadde',
+      houseNumber: 'Kapı no',
+      postalCode: 'Posta kodu',
+      city: 'Şehir',
+      region: 'Bölge',
+      state: 'Eyalet',
+      province: 'İl',
+      prefecture: 'Prefektörlük',
+      emirate: 'Emirlik',
+      neighborhood: 'Mahalle',
+      buildingNumber: 'Bina no',
+      apartment: 'Daire',
+      district: 'İlçe',
+      provinceTr: 'İl',
+      postcode: 'Posta kodu',
+      zip: 'ZIP',
+      poBox: 'Posta kutusu',
+      area: 'Bölge',
+    },
+    linkedIn: 'LinkedIn',
+    github: 'GitHub',
+    website: 'Web sitesi',
+    links: 'Bağlantılar',
+    add: 'Ekle',
+    drag: 'Sürükle',
+    up: 'Yukarı',
+    down: 'Aşağı',
+    position: 'Pozisyon',
+    company: 'Şirket',
+    location: 'Yer',
+    city: 'Şehir',
+    from: 'Başlangıç',
+    until: 'Bitiş',
+    current: 'Devam ediyor',
+    description: 'Açıklama',
+    bullet: 'Madde',
+    addBullet: 'Madde ekle',
+    degree: 'Derece',
+    institution: 'Kurum',
+    name: 'Ad',
+    level: 'Seviye',
+    category: 'Kategori',
+    spokenLanguage: 'Dil',
+    issuer: 'Veren kurum',
+    date: 'Tarih',
+    url: 'URL',
+    emptyExperience: 'Henüz deneyim yok.',
+    emptyEducation: 'Henüz eğitim yok.',
+    emptySkills: 'Henüz yetenek yok.',
+    skillHint: 'Önce bir kategori seçin, sonra yıldızlarla değerlendirin.',
+    chooseCategory: 'Kategori seçin',
+    chooseLanguage: 'Dil seçin',
+    chooseLevel: 'Seviye seçin',
+    languageHint: 'Bir dil ve uygun seviyeyi seçin. Liste alfabetik sıralanır.',
+    emptyLanguages: 'Henüz dil yok.',
+    emptyCertificates: 'Henüz sertifika yok.',
+    emptyProjects: 'Henüz proje yok.',
+    language: 'Dil',
+    resizePanes: 'Alan genişliği',
+    accent: 'Vurgu rengi',
+    showPhoto: 'Fotoğrafı göster',
+    skillScale: 'Seviye',
+    skillStars: 'Yıldız',
+    skillBars: 'Çubuk',
+    datePlace: 'Tarih',
+    dateAside: 'Unvan yanında',
+    dateBelow: 'Unvan altında',
+    timeline: 'Zaman çizelgesi',
+    timelineOff: 'Kapalı',
+    timelineLine: 'Çizgi',
+    font: 'Yazı tipi',
+    pageNumbers: 'Sayfa numarası',
+    pageNumbersHint: 'Özgeçmiş birden fazla sayfa olduğunda görünür.',
+    pageNumbersOff: 'Yok',
+    pageBadge: 'Daire',
+    pagePill: 'Çerçeve',
+    pageNumberPlace: 'Konum',
+    placeLeft: 'Sol',
+    placeCenter: 'Orta',
+    placeRight: 'Sağ',
+    confirmImport: 'Geçerli girişler yedek dosyasıyla değiştirilecek.',
+    confirmRemovePhoto: 'Profil fotoğrafı kaldırılacak.',
+    confirmEmpty: 'Mevcut dosyanın üzerine boş bir özgeçmiş yazılacak.',
+    confirmDeleteAll: 'Tüm girişler ve fotoğraf kalıcı olarak silinecek. İpucu: Önce bir yedek (JSON) dışa aktarın.',
+    invalidExport: 'Dışa aktarmadan önce çok uzun alanları kısaltın.',
+    invalidLength: 'Bazı alanlar izin verilen uzunluğu aşıyor.',
+    backupImported: 'Yedek içe aktarıldı.',
+    backupSaved: 'Yedek kaydedildi.',
+    backupInvalid: 'Dosya geçerli bir CV-Studio yedeği değil.',
+    backupTooNew: 'Bu yedek programın daha yeni bir sürümünden geliyor ve açılamıyor.',
+    backupTooLarge: 'Yedek dosyası çok büyük.',
+    dataDeleted: 'Tüm veriler silindi.',
+    photoUnreadable: 'Görsel okunamadı.',
+    translate: 'Kendi metinlerinizi çevirin',
+    translateIntro: 'Pozisyonlar, dereceler, açıklamalar ve maddeler doğrudan bu cihazda çevrilir. Hiçbir veri gönderilmez.',
+    translateFrom: 'Kaynak',
+    translateTo: 'Hedef',
+    translateTexts: 'metin',
+    translateNothing: 'Henüz çevrilecek kendi metniniz yok.',
+    translateReview: 'Makine çevirisi – lütfen sonrasında kontrol edin. Özgeçmişin dili de değiştirilir.',
+    translateStart: 'Çevir',
+    translating: 'Çevriliyor…',
+    cancel: 'İptal',
+    translated: 'Metinler çevrildi. Lütfen kontrol edin.',
+    undo: 'Geri al',
+    translateUndone: 'Çeviri geri alındı.',
+    translateFailed: 'Çeviri başarısız oldu. Lütfen tekrar deneyin.',
+    translateStale: 'Çeviri sırasında bir şey değişti. Lütfen yeniden çevirin.',
+    pdfSaved: 'PDF kaydedildi.',
+    pdfFailed: 'PDF hazırlanamadı. Lütfen tekrar deneyin.',
+    dialogImport: 'Özgeçmişi içe aktar',
+    dialogExport: 'Özgeçmişi dışa aktar',
+    dialogPhoto: 'Profil fotoğrafı seç',
+    dialogImages: 'Görseller',
+    dialogPdf: 'Özgeçmişi PDF olarak kaydet',
+    backupFileBase: 'ozgecmis-yedek',
+    design: { classic: 'Klasik', modern: 'Modern', minimal: 'Minimal' },
+    languageName: { de: 'Almanca', en: 'İngilizce', tr: 'Türkçe' },
+  },
+};
+
+/** Oberflächentexte für die gewählte Sprache (in der App die Lebenslauf-Sprache). */
+export function uiText(language: CvLanguage): UiText {
+  return UI_TEXT[language];
+}

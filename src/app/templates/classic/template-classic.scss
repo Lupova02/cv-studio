@@ -1,0 +1,360 @@
+@use '../print-base' as *;
+
+:host {
+  @include sheet;
+}
+
+// --- Grundlayout und Spaltenmaße (Datumsspalte, Tabellen, Zeitleiste) ---
+.classic {
+  --date-col: 0mm;
+  --col-gap: 0mm;
+  --table-col: 32mm;
+  --table-gap: 8mm;
+  --rail-x: calc(var(--date-col) + var(--col-gap) / 2);
+  --muted: #57534e;
+  padding: 18mm 18mm 16mm;
+  color: #1c1917;
+  font-size: 14px;
+}
+
+.classic.with-timeline {
+  --col-gap: 6mm;
+}
+
+.classic.dates-aside {
+  --date-col: var(--table-col);
+  --col-gap: var(--table-gap);
+}
+
+h1,
+h2,
+p,
+dl,
+dd {
+  margin: 0;
+}
+
+// --- Kopfbereich ---
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10mm;
+  padding-bottom: 6mm;
+  border-bottom: 0.5mm solid var(--accent, #1f4b99);
+}
+
+.identity {
+  flex: 1;
+  min-width: 0;
+}
+
+h1 {
+  color: #1c1917;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6mm;
+  margin-top: 5mm;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-content: start;
+  gap: 1.8mm 4mm;
+}
+
+.fact {
+  display: contents;
+}
+
+.facts dt {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 4.4mm;
+}
+
+.facts dd {
+  color: #1c1917;
+  font-size: 12.5px;
+  line-height: 4.4mm;
+  overflow-wrap: anywhere;
+}
+
+.contact {
+  grid-column: 2;
+  display: grid;
+  align-content: start;
+  gap: 1.8mm;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  color: #1c1917;
+  font-size: 12.5px;
+  line-height: 4.4mm;
+  overflow-wrap: anywhere;
+}
+
+.contact app-contact-icon {
+  color: var(--accent, #1f4b99);
+}
+
+.photo {
+  flex: none;
+  width: 30mm;
+  height: 38mm;
+  object-fit: cover;
+  border-radius: 1mm;
+}
+
+// --- Abschnitte ---
+
+section {
+  margin-top: 7mm;
+}
+
+h2 {
+  @include keep-heading;
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  margin-bottom: 3.5mm;
+  color: var(--accent, #1f4b99);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h2::after {
+  content: '';
+  flex: 1;
+  height: 0.35mm;
+  background: #d6d3d1;
+}
+
+// --- Einträge ---
+
+.entry {
+  @include keep-entry;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--date-col) minmax(0, 1fr);
+  column-gap: var(--col-gap);
+  align-items: baseline;
+  margin-bottom: 4.5mm;
+}
+
+.entry:last-child {
+  margin-bottom: 0;
+}
+
+.date {
+  grid-column: 1;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 5mm;
+  font-variant-numeric: tabular-nums;
+}
+
+.body {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.title {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 5mm;
+}
+
+.meta {
+  margin-top: 0.4mm;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.link {
+  overflow-wrap: anywhere;
+}
+
+.org {
+  color: var(--accent, #1f4b99);
+  font-weight: 700;
+}
+
+.when {
+  margin-top: 0.6mm;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.text {
+  margin-top: 1.4mm;
+  color: #292524;
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.bullets {
+  margin: 1.2mm 0 0;
+  padding-left: 4.5mm;
+}
+
+.bullets li {
+  margin: 0.5mm 0;
+  color: #292524;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.bullets li::marker {
+  color: var(--accent, #1f4b99);
+}
+
+// --- Tabellen: Kenntnisse, Sprachen, Links ---
+
+.table {
+  display: grid;
+  gap: 1.4mm;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: var(--table-col) minmax(0, 1fr);
+  column-gap: var(--table-gap);
+  align-items: baseline;
+}
+
+dt {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 5mm;
+}
+
+.table-row:has(.icon-label) {
+  align-items: start;
+}
+
+dt.icon-label {
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+
+dt.icon-label app-contact-icon {
+  color: var(--accent, #1f4b99);
+}
+
+dt.strong {
+  color: #1c1917;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+dd {
+  font-size: 14px;
+  line-height: 5mm;
+  overflow-wrap: anywhere;
+}
+
+dd.soft {
+  color: var(--muted);
+}
+
+.skills {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8mm 8mm;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skills li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3mm;
+  line-height: 5mm;
+}
+
+.skills app-star-rating {
+  color: #a8a29e;
+}
+
+.table-section .table-row + .table-row:has(.skills) {
+  margin-top: 1.6mm;
+}
+
+// --- Zeitleiste zwischen Datumsspalte und Eintragstext ---
+
+.timeline {
+  position: relative;
+  margin-top: 7mm;
+  overflow: hidden;
+}
+
+.timeline > section:first-child {
+  margin-top: 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--rail-x) - 0.275mm);
+  width: 0.55mm;
+  background: var(--accent, #1f4b99);
+}
+
+.timeline h2 {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  box-shadow: 0 0 0 2mm #fff;
+}
+
+.timeline .entry::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 1.2mm;
+  left: calc(var(--rail-x) - 1.3mm);
+  width: 2.6mm;
+  height: 2.6mm;
+  box-sizing: border-box;
+  border: 0.4mm solid #fff;
+  border-radius: 50%;
+  background: var(--accent, #1f4b99);
+}
+
+.timeline .line-end::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 2.5mm;
+  bottom: -400mm;
+  left: calc(var(--rail-x) - 1.5mm);
+  width: 3mm;
+  background: #fff;
+}

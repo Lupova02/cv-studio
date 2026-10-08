@@ -1,0 +1,338 @@
+@use '../print-base' as *;
+
+:host {
+  @include sheet;
+}
+
+// --- Grundlayout und Maße der Randspalte ---
+.minimal {
+  --label-col: 38mm;
+  --label-gap: 7mm;
+  --muted: #78716c;
+  --hairline: #e7e5e4;
+  padding: 22mm 20mm 20mm;
+  color: #1c1917;
+  font-size: 14px;
+}
+
+h1,
+h2,
+p,
+dl,
+dd {
+  margin: 0;
+}
+
+// --- Kopfbereich ---
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10mm;
+}
+
+.identity {
+  flex: 1;
+  min-width: 0;
+}
+
+h1 {
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.rule {
+  display: block;
+  width: 12mm;
+  height: 0.6mm;
+  margin: 5mm 0 4.5mm;
+  background: var(--accent, #1c1917);
+}
+
+.contact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2mm 8mm;
+}
+
+.contact ul {
+  display: grid;
+  align-content: start;
+  gap: 2mm;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.2mm;
+  color: #44403c;
+  font-size: 12.5px;
+  line-height: 4.4mm;
+  overflow-wrap: anywhere;
+}
+
+.contact app-contact-icon {
+  margin-top: 0.2mm;
+  color: var(--accent, #1c1917);
+}
+
+.photo {
+  flex: none;
+  width: 26mm;
+  height: 26mm;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+// --- Abschnitte: Titel in der Randspalte, Inhalt daneben ---
+
+.block {
+  display: grid;
+  grid-template-columns: var(--label-col) minmax(0, 1fr);
+  column-gap: var(--label-gap);
+  margin-top: 7mm;
+  padding-top: 6mm;
+  border-top: 0.25mm solid var(--hairline);
+}
+
+.header + .block {
+  margin-top: 10mm;
+}
+
+h2 {
+  @include keep-heading;
+  color: var(--accent, #1c1917);
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 5mm;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  hyphens: auto;
+}
+
+.content {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+// --- Einträge ---
+
+.entry {
+  @include keep-entry;
+  margin-bottom: 5.5mm;
+}
+
+.entry:last-child {
+  margin-bottom: 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 5mm;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 5mm;
+}
+
+.date,
+.when {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.when {
+  margin-top: 0.3mm;
+}
+
+.meta {
+  margin-top: 0.6mm;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.link {
+  overflow-wrap: anywhere;
+}
+
+.org {
+  color: var(--accent, #1c1917);
+  font-weight: 600;
+}
+
+.text {
+  margin-top: 1.6mm;
+  color: #292524;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.bullets {
+  margin: 1.4mm 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bullets li {
+  position: relative;
+  margin: 0.6mm 0;
+  padding-left: 4.5mm;
+  color: #292524;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bullets li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+
+// --- Persönliche Angaben ---
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3mm 7mm;
+}
+
+dt {
+  color: var(--muted);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  line-height: 4mm;
+  text-transform: uppercase;
+}
+
+dd {
+  font-size: 14px;
+  line-height: 5mm;
+  overflow-wrap: anywhere;
+}
+
+// --- Sprachen ---
+
+.languages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3mm 7mm;
+  list-style: none;
+}
+
+.languages li {
+  display: flex;
+  flex-direction: column;
+}
+
+.lang-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 5mm;
+}
+
+.lang-level {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 4.4mm;
+}
+
+// --- Kenntnisse ---
+
+.skill-group + .skill-group {
+  margin-top: 4mm;
+}
+
+.skill-category {
+  margin-bottom: 1.2mm;
+  color: var(--muted);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  line-height: 5mm;
+  text-transform: uppercase;
+}
+
+.skills {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8mm 8mm;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skills li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3mm;
+  font-size: 14px;
+  line-height: 5mm;
+}
+
+.skills app-star-rating {
+  color: #a8a29e;
+}
+
+// --- Zeitleiste: eine Linie pro Abschnitt, vom ersten bis zum letzten Punkt ---
+
+.timeline {
+  position: relative;
+  padding-left: 5mm;
+  overflow: hidden;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 2.5mm;
+  bottom: 0;
+  left: 1.225mm;
+  width: 0.55mm;
+  background: var(--accent, #1c1917);
+}
+
+.timeline .entry {
+  position: relative;
+}
+
+.timeline .entry::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 1.2mm;
+  left: -4.8mm;
+  width: 2.6mm;
+  height: 2.6mm;
+  box-sizing: border-box;
+  border: 0.4mm solid #fff;
+  border-radius: 50%;
+  background: var(--accent, #1c1917);
+}
+
+.timeline .entry:last-child::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 2.5mm;
+  bottom: -400mm;
+  left: -5mm;
+  width: 5mm;
+  background: #fff;
+}

@@ -1,0 +1,35 @@
+appId: app.cvstudio.desktop
+productName: CV-Studio
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist-electron/**/*
+  - dist/cv-studio/browser/**/*
+  - package.json
+  - "!**/*.map"
+asar: true
+npmRebuild: false
+extraMetadata:
+  main: dist-electron/electron/main.js
+mac:
+  category: public.app-category.business
+  identity: null
+  icon: build/icon.png
+  target:
+    - target: dmg
+      arch:
+        - arm64
+dmg:
+  artifactName: CV-Studio-${version}-arm64.${ext}
+win:
+  icon: build/icon.png
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: CV-Studio-Setup-${version}.${ext}

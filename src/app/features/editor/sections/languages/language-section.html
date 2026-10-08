@@ -1,0 +1,40 @@
+<section class="block">
+  <h2>{{ copy.cv().languages }}</h2>
+  <p class="hint">{{ copy.ui().languageHint }}</p>
+
+  <!-- Neue Sprache aus dem Katalog hinzufügen (bereits gewählte werden ausgeblendet) -->
+  <div class="add-row">
+    <label class="pick">{{ copy.ui().spokenLanguage }}
+      <select [value]="pending()" (change)="pending.set($any($event.target).value)">
+        <option value="">{{ copy.ui().chooseLanguage }}</option>
+        @for (language of available(); track language.id) {
+          <option [value]="language.id">{{ language.name }}</option>
+        }
+      </select>
+    </label>
+    <button type="button" class="btn-solid" (click)="add()" [disabled]="!pending() || full()">{{ copy.ui().add }}</button>
+  </div>
+
+  <!-- Gewählte Sprachen, alphabetisch; je Sprache Niveau + Erklärung des Niveaus -->
+  <ul>
+    @for (group of ordered(); track group.controls.id.value) {
+      <li [formGroup]="group">
+        <div class="row-head">
+          <strong>{{ nameOf(group.controls.id.value) }}</strong>
+          <button type="button" class="icon-btn danger" (click)="remove(group.controls.id.value)" [attr.aria-label]="copy.ui().remove" [attr.title]="copy.ui().remove"><app-trash-icon /></button>
+        </div>
+        <label class="pick">{{ copy.ui().level }}
+          <select formControlName="level">
+            <option value="">{{ copy.ui().chooseLevel }}</option>
+            @for (level of levels(); track level.id) {
+              <option [value]="level.id">{{ level.name }}</option>
+            }
+          </select>
+        </label>
+        @if (reason(group.controls.level.value); as why) {
+          <p class="why">{{ why }}</p>
+        }
+      </li>
+    }
+  </ul>
+</section>

@@ -1,0 +1,35 @@
+<section class="block">
+  <!-- Überschrift mit „Hinzufügen“-Knopf -->
+  <app-list-header [title]="copy.cv().projects" [disabled]="items().length >= limits.items" (add)="add()" />
+  <!-- Per Drag & Drop sortierbare Liste der Projekte -->
+  <div cdkDropList (cdkDropListDropped)="drop($event)">
+    @for (group of items().controls; track group.controls.id.value; let index = $index) {
+      <article class="entry-card" cdkDrag [formGroup]="group">
+        <app-item-actions [index]="index" [count]="items().length" (move)="move(index, $event)" (remove)="remove(index)" />
+        <!-- Stammdaten: Name, Link, Zeitraum -->
+        <div class="grid-2">
+          <label>{{ copy.ui().name }} <input formControlName="name" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().url }} <input formControlName="url" [attr.maxlength]="limits.url" /></label>
+          <label>{{ copy.ui().from }} <input type="month" formControlName="from" /></label>
+          <label>{{ copy.ui().until }} <input type="month" formControlName="until" /></label>
+        </div>
+        <label>{{ copy.ui().description }} <textarea formControlName="description" rows="3" [attr.maxlength]="limits.longText"></textarea></label>
+        <!-- Stichpunkte mit Verschieben/Entfernen -->
+        <div class="bullets">
+          @for (bullet of group.controls.bullets.controls; track $index; let bulletIndex = $index; let first = $first; let last = $last) {
+            <div class="bullet-row">
+              <input [formControl]="bullet" [attr.maxlength]="limits.bullet" [attr.aria-label]="copy.ui().bullet + ' ' + (bulletIndex + 1)" />
+              <button type="button" class="icon-btn" (click)="moveBullet(group, bulletIndex, -1)" [disabled]="first" [attr.aria-label]="copy.ui().up"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 14.5 12 8.5l6 6" /></svg></button>
+              <button type="button" class="icon-btn" (click)="moveBullet(group, bulletIndex, 1)" [disabled]="last" [attr.aria-label]="copy.ui().down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5 12 15.5l6-6" /></svg></button>
+              <button type="button" class="icon-btn danger" (click)="removeBullet(group, bulletIndex)" [attr.aria-label]="copy.ui().remove" [attr.title]="copy.ui().remove"><app-trash-icon /></button>
+            </div>
+          }
+        </div>
+        <button type="button" class="btn-ghost" (click)="addBullet(group)" [disabled]="group.controls.bullets.length >= limits.bullets">{{ copy.ui().addBullet }}</button>
+      </article>
+    } @empty {
+      <!-- Hinweis, solange die Liste leer ist -->
+      <p class="empty">{{ copy.ui().emptyProjects }}</p>
+    }
+  </div>
+</section>

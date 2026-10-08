@@ -1,0 +1,731 @@
+// --- Grundgerüst und Ladeansicht ---
+:host {
+  display: block;
+  height: 100%;
+}
+
+.boot {
+  max-width: 36rem;
+  margin: 15vh auto;
+  padding: 0 1.5rem;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+// --- Obere Werkzeugleiste ---
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  background: #1c1917;
+  color: #fafaf9;
+}
+
+.brand {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.brand strong {
+  letter-spacing: -0.02em;
+}
+
+.brand span {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #d6d3d1;
+  font-size: 0.75rem;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.toolbar-actions button {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  min-height: 2.15rem;
+  padding: 0.38rem 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.toolbar-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+// --- Muster-Schalter (rot = aus, grün = an) ---
+.sample-toggle {
+  --tone: #ef4444;
+  border-color: color-mix(in srgb, var(--tone) 65%, transparent);
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+  color: color-mix(in srgb, var(--tone) 35%, #fff);
+}
+
+.sample-toggle.on {
+  --tone: #22c55e;
+}
+
+.sample-toggle:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--tone) 24%, transparent);
+}
+
+.switch {
+  position: relative;
+  width: 1.75rem;
+  height: 1rem;
+  flex: none;
+  border-radius: 999px;
+  background: var(--tone);
+  transition: background 160ms ease;
+}
+
+.knob {
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+  transition: transform 180ms ease;
+}
+
+.sample-toggle.on .knob {
+  transform: translateX(0.75rem);
+}
+
+// --- PDF-Export-Knopf ---
+.export {
+  border-color: var(--tone);
+  background: var(--tone);
+  color: #fff;
+}
+
+.export:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--tone) 86%, #000);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--tone) 40%, transparent);
+}
+
+.export.pdf {
+  --tone: #d93025;
+}
+
+.export svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+// --- Hinweisbalken ---
+.banner {
+  margin: 0;
+  padding: 0.55rem 1rem;
+  background: #ecfccb;
+  animation: rise 220ms ease;
+}
+
+.banner.error {
+  background: #fee2e2;
+}
+
+// --- Arbeitsfläche: Editor-Spalte ---
+.workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor,
+.preview {
+  min-height: 0;
+  min-width: 0;
+}
+
+.editor {
+  flex: none;
+  overflow: auto;
+  padding: 0 1.35rem 2.4rem;
+  background: #fafaf9;
+  transition: width 180ms ease;
+}
+
+.workspace.resizing .editor,
+.workspace.resizing .scale-slot,
+.workspace.resizing .scale-inner {
+  transition: none;
+}
+
+.editor > :not(:first-child) {
+  display: block;
+  margin-top: 1.7rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid #e7e5e4;
+}
+
+.editor > .personal {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+// --- Trenner zwischen Editor und Vorschau ---
+.splitter {
+  flex: none;
+  display: grid;
+  width: 14px;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  background: #e7e5e4;
+  padding: 0;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.splitter span {
+  width: 4px;
+  height: 36px;
+  border-radius: 99px;
+  background: #a8a29e;
+  transition: height 160ms ease, background 160ms ease;
+}
+
+.splitter:hover span,
+.splitter:focus-visible span,
+.workspace.resizing .splitter span {
+  height: 64px;
+  background: #1f4b99;
+}
+
+// --- Vorschau-Spalte und Design-Leiste ---
+.preview {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  background: #d6d3d1;
+}
+
+.preview-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 0.9rem;
+  align-items: end;
+  padding: 0.7rem 1rem;
+  background: rgba(245, 245, 244, 0.94);
+  border-bottom: 1px solid #e7e5e4;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.designs {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.skill-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: #57534e;
+  font-size: 0.78rem;
+}
+
+.skill-scale div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.skill-scale button,
+.design {
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.skill-scale button:hover:not(:disabled),
+.design:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.skill-scale button.active {
+  border-color: #1c1917;
+  background: #fff;
+}
+
+.skill-scale.muted {
+  opacity: 0.5;
+}
+
+.design {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+  min-width: 4.5rem;
+  font-size: 0.75rem;
+}
+
+.design.active {
+  border-color: #1c1917;
+  background: #fff;
+}
+
+// --- Vorlagen-Miniaturen ---
+.thumb {
+  width: 34px;
+  height: 46px;
+  border: 1px solid #d6d3d1;
+  background:
+    linear-gradient(#1c1917, #1c1917) 4px 8px / 18px 2px no-repeat,
+    linear-gradient(#a8a29e, #a8a29e) 4px 14px / 24px 1px no-repeat,
+    linear-gradient(#a8a29e, #a8a29e) 4px 18px / 20px 1px no-repeat,
+    #fff;
+}
+
+.thumb[data-design='modern'] {
+  background:
+    linear-gradient(#1f4b99, #1f4b99) left / 12px 100% no-repeat,
+    linear-gradient(#1c1917, #1c1917) 16px 8px / 14px 2px no-repeat,
+    #fff;
+}
+
+.thumb[data-design='minimal'] {
+  background:
+    linear-gradient(#111, #111) 4px 16px / 12px 2px no-repeat,
+    #fff;
+}
+
+// --- Skalierte Vorschau ---
+.preview-frame {
+  flex: 1;
+  overflow: hidden auto;
+  padding: 1.25rem 0 2rem;
+}
+
+.scale-slot {
+  position: relative;
+  margin: 0 auto;
+  transition: width 180ms ease, height 180ms ease;
+}
+
+.scale-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 210mm;
+  transform-origin: top left;
+  box-shadow: 0 18px 40px rgba(28, 25, 23, 0.16);
+  transition: transform 180ms ease;
+}
+
+// --- Editor-Leiste (klebt oben): Version und Symbolknopf-Zustände ---
+.editor-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 -1.35rem 1.15rem;
+  padding: 0.85rem 1.35rem;
+  background: rgba(250, 250, 249, 0.92);
+  border-bottom: 1px solid #e7e5e4;
+  backdrop-filter: blur(10px);
+}
+
+.app-version {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #e7e5e4;
+  border-radius: 999px;
+  background: #fff;
+  color: #57534e;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.group.identity-card {
+  margin-top: 0;
+}
+
+.icon-button.danger {
+  color: #b91c1c;
+}
+
+.icon-button.active {
+  border-color: #1f4b99;
+  background: #eef2fb;
+  color: #1f4b99;
+}
+
+// --- Übersetzen-Panel ---
+.translate-panel {
+  flex-basis: 100%;
+  padding: 0.85rem 0.95rem 0.9rem;
+  border: 1px solid #e7e5e4;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(28, 25, 23, 0.08);
+  animation: rise 180ms ease;
+}
+
+.translate-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.translate-head h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.translate-count {
+  color: #78716c;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.translate-intro,
+.translate-hint {
+  margin: 0.35rem 0 0;
+  color: #57534e;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.translate-hint {
+  margin-top: 0.6rem;
+  color: #92400e;
+}
+
+.translate-langs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 0.6rem;
+}
+
+.translate-arrow {
+  padding-bottom: 0.55rem;
+  color: #a8a29e;
+}
+
+.translate-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+// --- „Rückgängig“-Knopf im Hinweisbalken ---
+.banner-action {
+  margin-left: 0.6rem;
+  padding: 0.12rem 0.6rem;
+  border-color: #84cc16;
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.banner-action:hover {
+  background: #f7fee7;
+}
+
+// --- Ergänzungen: Löschen-Hover, Sprachwahl, Foto-Schalter ---
+.icon-button.danger:hover:not(:disabled) {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.lang-pick {
+  width: auto;
+  min-width: 7.4rem;
+  height: 2.35rem;
+  padding: 0 0.6rem;
+}
+
+.photo-toggle {
+  justify-content: center;
+  margin-top: 0.1rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+// --- Seitenumbruch-Streifen in der Vorschau ---
+.page-gap {
+  position: absolute;
+  z-index: 5;
+  left: -120px;
+  right: -120px;
+  background: #d6d3d1;
+  box-shadow:
+    inset 0 14px 14px -14px rgba(28, 25, 23, 0.28),
+    inset 0 -14px 14px -14px rgba(28, 25, 23, 0.28);
+  pointer-events: none;
+}
+
+// --- Karte „Persönliches“ ---
+.identity {
+  display: grid;
+  grid-template-columns: 7.25rem minmax(0, 1fr);
+  gap: 0.85rem 1rem;
+  align-items: start;
+}
+
+.name-fields {
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
+}
+
+.name-fields label,
+.identity .fields label {
+  margin-top: 0;
+}
+
+.identity .fields {
+  grid-column: 1 / -1;
+  gap: 0.7rem 0.75rem;
+}
+
+// --- Formular-Karten und Links ---
+.fields {
+  align-items: start;
+}
+
+.fields label,
+.phone-card label,
+.choice label {
+  margin-top: 0;
+}
+
+.group {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.95rem 1rem 1.05rem;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.group h3 {
+  margin: 0;
+  color: #1c1917;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.group.links {
+  gap: 0.7rem;
+}
+
+.group .fields {
+  gap: 0.7rem 0.75rem;
+}
+
+.group.links .fields {
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+.group.links .field-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #44403c;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.group.links .field-name svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+}
+
+.group.links .field-name svg.mark {
+  fill: currentColor;
+}
+
+.group.links .field-name svg.line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+// --- Staatsangehörigkeit: Auswahl und Text-Knöpfe ---
+.choice {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.choice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.85rem;
+}
+
+.quiet {
+  justify-self: start;
+  border-color: transparent;
+  background: transparent;
+  color: #1f4b99;
+  padding: 0.15rem 0;
+  font-size: 0.88rem;
+}
+
+.quiet:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+// --- Nur für Screenreader sichtbar ---
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// --- Foto-Spalte ---
+.photo-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 7.25rem;
+}
+
+.photo-side .btn-solid {
+  width: 100%;
+}
+
+.photo-side .icon-btn {
+  align-self: center;
+}
+
+.photo-side img,
+.photo-fallback {
+  width: 7.25rem;
+  height: 7.25rem;
+  object-fit: cover;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  background: #f5f5f4;
+}
+
+.photo-fallback {
+  display: grid;
+  place-items: center;
+  color: #78716c;
+  font-size: 0.8rem;
+}
+
+// --- Datei-Aktionen (Symbolknöpfe) ---
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.icon-button {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  padding: 0;
+  background: #fff;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.icon-button:hover:not(:disabled) {
+  border-color: #a8a29e;
+  transform: translateY(-1px);
+}
+
+// --- Telefon-Karten ---
+.phone-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.65rem 0.75rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #f5f5f4;
+}
+
+.phone-card:last-of-type {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+// --- Reduzierte Bewegung: Animationen abschalten ---
+@media (prefers-reduced-motion: reduce) {
+  .banner,
+  .editor,
+  .scale-slot,
+  .scale-inner,
+  .splitter span,
+  .toolbar-actions button,
+  .switch,
+  .knob,
+  .skill-scale button,
+  .design,
+  .icon-button {
+    animation: none;
+    transition: none;
+  }
+}
+
+// --- Einblend-Animation (Hinweisbalken, Übersetzen-Panel) ---
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// --- Symbole in den Symbolknöpfen ---
+.icon-button svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

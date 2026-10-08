@@ -1,0 +1,19 @@
+<section class="block">
+  <app-list-header [title]="copy.cv().certificates" [disabled]="items().length >= limits.items" (add)="add()" />
+  <!-- Einträge lassen sich per Ziehgriff oder Pfeilen umsortieren -->
+  <div cdkDropList (cdkDropListDropped)="drop($event)">
+    @for (group of items().controls; track group.controls.id.value; let index = $index) {
+      <article class="entry-card" cdkDrag [formGroup]="group">
+        <app-item-actions [index]="index" [count]="items().length" (move)="move(index, $event)" (remove)="remove(index)" />
+        <div class="grid-2">
+          <label>{{ copy.ui().name }} <input formControlName="name" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().issuer }} <input formControlName="issuer" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().date }} <input type="month" formControlName="date" /></label>
+        </div>
+        <label>{{ copy.ui().description }} <textarea formControlName="description" rows="2" [attr.maxlength]="limits.longText"></textarea></label>
+      </article>
+    } @empty {
+      <p class="empty">{{ copy.ui().emptyCertificates }}</p>
+    }
+  </div>
+</section>

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-tests",
+    "rootDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "6.0",
+    "types": ["node"]
+  },
+  "include": ["shared/**/*.ts", "electron/**/*.ts"],
+  "exclude": [
+    "electron/main.ts",
+    "electron/preload.ts",
+    "electron/ipc/**/*.ts",
+    "electron/services/photo-store.ts",
+    "electron/services/pdf-export.ts",
+    "electron/services/docx-export.ts"
+  ]
+}

@@ -1,0 +1,268 @@
+// Globale Stile der App: Grundlayout, Formularelemente, Knöpfe, Eintragskarten,
+// Drag-&-Drop-Darstellung und Druckseite (A4 ohne Rand).
+
+// --- Grundlagen ---
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+// Standardschrift der Lebenslauf-Vorlagen; die Vorschau überschreibt sie je nach gewählter Schrift.
+:root {
+  --cv-font: 'Source Sans 3', 'Segoe UI', sans-serif;
+}
+
+body {
+  font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
+  color: #1c1917;
+  background: #e7e5e4;
+}
+
+// --- Schrift-Vererbung und Knöpfe ---
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  border: 1px solid #d6d3d1;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.btn-solid {
+  border-color: #1c1917;
+  background: #1c1917;
+  color: #fafaf9;
+  padding: 0.45rem 0.95rem;
+  white-space: nowrap;
+}
+
+.btn-solid:hover:not(:disabled) {
+  background: #292524;
+}
+
+.btn-ghost {
+  border: 1px solid #e7e5e4;
+  background: #fff;
+  color: #44403c;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: #d6d3d1;
+  background: #fafaf9;
+  color: #1c1917;
+}
+
+// --- Tastatur-Fokus ---
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #1f4b99;
+  outline-offset: 2px;
+}
+
+// --- Editor-Abschnitte und Überschriften ---
+.block {
+  margin-bottom: 0;
+}
+
+.block h2,
+.block-head h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.block-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+// --- Formularfelder ---
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  margin-top: 0.7rem;
+  color: #44403c;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #d6d3d1;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0.52rem 0.7rem;
+  color: #1c1917;
+  font-weight: 400;
+}
+
+textarea {
+  resize: vertical;
+}
+
+// --- Raster und Checkboxen ---
+.grid-2,
+.grid-3 {
+  display: grid;
+  gap: 0 0.7rem;
+}
+
+.grid-2 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.grid-3 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  color: #1c1917;
+}
+
+.check input {
+  width: auto;
+}
+
+// --- Eintragskarten, Knopfleisten und Stichpunkte ---
+.entry-card {
+  margin-bottom: 0.85rem;
+  padding: 0.85rem 0.95rem 1rem;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.entry-card > .btn-ghost {
+  margin-top: 0.7rem;
+}
+
+.item-actions,
+.bullet-row,
+.photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.item-actions {
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin-bottom: 0.55rem;
+}
+
+.icon-btn {
+  display: grid;
+  width: 1.85rem;
+  height: 1.85rem;
+  place-items: center;
+  padding: 0;
+  border-radius: 8px;
+  color: #44403c;
+  background: #fafaf9;
+}
+
+.icon-btn svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-btn.grip {
+  cursor: grab;
+}
+
+.icon-btn.grip svg {
+  fill: currentColor;
+  stroke: none;
+}
+
+.icon-btn.danger {
+  color: #b91c1c;
+}
+
+.icon-btn.danger:hover:not(:disabled) {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.bullet-row {
+  align-items: center;
+  margin-top: 0.4rem;
+}
+
+.bullet-row input {
+  flex: 1;
+}
+
+// --- Hinweis bei leerer Liste ---
+.empty {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px dashed #d6d3d1;
+  border-radius: 12px;
+  background: #fff;
+  color: #78716c;
+  font-size: 0.9rem;
+}
+
+// --- Drag & Drop (Angular CDK) ---
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(28, 25, 23, 0.16);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.cdk-drag-animating {
+  transition: transform 180ms ease;
+}
+
+// --- Druck / PDF: A4 ohne Seitenrand ---
+@page {
+  size: A4;
+  margin: 0;
+}

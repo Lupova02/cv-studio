@@ -1,0 +1,130 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "cv-studio": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "skipTests": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "index": "src/index.html",
+            "outputPath": "dist/cv-studio",
+            "tsConfig": "tsconfig.app.json",
+            "polyfills": ["zone.js"],
+            "externalDependencies": ["node:worker_threads"],
+            "inlineStyleLanguage": "scss",
+            "baseHref": "/",
+          "assets": [
+            {
+              "glob": "**/*",
+              "input": "public"
+            },
+            {
+              "glob": "*",
+              "input": "node_modules/@mkljczk/bergamot-translator/worker",
+              "output": "translation/worker"
+            }
+          ],
+            "styles": [
+              "node_modules/@fontsource/source-sans-3/latin-400.css",
+              "node_modules/@fontsource/source-sans-3/latin-600.css",
+              "node_modules/@fontsource/source-sans-3/latin-700.css",
+              "node_modules/@fontsource/source-sans-3/latin-ext-400.css",
+              "node_modules/@fontsource/source-sans-3/latin-ext-600.css",
+              "node_modules/@fontsource/source-sans-3/latin-ext-700.css",
+              "node_modules/@fontsource/source-serif-4/latin-400.css",
+              "node_modules/@fontsource/source-serif-4/latin-600.css",
+              "node_modules/@fontsource/source-serif-4/latin-700.css",
+              "node_modules/@fontsource/source-serif-4/latin-ext-400.css",
+              "node_modules/@fontsource/source-serif-4/latin-ext-600.css",
+              "node_modules/@fontsource/source-serif-4/latin-ext-700.css",
+              "node_modules/@fontsource/libre-baskerville/latin-400.css",
+              "node_modules/@fontsource/libre-baskerville/latin-600.css",
+              "node_modules/@fontsource/libre-baskerville/latin-700.css",
+              "node_modules/@fontsource/libre-baskerville/latin-ext-400.css",
+              "node_modules/@fontsource/libre-baskerville/latin-ext-600.css",
+              "node_modules/@fontsource/libre-baskerville/latin-ext-700.css",
+              "node_modules/@fontsource/ibm-plex-sans/latin-400.css",
+              "node_modules/@fontsource/ibm-plex-sans/latin-600.css",
+              "node_modules/@fontsource/ibm-plex-sans/latin-700.css",
+              "node_modules/@fontsource/ibm-plex-sans/latin-ext-400.css",
+              "node_modules/@fontsource/ibm-plex-sans/latin-ext-600.css",
+              "node_modules/@fontsource/ibm-plex-sans/latin-ext-700.css",
+              "node_modules/@fontsource/lora/latin-400.css",
+              "node_modules/@fontsource/lora/latin-600.css",
+              "node_modules/@fontsource/lora/latin-700.css",
+              "node_modules/@fontsource/lora/latin-ext-400.css",
+              "node_modules/@fontsource/lora/latin-ext-600.css",
+              "node_modules/@fontsource/lora/latin-ext-700.css",
+              "node_modules/@fontsource/comic-neue/latin-400.css",
+              "node_modules/@fontsource/comic-neue/latin-700.css",
+              "src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "index": {
+                "input": "src/index.prod.html",
+                "output": "index.html"
+              },
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": false
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "800kB",
+                  "maximumError": "1.5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "16kB",
+                  "maximumError": "32kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "cv-studio:build:production"
+            },
+            "development": {
+              "buildTarget": "cv-studio:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  }
+}

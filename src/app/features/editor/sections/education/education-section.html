@@ -1,0 +1,25 @@
+<section class="block">
+  <!-- Überschrift mit „Hinzufügen“-Knopf -->
+  <app-list-header [title]="copy.cv().education" [disabled]="items().length >= limits.items" (add)="add()" />
+  <!-- Per Drag & Drop sortierbare Liste der Ausbildungen -->
+  <div cdkDropList (cdkDropListDropped)="drop($event)">
+    @for (group of items().controls; track group.controls.id.value; let index = $index) {
+      <article class="entry-card" cdkDrag [formGroup]="group">
+        <app-item-actions [index]="index" [count]="items().length" (move)="move(index, $event)" (remove)="remove(index)" />
+        <!-- Stammdaten: Abschluss, Einrichtung, Ort, Zeitraum -->
+        <div class="grid-2">
+          <label>{{ copy.ui().degree }} <input formControlName="degree" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().institution }} <input formControlName="institution" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().location }} <input formControlName="location" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().from }} <input type="month" formControlName="from" /></label>
+          <label>{{ copy.ui().until }} <input type="month" formControlName="until" /></label>
+          <label class="check"><input type="checkbox" formControlName="current" (change)="toggleCurrent(group)" /> {{ copy.ui().current }}</label>
+        </div>
+        <label>{{ copy.ui().description }} <textarea formControlName="description" rows="3" [attr.maxlength]="limits.longText"></textarea></label>
+      </article>
+    } @empty {
+      <!-- Hinweis, solange die Liste leer ist -->
+      <p class="empty">{{ copy.ui().emptyEducation }}</p>
+    }
+  </div>
+</section>

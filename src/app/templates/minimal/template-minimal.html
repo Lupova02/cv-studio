@@ -1,0 +1,207 @@
+<!-- Vorlage „Minimal“: Abschnittstitel in der linken Randspalte, Inhalt daneben. -->
+<article class="minimal" [attr.lang]="options().language" [style.--accent]="options().accentColor">
+  <!-- Kopf: Name, Kontaktdaten/Links in zwei Spalten, Foto -->
+  <header class="header">
+    <div class="identity">
+      <h1>{{ name() }}</h1>
+      <span class="rule"></span>
+      @if (contactGroups().length) {
+        <div class="contact">
+          @for (group of contactGroups(); track $index) {
+            <ul>
+              @for (entry of group; track $index) {
+                <li [attr.title]="entry.label">
+                  <app-contact-icon [icon]="entry.icon" />
+                  <span>{{ entry.lines.join(', ') }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
+    </div>
+    @if (hasPhoto()) {
+      <img class="photo" [src]="options().photoDataUrl" [alt]="name()" />
+    }
+  </header>
+
+  <!-- Persönliche Angaben -->
+  @if (factItems().length) {
+    <section class="block">
+      <h2>{{ labels().personal }}</h2>
+      <dl class="content facts">
+        @for (fact of factItems(); track fact.label) {
+          <div>
+            <dt>{{ fact.label }}</dt>
+            <dd>{{ fact.details.length ? fact.details.join(', ') : fact.value }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+  }
+
+  <!-- Berufserfahrung -->
+  @if (data().experience.length) {
+    <section class="block">
+      <h2>{{ labels().experience }}</h2>
+      <div class="content" [class.timeline]="timeline()">
+        @for (item of data().experience; track item.id) {
+          <article class="entry">
+            <div class="row">
+              <strong class="title">{{ item.position || item.company }}</strong>
+              @if (datesAside()) {
+                <span class="date">{{ range(item.from, item.until, item.current) }}</span>
+              }
+            </div>
+            <p class="meta"><span class="org">{{ item.company }}</span>@if (place(item); as where) { · {{ where }} }</p>
+            @if (!datesAside() && range(item.from, item.until, item.current)) {
+              <p class="when">{{ range(item.from, item.until, item.current) }}</p>
+            }
+            @if (item.description) {
+              <p class="text">{{ item.description }}</p>
+            }
+            @if (item.bullets.length) {
+              <ul class="bullets">
+                @for (bullet of item.bullets; track $index) {
+                  @if (bullet) {
+                    <li>{{ bullet }}</li>
+                  }
+                }
+              </ul>
+            }
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Ausbildung -->
+  @if (data().education.length) {
+    <section class="block">
+      <h2>{{ labels().education }}</h2>
+      <div class="content" [class.timeline]="timeline()">
+        @for (item of data().education; track item.id) {
+          <article class="entry">
+            <div class="row">
+              <strong class="title">{{ item.degree || item.institution }}</strong>
+              @if (datesAside()) {
+                <span class="date">{{ range(item.from, item.until, item.current) }}</span>
+              }
+            </div>
+            <p class="meta"><span class="org">{{ item.institution }}</span>@if (item.location) { · {{ item.location }} }</p>
+            @if (!datesAside() && range(item.from, item.until, item.current)) {
+              <p class="when">{{ range(item.from, item.until, item.current) }}</p>
+            }
+            @if (item.description) {
+              <p class="text">{{ item.description }}</p>
+            }
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Projekte -->
+  @if (data().projects.length) {
+    <section class="block">
+      <h2>{{ labels().projects }}</h2>
+      <div class="content" [class.timeline]="timeline()">
+        @for (item of data().projects; track item.id) {
+          <article class="entry">
+            <div class="row">
+              <strong class="title">{{ item.name }}</strong>
+              @if (datesAside()) {
+                <span class="date">{{ range(item.from, item.until, false) }}</span>
+              }
+            </div>
+            @if (item.url) {
+              <p class="meta link">{{ item.url }}</p>
+            }
+            @if (!datesAside() && range(item.from, item.until, false)) {
+              <p class="when">{{ range(item.from, item.until, false) }}</p>
+            }
+            @if (item.description) {
+              <p class="text">{{ item.description }}</p>
+            }
+            @if (item.bullets.length) {
+              <ul class="bullets">
+                @for (bullet of item.bullets; track $index) {
+                  @if (bullet) {
+                    <li>{{ bullet }}</li>
+                  }
+                }
+              </ul>
+            }
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Zertifikate -->
+  @if (data().certificates.length) {
+    <section class="block">
+      <h2>{{ labels().certificates }}</h2>
+      <div class="content" [class.timeline]="timeline()">
+        @for (item of data().certificates; track item.id) {
+          <article class="entry">
+            <div class="row">
+              <strong class="title">{{ item.name }}</strong>
+              @if (datesAside()) {
+                <span class="date">{{ range(item.date, '', false) }}</span>
+              }
+            </div>
+            @if (item.issuer) {
+              <p class="meta"><span class="org">{{ item.issuer }}</span></p>
+            }
+            @if (!datesAside() && range(item.date, '', false)) {
+              <p class="when">{{ range(item.date, '', false) }}</p>
+            }
+            @if (item.description) {
+              <p class="text">{{ item.description }}</p>
+            }
+          </article>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Sprachen -->
+  @if (spoken().length) {
+    <section class="block">
+      <h2>{{ labels().languages }}</h2>
+      <ul class="content languages">
+        @for (item of spoken(); track item.id) {
+          <li>
+            <span class="lang-name">{{ item.name }}</span>
+            @if (item.level) {
+              <span class="lang-level">{{ item.level }}</span>
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <!-- Kenntnisse nach Kategorien -->
+  @if (skillGroups().length) {
+    <section class="block">
+      <h2>{{ labels().skills }}</h2>
+      <div class="content">
+        @for (group of skillGroups(); track group.id) {
+          <div class="skill-group">
+            <p class="skill-category">{{ group.name }}</p>
+            <ul class="skills">
+              @for (item of group.skills; track item.id) {
+                <li>
+                  <span>{{ item.name }}</span>
+                  <app-star-rating [value]="item.stars" [mode]="options().skillScale" />
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</article>

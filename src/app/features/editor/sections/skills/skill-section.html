@@ -1,0 +1,34 @@
+<section class="block">
+  <h2>{{ copy.cv().skills }}</h2>
+  <p class="hint">{{ copy.ui().skillHint }}</p>
+
+  <!-- Kategorie wählen; hinter jeder Kategorie steht die Anzahl gewählter Kenntnisse -->
+  <label class="pick">{{ copy.ui().category }}
+    <select [value]="categoryId()" (change)="chooseCategory($any($event.target).value)">
+      <option value="">{{ copy.ui().chooseCategory }}</option>
+      @for (group of catalog(); track group.id) {
+        <option [value]="group.id">{{ group.name }}@if (count(group.id); as chosen) { · {{ chosen }} }</option>
+      }
+    </select>
+  </label>
+
+  <!-- Kenntnisse der gewählten Kategorie: Häkchen = im Lebenslauf, Sterne = Niveau -->
+  @if (active(); as group) {
+    <ul>
+      @for (skill of group.skills; track skill.id) {
+        <li [class.chosen]="stars(skill.id) > 0">
+          <label>
+            <input
+              type="checkbox"
+              [checked]="stars(skill.id) > 0"
+              [disabled]="stars(skill.id) === 0 && full()"
+              (change)="toggle(skill.id, $any($event.target).checked)"
+            />
+            <span>{{ skill.name }}</span>
+          </label>
+          <app-star-rating [value]="stars(skill.id)" [interactive]="true" (pick)="setStars(skill.id, $event)" />
+        </li>
+      }
+    </ul>
+  }
+</section>

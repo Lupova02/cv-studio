@@ -1,0 +1,96 @@
+// Gemeinsame Mixins aller Lebenslauf-Vorlagen: A4-Blatt, Umbruchregeln für den Druck und Zeitleiste.
+
+// --- A4-Blatt ---
+@mixin sheet {
+  display: block;
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  color: #1c1917;
+  box-sizing: border-box;
+  font-family: var(--cv-font);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+// --- Umbruchregeln: Einträge nicht teilen, Überschriften nicht allein am Seitenende ---
+@mixin keep-entry {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@mixin keep-heading {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+// --- Zeitleiste: senkrechte Linie links mit Punkt je Eintrag; weiße Flächen unterbrechen die Linie
+// hinter Überschriften und nach dem letzten Eintrag ---
+@mixin timeline-rail {
+  .timeline {
+    position: relative;
+    padding-left: 5mm;
+    overflow: hidden;
+  }
+
+  .timeline > section:first-child {
+    margin-top: 0;
+  }
+
+  .timeline > section > h2 {
+    position: relative;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .timeline > section > h2::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    left: -5mm;
+    top: -2.6mm;
+    bottom: -2mm;
+    width: 5mm;
+    background: #fff;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    left: 1.225mm;
+    top: 0;
+    bottom: 0;
+    width: 0.55mm;
+    background: var(--accent, #1f4b99);
+  }
+
+  .timeline .entry {
+    position: relative;
+  }
+
+  .timeline .entry::before {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    left: -4.8mm;
+    top: 1.56mm;
+    width: 2.6mm;
+    height: 2.6mm;
+    box-sizing: border-box;
+    border: 0.4mm solid #fff;
+    border-radius: 50%;
+    background: var(--accent, #1f4b99);
+  }
+
+  .timeline .line-end::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    left: -5mm;
+    top: 2.86mm;
+    bottom: -400mm;
+    width: 5mm;
+    background: #fff;
+  }
+}

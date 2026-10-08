@@ -1,0 +1,224 @@
+@use '../print-base' as *;
+
+// --- Zeitleiste aus den gemeinsamen Vorlagen-Stilen ---
+@include timeline-rail;
+
+:host {
+  @include sheet;
+  position: relative;
+}
+
+// --- Grundlayout: Seitenleiste über die volle Höhe, Hauptspalte daneben ---
+.modern {
+  --sidebar-width: 62mm;
+  min-height: 297mm;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  box-sizing: border-box;
+  padding: 14mm 8mm;
+  background: var(--accent, #0f3d4c);
+  color: var(--on-accent, #fff);
+  --bar: var(--on-accent, #fff);
+}
+
+.main {
+  margin-left: var(--sidebar-width);
+  box-sizing: border-box;
+  min-height: 297mm;
+  padding: 14mm 12mm 16mm;
+  font-size: 14px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+// --- Seitenleiste: Foto, Name, Angaben, Kontakt, Sprachen, Kenntnisse ---
+.photo {
+  width: 32mm;
+  height: 32mm;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 6mm;
+}
+
+h1 {
+  font-size: 24px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.role,
+.facts,
+.contact,
+.sidebar p,
+.sidebar small {
+  color: color-mix(in srgb, var(--on-accent, #fff) 82%, transparent);
+}
+
+.role {
+  margin-top: 2mm;
+  font-size: 13px;
+}
+
+.contact,
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.facts {
+  margin-top: 4mm;
+}
+
+.facts > li {
+  margin-top: 2.6mm;
+}
+
+.facts strong {
+  color: var(--on-accent, #fff);
+  font-weight: 700;
+}
+
+.contact li,
+.sidebar li,
+.facts,
+.sidebar p {
+  margin-top: 1.4mm;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.sidebar h2 {
+  margin: 7mm 0 3mm;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sidebar h2 + ul > li:first-child,
+.sidebar h2 + p,
+.skill-category + ul > li:first-child {
+  margin-top: 0;
+}
+
+.sidebar .skill-category {
+  margin: 6.5mm 0 1mm;
+  color: var(--on-accent, #fff);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.sidebar h2 + .skill-category {
+  margin-top: 0;
+}
+
+.sidebar li {
+  display: flex;
+  justify-content: space-between;
+  gap: 3mm;
+}
+
+.contact li {
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2.2mm;
+}
+
+.contact svg {
+  width: 4.2mm;
+  height: 4.2mm;
+  flex: none;
+  margin-top: 0.35mm;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.facts > li {
+  display: block;
+}
+
+// --- Hauptspalte: Abschnitte und Einträge ---
+.main h2 {
+  @include keep-heading;
+  margin-bottom: 3mm;
+  padding-left: 3mm;
+  border-left: 1mm solid var(--accent, #0f3d4c);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.entry strong {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.when {
+  margin-top: 0.6mm;
+  color: #57534e;
+  font-size: 12.5px;
+}
+
+.main section + section {
+  margin-top: 7mm;
+}
+
+.entry {
+  @include keep-entry;
+  margin-bottom: 4.5mm;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 4mm;
+}
+
+.row span,
+.meta {
+  color: #57534e;
+  font-size: 12.5px;
+}
+
+.org {
+  color: var(--accent, #0f3d4c);
+  font-weight: 700;
+}
+
+.text,
+.meta {
+  margin-top: 1mm;
+}
+
+.text {
+  white-space: pre-wrap;
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.main ul {
+  margin: 1.5mm 0 0;
+  padding-left: 4.5mm;
+}
+
+.main li {
+  margin: 0.5mm 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
