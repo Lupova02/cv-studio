@@ -38,6 +38,11 @@ export class TemplateMinimal {
   /** Zeitleiste (Linie mit Punkten) anzeigen? */
   protected readonly timeline = computed(() => this.options().timeline === 'line');
 
+  /** Verbindet die nicht-leeren Teile mit ' · ', z. B. 'Position · Firma'. */
+  protected join(parts: string[]): string {
+    return joinMeta(parts);
+  }
+
   /** Formatierter Arbeitsort aus Stadt und Land. */
   protected place(item: { city: string; country: string }): string {
     return workplace(item.city, item.country, this.options().language);

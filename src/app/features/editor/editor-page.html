@@ -167,14 +167,19 @@
               <div class="grid-2 fields">
                 <label>{{ copy.cv().birthDate }} <input type="date" formControlName="birthDate" /></label>
                 <label>{{ copy.cv().birthPlace }} <input formControlName="birthPlace" [attr.maxlength]="limits.shortText" /></label>
-                <label>{{ copy.cv().gender }}
-                  <select formControlName="gender">
+                <!-- Geschlecht mit Schalter: ausgeblendet bleibt die Angabe gespeichert, erscheint aber nicht im Lebenslauf -->
+                <div class="gender-field" [class.hidden-in-cv]="!cvForm.controls.showGender.value">
+                  <div class="field-head">
+                    <label for="cv-gender">{{ copy.cv().gender }}</label>
+                    <label class="check"><input type="checkbox" [formControl]="cvForm.controls.showGender" /> {{ copy.ui().showGender }}</label>
+                  </div>
+                  <select id="cv-gender" formControlName="gender">
                     <option value=""></option>
                     <option value="female">{{ copy.cv().genderFemale }}</option>
                     <option value="male">{{ copy.cv().genderMale }}</option>
                     <option value="diverse">{{ copy.cv().genderDiverse }}</option>
                   </select>
-                </label>
+                </div>
                 <label>{{ copy.ui().email }} <input type="email" formControlName="email" [attr.maxlength]="limits.email" autocomplete="email" /></label>
               </div>
             </div>
@@ -305,6 +310,19 @@
             </div>
           </div>
         </section>
+        <!-- Über mich: leer = Abschnitt erscheint nicht im Lebenslauf -->
+        <section class="block summary">
+          <header class="block-head">
+            <h2>{{ copy.cv().summary }}</h2>
+          </header>
+          <textarea
+            formControlName="summary"
+            rows="4"
+            [attr.maxlength]="limits.longText"
+            [attr.aria-label]="copy.cv().summary"
+            [attr.placeholder]="copy.ui().summaryHint"
+          ></textarea>
+        </section>
         <!-- Abschnitte: jeweils eigene Komponente mit ihrer Formular-Liste -->
         <app-language-section [items]="cvForm.controls.languages" />
         <app-skill-section [items]="cvForm.controls.skills" />
@@ -312,6 +330,7 @@
         <app-education-section [items]="cvForm.controls.education" />
         <app-certificate-section [items]="cvForm.controls.certificates" />
         <app-project-section [items]="cvForm.controls.projects" />
+        <app-reference-section [items]="cvForm.controls.references" />
       </div>
       <!-- Verschiebbarer Trenner (Maus und Tastatur) -->
       <div
@@ -330,7 +349,7 @@
       </div>
       <!-- Rechte Spalte: Design-Leiste und Live-Vorschau -->
       <aside class="preview">
-        <!-- Design-Leiste: Vorlage, Akzentfarbe, Skala, Datumsposition, Zeitleiste, Schrift, Seitenzahlen -->
+        <!-- Design-Leiste: Vorlage, Akzentfarbe, Skala, Datumsposition, Zeitleiste, Reihenfolge, Schrift, Seitenzahlen -->
         <div class="preview-options">
           <div class="designs">
             @for (item of templates; track item.id) {
@@ -346,6 +365,7 @@
             <div>
               <button type="button" [class.active]="cvForm.controls.skillScale.value === 'stars'" (click)="chooseSkillScale('stars')">{{ copy.ui().skillStars }}</button>
               <button type="button" [class.active]="cvForm.controls.skillScale.value === 'bars'" (click)="chooseSkillScale('bars')">{{ copy.ui().skillBars }}</button>
+              <button type="button" [class.active]="cvForm.controls.skillScale.value === 'off'" (click)="chooseSkillScale('off')">{{ copy.ui().skillOff }}</button>
             </div>
           </div>
           <div class="skill-scale">
@@ -360,6 +380,13 @@
             <div>
               <button type="button" [class.active]="cvForm.controls.timeline.value === 'off'" (click)="chooseTimeline('off')">{{ copy.ui().timelineOff }}</button>
               <button type="button" [class.active]="cvForm.controls.timeline.value === 'line'" (click)="chooseTimeline('line')">{{ copy.ui().timelineLine }}</button>
+            </div>
+          </div>
+          <div class="skill-scale">
+            <span>{{ copy.ui().entryOrder }}</span>
+            <div>
+              <button type="button" [class.active]="cvForm.controls.entryOrder.value === 'manual'" (click)="chooseEntryOrder('manual')">{{ copy.ui().orderManual }}</button>
+              <button type="button" [class.active]="cvForm.controls.entryOrder.value === 'newest'" (click)="chooseEntryOrder('newest')">{{ copy.ui().orderNewest }}</button>
             </div>
           </div>
           <label>{{ copy.ui().font }}

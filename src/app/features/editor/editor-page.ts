@@ -2,7 +2,7 @@ import { Component, DestroyRef, ElementRef, computed, effect, inject, signal, un
 import { ReactiveFormsModule } from '@angular/forms';
 import { addressFields } from '@shared/format/address-format';
 import { countriesFor, countryDial } from '@shared/catalogs/country-data';
-import { CV_FONT_LABELS, CV_FONTS, LIMITS, MAX_NATIONALITIES, MAX_PHONES, OTHER_NATIONALITY, PAGE_NUMBER_PLACES, PAGE_NUMBER_STYLES, cvFontStack, type CvData, type CvFont, type CvLanguage, type DatePlace, type PageNumberPlace, type PageNumberStyle, type SkillScale, type TemplateId, type TemplateOptions, type TimelineStyle } from '@shared/cv/cv-data';
+import { CV_FONT_LABELS, CV_FONTS, LIMITS, MAX_NATIONALITIES, MAX_PHONES, OTHER_NATIONALITY, PAGE_NUMBER_PLACES, PAGE_NUMBER_STYLES, cvFontStack, type CvData, type CvFont, type CvLanguage, type DatePlace, type EntryOrder, type PageNumberPlace, type PageNumberStyle, type SkillScale, type TemplateId, type TemplateOptions, type TimelineStyle } from '@shared/cv/cv-data';
 import { countTranslatable } from '@shared/cv/cv-translate';
 import { formatPageNumber } from '@shared/format/format';
 import { sampleCv } from '@shared/cv/sample-cv';
@@ -20,6 +20,7 @@ import { ExperienceSection } from './sections/experience/experience-section';
 import { CertificateSection } from './sections/certificates/certificate-section';
 import { LanguageSection } from './sections/languages/language-section';
 import { ProjectSection } from './sections/projects/project-section';
+import { ReferenceSection } from './sections/references/reference-section';
 import { SkillSection } from './sections/skills/skill-section';
 import { TrashIcon } from '../../ui/trash-icon/trash-icon';
 
@@ -39,6 +40,7 @@ import { TrashIcon } from '../../ui/trash-icon/trash-icon';
     LanguageSection,
     CertificateSection,
     ProjectSection,
+    ReferenceSection,
     TrashIcon,
   ],
   templateUrl: './editor-page.html',
@@ -92,11 +94,13 @@ export class EditorPage {
     const template = findTemplate(data.template.templateId);
     return {
       showPhoto: data.template.showPhoto && template.supportsPhoto,
+      showGender: data.template.showGender,
       accentColor: data.template.accentColor,
       language: data.template.language,
       skillScale: data.template.skillScale,
       datePlace: data.template.datePlace,
       timeline: data.template.timeline,
+      entryOrder: data.template.entryOrder,
       font: data.template.font,
       pageNumbers: data.template.pageNumbers,
       pageNumberPlace: data.template.pageNumberPlace,
@@ -275,6 +279,10 @@ export class EditorPage {
 
   protected chooseTimeline(style: TimelineStyle): void {
     this.form()?.controls.timeline.setValue(style);
+  }
+
+  protected chooseEntryOrder(order: EntryOrder): void {
+    this.form()?.controls.entryOrder.setValue(order);
   }
 
   protected choosePageNumberPlace(place: PageNumberPlace): void {

@@ -22,9 +22,13 @@ import {
   type LanguageItem,
   type PersonalInfo,
   type ProjectItem,
+  type ReferenceItem,
   type SkillItem,
   type TemplateId,
   CV_FONTS,
+  ENTRY_ORDERS,
+  SKILL_SCALES,
+  type EntryOrder,
   PAGE_NUMBER_PLACES,
   PAGE_NUMBER_STYLES,
   type CvFont,
@@ -422,8 +426,24 @@ function migrateProject(value: unknown): ProjectItem {
   };
 }
 
+function migrateReference(value: unknown): ReferenceItem {
+  const source = isRecord(value) ? value : {};
+  return {
+    id: asId(source['id']),
+    name: asText(source['name'], LIMITS.shortText, 'Name der Referenz'),
+    position: asText(source['position'], LIMITS.shortText, 'Position der Referenz'),
+    company: asText(source['company'], LIMITS.shortText, 'Firma der Referenz'),
+    email: asText(source['email'], LIMITS.email, 'E-Mail der Referenz'),
+    phone: asText(source['phone'], LIMITS.phone, 'Telefon der Referenz'),
+  };
+}
+
 function asSkillScale(value: unknown): SkillScale {
-  return value === 'bars' ? 'bars' : 'stars';
+  return typeof value === 'string' && (SKILL_SCALES as readonly string[]).includes(value) ? (value as SkillScale) : 'stars';
+}
+
+function asEntryOrder(value: unknown): EntryOrder {
+  return typeof value === 'string' && (ENTRY_ORDERS as readonly string[]).includes(value) ? (value as EntryOrder) : 'manual';
 }
 
 function asDatePlace(value: unknown): DatePlace {
@@ -452,11 +472,13 @@ function migrateTemplate(value: unknown): TemplateSettings {
   return {
     templateId: asTemplateId(source['templateId']),
     showPhoto: asBoolean(source['showPhoto'], true),
+    showGender: asBoolean(source['showGender'], true),
     accentColor: asAccent(source['accentColor']),
     language: asLanguage(source['language']),
     skillScale: asSkillScale(source['skillScale']),
     datePlace: asDatePlace(source['datePlace']),
     timeline: asTimeline(source['timeline']),
+    entryOrder: asEntryOrder(source['entryOrder']),
     font: asFont(source['font']),
     pageNumbers: asPageNumbers(source['pageNumbers']),
     pageNumberPlace: asPageNumberPlace(source['pageNumberPlace']),
@@ -483,12 +505,14 @@ export function migrate(raw: unknown): CvData {
   return {
     schemaVersion: SCHEMA_VERSION,
     personal: migratePersonal(raw['personal']),
+    summary: asText(raw['summary'], LIMITS.longText, 'Über mich'),
     experience: withUniqueIds(asList(raw['experience'], 'Berufserfahrung').map((entry) => migrateExperience(entry))),
     education: withUniqueIds(asList(raw['education'], 'Ausbildung').map((entry) => migrateEducation(entry))),
     skills: migrateSkills(raw['skills']),
     languages: migrateLanguages(raw['languages']),
     certificates: withUniqueIds(asList(raw['certificates'], 'Zertifikate').map((entry) => migrateCertificate(entry))),
     projects: withUniqueIds(asList(raw['projects'], 'Projekte').map((entry) => migrateProject(entry))),
+    references: withUniqueIds(asList(raw['references'], 'Referenzen').map((entry) => migrateReference(entry))),
     template: migrateTemplate(raw['template']),
   };
 }

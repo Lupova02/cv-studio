@@ -477,6 +477,35 @@
   font-weight: 500;
 }
 
+// --- Geschlecht mit Schalter „Anzeigen“ in der Beschriftungszeile ---
+.gender-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+}
+
+.gender-field .field-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gender-field .field-head label {
+  margin-top: 0;
+}
+
+.gender-field .check {
+  gap: 0.3rem;
+  color: #57534e;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.gender-field.hidden-in-cv select {
+  color: #a8a29e;
+}
+
 // --- Seitenumbruch-Streifen in der Vorschau ---
 .page-gap {
   position: absolute;

@@ -34,9 +34,10 @@ function bulletFields(bullets: string[]): TextField[] {
   }));
 }
 
-/** Freitexte, die die Nutzerin selbst geschrieben hat (nur nicht-leere); Namen von Firmen, Schulen, Projekten und Orten bleiben unverändert. */
+/** Freitexte, die die Nutzerin selbst geschrieben hat (nur nicht-leere); Namen von Personen, Firmen, Schulen, Projekten und Orten bleiben unverändert. */
 function translatableFields(cv: CvData): TextField[] {
   return [
+    field(cv, 'summary', LIMITS.longText),
     ...cv.experience.flatMap((item) => [
       field(item, 'position', LIMITS.shortText),
       field(item, 'description', LIMITS.longText),
@@ -45,6 +46,7 @@ function translatableFields(cv: CvData): TextField[] {
     ...cv.education.flatMap((item) => [field(item, 'degree', LIMITS.shortText), field(item, 'description', LIMITS.longText)]),
     ...cv.certificates.map((item) => field(item, 'description', LIMITS.longText)),
     ...cv.projects.flatMap((item) => [field(item, 'description', LIMITS.longText), ...bulletFields(item.bullets)]),
+    ...cv.references.map((item) => field(item, 'position', LIMITS.shortText)),
   ].filter((entry) => entry.read().trim().length > 0);
 }
 

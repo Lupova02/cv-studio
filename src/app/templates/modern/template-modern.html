@@ -85,7 +85,9 @@
           @for (item of group.skills; track item.id) {
             <li>
               <span>{{ item.name }}</span>
-              <app-star-rating [value]="item.stars" [mode]="options().skillScale" />
+              @if (options().skillScale !== 'off') {
+                <app-star-rating [value]="item.stars" [mode]="options().skillScale" />
+              }
             </li>
           }
         </ul>
@@ -94,6 +96,13 @@
   </aside>
   <!-- Hauptspalte: chronologische Abschnitte, optional mit Zeitleiste -->
   <div class="main">
+    <!-- Über mich -->
+    @if (data().summary) {
+      <section class="summary">
+        <h2>{{ labels().summary }}</h2>
+        <p class="text">{{ data().summary }}</p>
+      </section>
+    }
     <div [class.timeline]="options().timeline === 'line'">
     <!-- Berufserfahrung -->
     @if (data().experience.length) {
@@ -194,5 +203,18 @@
       </section>
     }
     </div>
+    <!-- Referenzen: außerhalb der Zeitleiste, da nicht chronologisch -->
+    @if (data().references.length) {
+      <section class="references">
+        <h2>{{ labels().references }}</h2>
+        @for (item of data().references; track item.id) {
+          <article class="entry">
+            <strong>{{ item.name }}</strong>
+            @if (join([item.position, item.company]); as role) { <p class="meta">{{ role }}</p> }
+            @if (join([item.email, item.phone]); as reach) { <p class="meta">{{ reach }}</p> }
+          </article>
+        }
+      </section>
+    }
   </div>
 </article>

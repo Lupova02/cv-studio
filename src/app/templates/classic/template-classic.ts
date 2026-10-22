@@ -47,6 +47,11 @@ export class TemplateClassic {
     return order.filter(([, count]) => count > 0).pop()?.[0] ?? null;
   });
 
+  /** Verbindet die nicht-leeren Teile mit ' · ', z. B. 'Position · Firma'. */
+  protected join(parts: string[]): string {
+    return joinMeta(parts);
+  }
+
   /** Formatierter Arbeitsort aus Stadt und Land. */
   protected place(item: { city: string; country: string }): string {
     return workplace(item.city, item.country, this.options().language);

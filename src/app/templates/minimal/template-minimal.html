@@ -25,6 +25,14 @@
     }
   </header>
 
+  <!-- Über mich -->
+  @if (data().summary) {
+    <section class="block">
+      <h2>{{ labels().summary }}</h2>
+      <p class="content text summary">{{ data().summary }}</p>
+    </section>
+  }
+
   <!-- Persönliche Angaben -->
   @if (factItems().length) {
     <section class="block">
@@ -195,11 +203,33 @@
               @for (item of group.skills; track item.id) {
                 <li>
                   <span>{{ item.name }}</span>
-                  <app-star-rating [value]="item.stars" [mode]="options().skillScale" />
+                  @if (options().skillScale !== 'off') {
+                    <app-star-rating [value]="item.stars" [mode]="options().skillScale" />
+                  }
                 </li>
               }
             </ul>
           </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Referenzen -->
+  @if (data().references.length) {
+    <section class="block">
+      <h2>{{ labels().references }}</h2>
+      <div class="content">
+        @for (item of data().references; track item.id) {
+          <article class="entry">
+            <strong class="title">{{ item.name }}</strong>
+            @if (join([item.position, item.company]); as role) {
+              <p class="meta">{{ role }}</p>
+            }
+            @if (join([item.email, item.phone]); as reach) {
+              <p class="meta">{{ reach }}</p>
+            }
+          </article>
         }
       </div>
     </section>

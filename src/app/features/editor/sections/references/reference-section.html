@@ -1,0 +1,20 @@
+<section class="block">
+  <app-list-header [title]="copy.cv().references" [disabled]="items().length >= limits.items" (add)="add()" />
+  <!-- Einträge lassen sich per Ziehgriff oder Pfeilen umsortieren -->
+  <div cdkDropList (cdkDropListDropped)="drop($event)">
+    @for (group of items().controls; track group.controls.id.value; let index = $index) {
+      <article class="entry-card" cdkDrag [formGroup]="group">
+        <app-item-actions [index]="index" [count]="items().length" (move)="move(index, $event)" (remove)="remove(index)" />
+        <div class="grid-2">
+          <label class="span-2">{{ copy.ui().name }} <input formControlName="name" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().position }} <input formControlName="position" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().company }} <input formControlName="company" [attr.maxlength]="limits.shortText" /></label>
+          <label>{{ copy.ui().email }} <input type="email" formControlName="email" [attr.maxlength]="limits.email" /></label>
+          <label>{{ copy.ui().phone }} <input type="tel" formControlName="phone" [attr.maxlength]="limits.phone" /></label>
+        </div>
+      </article>
+    } @empty {
+      <p class="empty">{{ copy.ui().emptyReferences }}</p>
+    }
+  </div>
+</section>

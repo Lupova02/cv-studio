@@ -45,8 +45,8 @@ export const MAX_PHONES = 5;
 
 /** Standard-Akzentfarbe der Vorlagen (Hex, kleingeschrieben); Rückfallwert bei ungültigen Farben. */
 export const DEFAULT_ACCENT = '#1f4b99';
-/** Darstellung der Kenntnis-Stufen: Sterne oder Balken. */
-export const SKILL_SCALES = ['stars', 'bars'] as const;
+/** Darstellung der Kenntnis-Stufen: Sterne, Balken oder `off` = nur die Namen ohne Stufe. */
+export const SKILL_SCALES = ['stars', 'bars', 'off'] as const;
 /** Darstellung der Kenntnis-Stufen. */
 export type SkillScale = (typeof SKILL_SCALES)[number];
 /** Position der Zeitangaben: `aside` = in eigener Spalte neben dem Eintrag, `below` = unter dem Titel. */
@@ -57,6 +57,10 @@ export type DatePlace = (typeof DATE_PLACES)[number];
 export const TIMELINE_STYLES = ['off', 'line'] as const;
 /** Stil der Zeitleiste. */
 export type TimelineStyle = (typeof TIMELINE_STYLES)[number];
+/** Reihenfolge datierter Einträge im Lebenslauf: `manual` = wie im Editor sortiert, `newest` = neueste zuerst. */
+export const ENTRY_ORDERS = ['manual', 'newest'] as const;
+/** Reihenfolge datierter Einträge. */
+export type EntryOrder = (typeof ENTRY_ORDERS)[number];
 /** Gestaltungsvarianten der Seitenzahl im PDF; `off` = keine Seitenzahlen. */
 export const PAGE_NUMBER_STYLES = ['off', 'fraction', 'number', 'dashed', 'label', 'badge', 'pill'] as const;
 /** Gestaltungsvariante der Seitenzahl. */
@@ -226,10 +230,22 @@ export interface ProjectItem {
   bullets: string[];
 }
 
+/** Eine Referenzperson, die Auskunft über die Nutzerin geben kann. */
+export interface ReferenceItem {
+  id: string;
+  name: string;
+  position: string;
+  company: string;
+  email: string;
+  phone: string;
+}
+
 /** Gestaltungseinstellungen, die zusammen mit dem Lebenslauf gespeichert werden. */
 export interface TemplateSettings {
   templateId: TemplateId;
   showPhoto: boolean;
+  /** `false` = Geschlecht bleibt gespeichert, erscheint aber nicht im Lebenslauf. */
+  showGender: boolean;
   /** Hex-Farbe im Format '#rrggbb' (kleingeschrieben). */
   accentColor: string;
   /** Sprache des Lebenslaufs; bestimmt auch die Sprache von Datei-Dialogen und Dateinamen. */
@@ -237,6 +253,7 @@ export interface TemplateSettings {
   skillScale: SkillScale;
   datePlace: DatePlace;
   timeline: TimelineStyle;
+  entryOrder: EntryOrder;
   font: CvFont;
   pageNumbers: PageNumberStyle;
   pageNumberPlace: PageNumberPlace;
@@ -247,12 +264,15 @@ export interface CvData {
   /** Version des Datenformats, siehe `SCHEMA_VERSION`. */
   schemaVersion: number;
   personal: PersonalInfo;
+  /** Freitext „Über mich“; `''` = Abschnitt erscheint nicht im Lebenslauf. */
+  summary: string;
   experience: ExperienceItem[];
   education: EducationItem[];
   skills: SkillItem[];
   languages: LanguageItem[];
   certificates: CertificateItem[];
   projects: ProjectItem[];
+  references: ReferenceItem[];
   template: TemplateSettings;
 }
 
@@ -262,11 +282,13 @@ export interface CvData {
  */
 export interface TemplateOptions {
   showPhoto: boolean;
+  showGender: boolean;
   accentColor: string;
   language: CvLanguage;
   skillScale: SkillScale;
   datePlace: DatePlace;
   timeline: TimelineStyle;
+  entryOrder: EntryOrder;
   font: CvFont;
   pageNumbers: PageNumberStyle;
   pageNumberPlace: PageNumberPlace;
@@ -322,20 +344,24 @@ export function emptyCv(): CvData {
   return {
     schemaVersion: SCHEMA_VERSION,
     personal: emptyPersonal(),
+    summary: '',
     experience: [],
     education: [],
     skills: [],
     languages: [],
     certificates: [],
     projects: [],
+    references: [],
     template: {
       templateId: 'classic',
       showPhoto: true,
+      showGender: true,
       accentColor: DEFAULT_ACCENT,
       language: 'de',
       skillScale: 'stars',
       datePlace: 'aside',
       timeline: 'line',
+      entryOrder: 'manual',
       font: 'sourceSans',
       pageNumbers: 'fraction',
       pageNumberPlace: 'right',

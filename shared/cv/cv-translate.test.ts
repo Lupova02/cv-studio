@@ -21,6 +21,10 @@ describe('translateCv', () => {
     assert.equal(result.education[0].institution, data.education[0].institution);
     assert.equal(result.education[0].degree, data.education[0].degree.toUpperCase());
     assert.equal(result.projects[0]?.name, data.projects[0]?.name);
+    assert.equal(result.summary, data.summary.toUpperCase());
+    assert.equal(result.references[0]?.position, data.references[0]?.position.toUpperCase());
+    assert.equal(result.references[0]?.name, data.references[0]?.name);
+    assert.equal(result.references[0]?.company, data.references[0]?.company);
     assert.deepEqual(result.personal, data.personal);
     assert.deepEqual(result.skills, data.skills);
     assert.deepEqual(result.template, data.template);

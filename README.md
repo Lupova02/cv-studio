@@ -4,8 +4,8 @@ Offline-Desktop-App zum Erstellen von Lebensläufen, gebaut mit Angular und Elec
 
 ## Funktionen
 
-- **Editor mit Live-Vorschau**: Persönliches, Berufserfahrung, Ausbildung, Kenntnisse, Sprachen, Zertifikate und Projekte. Einträge lassen sich hinzufügen, per Ziehen oder über Pfeile verschieben und über den roten Papierkorb entfernen.
-- **Drei Vorlagen**: Klassisch, Modern und Minimal. Einstellbar sind Akzentfarbe, Schrift, Darstellung der Niveaus (Sterne oder Balken), Datumsposition, Zeitachse und Seitenzahlen.
+- **Editor mit Live-Vorschau**: Persönliches, „Über mich“, Berufserfahrung, Ausbildung, Kenntnisse, Sprachen, Zertifikate, Projekte und Referenzen. Einträge lassen sich hinzufügen, per Ziehen oder über Pfeile verschieben und über den roten Papierkorb entfernen. Leere Abschnitte erscheinen nicht im Lebenslauf.
+- **Drei Vorlagen**: Klassisch, Modern und Minimal. Einstellbar sind Akzentfarbe, Schrift, Darstellung der Niveaus (Sterne, Balken oder aus), Datumsposition, Zeitachse, Reihenfolge (eigene oder neueste zuerst) und Seitenzahlen. Das Geschlecht lässt sich im Lebenslauf ausblenden.
 - **PDF-Export** im A4-Format mit sauberem Seitenumbruch.
 - **Sicherung als JSON**: Export und Import des kompletten Lebenslaufs inklusive Foto, zum Beispiel für den Umzug auf einen anderen Rechner. Ältere Stände werden beim Import automatisch migriert und geprüft.
 - **Drei Sprachen** für Oberfläche und Lebenslauf: Deutsch, Englisch und Türkisch.

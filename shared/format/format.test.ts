@@ -108,6 +108,16 @@ describe('Format und Exportauftrag', () => {
       parsePrintJob({ templateId: 'modern', options: { showPhoto: false, accentColor: '#112233', language: 'de', skillScale: 'bars' }, data: {} }).options.skillScale,
       'bars',
     );
+    assert.equal(job.options.showGender, true);
+    assert.equal(job.options.entryOrder, 'manual');
+    const hidden = parsePrintJob({
+      templateId: 'minimal',
+      options: { showPhoto: false, showGender: false, accentColor: '#112233', language: 'tr', skillScale: 'off', entryOrder: 'newest' },
+      data: {},
+    }).options;
+    assert.equal(hidden.showGender, false);
+    assert.equal(hidden.skillScale, 'off');
+    assert.equal(hidden.entryOrder, 'newest');
     assert.equal(job.options.pageNumbers, 'fraction');
     assert.equal(job.options.pageNumberPlace, 'right');
     const numbered = parsePrintJob({

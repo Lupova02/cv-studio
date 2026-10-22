@@ -40,6 +40,14 @@
     }
   </header>
 
+  <!-- Über mich -->
+  @if (data().summary) {
+    <section class="summary">
+      <h2>{{ labels().summary }}</h2>
+      <p class="text">{{ data().summary }}</p>
+    </section>
+  }
+
   <!-- Chronologische Abschnitte, optional mit durchgehender Zeitleiste -->
   <div [class.timeline]="options().timeline === 'line'">
     <!-- Berufserfahrung -->
@@ -174,7 +182,9 @@
                 @for (item of group.skills; track item.id) {
                   <li>
                     <span>{{ item.name }}</span>
-                    <app-star-rating [value]="item.stars" [mode]="options().skillScale" />
+                    @if (options().skillScale !== 'off') {
+                      <app-star-rating [value]="item.stars" [mode]="options().skillScale" />
+                    }
                   </li>
                 }
               </ul>
@@ -212,6 +222,28 @@
               <span>{{ entry.label }}</span>
             </dt>
             <dd class="link">{{ entry.text }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+  }
+
+  <!-- Referenzen: Name links, Position/Firma und Kontakt rechts -->
+  @if (data().references.length) {
+    <section class="table-section">
+      <h2>{{ labels().references }}</h2>
+      <dl class="table">
+        @for (item of data().references; track item.id) {
+          <div class="table-row">
+            <dt class="strong">{{ item.name }}</dt>
+            <dd class="reference">
+              @if (join([item.position, item.company]); as role) {
+                <span>{{ role }}</span>
+              }
+              @if (join([item.email, item.phone]); as reach) {
+                <span class="soft">{{ reach }}</span>
+              }
+            </dd>
           </div>
         }
       </dl>

@@ -42,6 +42,8 @@ export function sampleCv(): CvData {
       website: 'danielkaya.example',
       photoFile: '',
     },
+    summary:
+      'Frontend-Entwickler mit acht Jahren Erfahrung in Angular und TypeScript. Ich baue barrierefreie Oberflächen, die auch nach Jahren noch wartbar sind, und begleite Teams gern bei großen Umstellungen.',
     experience: [
       {
         id: 'exp-kaiwerk',
@@ -208,14 +210,34 @@ export function sampleCv(): CvData {
         bullets: ['Belegungsplan für sechs Hallen und 40 Trainingsgruppen', 'Erinnerungen per E-Mail an Übungsleitende'],
       },
     ],
+    references: [
+      {
+        id: 'ref-kaiwerk',
+        name: 'Dr. Lena Hoffmann',
+        position: 'Leiterin Softwareentwicklung',
+        company: 'Kaiwerk Software GmbH',
+        email: 'lena.hoffmann@example.com',
+        phone: '+49 40 0000200',
+      },
+      {
+        id: 'ref-polder',
+        name: 'Joris de Vries',
+        position: 'Technischer Direktor',
+        company: 'Polder Labs B.V.',
+        email: 'joris.devries@example.com',
+        phone: '',
+      },
+    ],
     template: {
       templateId: 'classic',
       showPhoto: true,
+      showGender: true,
       accentColor: '#1f4b99',
       language: 'de',
       skillScale: 'stars',
       datePlace: 'aside',
       timeline: 'line',
+      entryOrder: 'manual',
       font: 'sourceSans',
       pageNumbers: 'fraction',
       pageNumberPlace: 'right',

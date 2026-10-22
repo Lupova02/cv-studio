@@ -213,6 +213,10 @@ h2::after {
   white-space: pre-wrap;
 }
 
+.summary .text {
+  margin-top: 0;
+}
+
 .bullets {
   margin: 1.2mm 0 0;
   padding-left: 4.5mm;
@@ -277,6 +281,16 @@ dd {
 
 dd.soft {
   color: var(--muted);
+}
+
+dd.reference {
+  display: flex;
+  flex-direction: column;
+}
+
+dd.reference .soft {
+  color: var(--muted);
+  font-size: 12.5px;
 }
 
 .skills {

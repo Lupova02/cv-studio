@@ -2,7 +2,7 @@
 // Anders als `migrate` wirft diese Prüfung bei falscher Vorlage, Sprache oder Farbe, statt still zu korrigieren.
 import type { CvFont, CvLanguage, TemplateOptions } from '../cv/cv-data';
 import type { PrintJob } from './ipc-api';
-import { CV_FONTS, PAGE_NUMBER_PLACES, PAGE_NUMBER_STYLES, TEMPLATE_IDS, type TemplateId } from '../cv/cv-data';
+import { CV_FONTS, ENTRY_ORDERS, PAGE_NUMBER_PLACES, PAGE_NUMBER_STYLES, SKILL_SCALES, TEMPLATE_IDS, type TemplateId } from '../cv/cv-data';
 import { CvValidationError, migrate } from '../cv/cv-migrate';
 
 /** Prüft, ob der Wert ein einfaches Objekt ist (kein Array, nicht `null`). */
@@ -49,11 +49,13 @@ export function parseTemplateOptions(value: unknown): TemplateOptions {
   }
   return {
     showPhoto: value['showPhoto'] === true,
+    showGender: value['showGender'] !== false,
     accentColor: asAccent(value['accentColor']),
     language: asLanguage(value['language']),
-    skillScale: value['skillScale'] === 'bars' ? 'bars' : 'stars',
+    skillScale: oneOf(value['skillScale'], SKILL_SCALES, 'stars'),
     datePlace: value['datePlace'] === 'below' ? 'below' : 'aside',
     timeline: value['timeline'] === 'off' ? 'off' : 'line',
+    entryOrder: oneOf(value['entryOrder'], ENTRY_ORDERS, 'manual'),
     font: typeof value['font'] === 'string' && (CV_FONTS as readonly string[]).includes(value['font']) ? (value['font'] as CvFont) : 'sourceSans',
     pageNumbers: oneOf(value['pageNumbers'], PAGE_NUMBER_STYLES, 'fraction'),
     pageNumberPlace: oneOf(value['pageNumberPlace'], PAGE_NUMBER_PLACES, 'right'),

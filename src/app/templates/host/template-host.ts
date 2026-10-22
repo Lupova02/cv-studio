@@ -1,6 +1,7 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, DestroyRef, ElementRef, afterRenderEffect, computed, inject, input, signal } from '@angular/core';
 import { cvFontStack, type CvData, type TemplateId, type TemplateOptions } from '@shared/cv/cv-data';
+import { prepareForDisplay } from '@shared/cv/cv-display';
 import { formatPageNumber } from '@shared/format/format';
 import { PAGE_HEIGHT, paginate } from './paginate';
 import { findTemplate } from '../template-registry';
@@ -111,7 +112,7 @@ export class TemplateHost {
   protected readonly fontStack = computed(() => cvFontStack(this.options().font));
   protected readonly definition = computed(() => findTemplate(this.templateId()));
   protected readonly outletInputs = computed(() => ({
-    data: this.data(),
+    data: prepareForDisplay(this.data(), this.options()),
     options: this.options(),
   }));
   /** Position und Text jeder Seitenzahl; erst ab zwei Seiten und nur wenn eingeschaltet. */

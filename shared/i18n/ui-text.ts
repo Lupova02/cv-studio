@@ -85,6 +85,11 @@ export interface UiText {
   emptyLanguages: string;
   emptyCertificates: string;
   emptyProjects: string;
+  emptyReferences: string;
+  /** Platzhalter im Feld „Über mich“. */
+  summaryHint: string;
+  /** Schalter neben dem Geschlecht: Angabe im Lebenslauf zeigen oder ausblenden. */
+  showGender: string;
   // --- Sprache, Ansicht und Gestaltung der Vorlage ---
   language: string;
   /** Bedienhilfe-Beschriftung des Trenners zwischen Editor und Vorschau. */
@@ -94,12 +99,16 @@ export interface UiText {
   skillScale: string;
   skillStars: string;
   skillBars: string;
+  skillOff: string;
   datePlace: string;
   dateAside: string;
   dateBelow: string;
   timeline: string;
   timelineOff: string;
   timelineLine: string;
+  entryOrder: string;
+  orderManual: string;
+  orderNewest: string;
   font: string;
   pageNumbers: string;
   pageNumbersHint: string;
@@ -250,6 +259,9 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     emptyLanguages: 'Noch keine Sprachen.',
     emptyCertificates: 'Noch keine Zertifikate.',
     emptyProjects: 'Noch keine Projekte.',
+    emptyReferences: 'Noch keine Referenzen.',
+    summaryHint: 'Ein paar Sätze über dich: Erfahrung, Stärken und was du suchst.',
+    showGender: 'Anzeigen',
     language: 'Sprache',
     resizePanes: 'Bereichsbreite',
     accent: 'Akzentfarbe',
@@ -257,12 +269,16 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     skillScale: 'Niveau',
     skillStars: 'Sterne',
     skillBars: 'Balken',
+    skillOff: 'Aus',
     datePlace: 'Datum',
     dateAside: 'Neben Titel',
     dateBelow: 'Unter Titel',
     timeline: 'Zeitachse',
     timelineOff: 'Ohne',
     timelineLine: 'Linie',
+    entryOrder: 'Reihenfolge',
+    orderManual: 'Eigene',
+    orderNewest: 'Neueste zuerst',
     font: 'Schrift',
     pageNumbers: 'Seitenzahl',
     pageNumbersHint: 'Erscheint, sobald der Lebenslauf mehr als eine Seite hat.',
@@ -287,7 +303,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     dataDeleted: 'Alle Daten wurden gelöscht.',
     photoUnreadable: 'Das Bild konnte nicht gelesen werden.',
     translate: 'Eigene Texte übersetzen',
-    translateIntro: 'Positionen, Abschlüsse, Beschreibungen und Stichpunkte werden direkt auf diesem Gerät übersetzt. Es werden keine Daten verschickt.',
+    translateIntro: '„Über mich“, Positionen, Abschlüsse, Beschreibungen und Stichpunkte werden direkt auf diesem Gerät übersetzt. Es werden keine Daten verschickt.',
     translateFrom: 'Von',
     translateTo: 'Nach',
     translateTexts: 'Texte',
@@ -404,6 +420,9 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     emptyLanguages: 'No languages yet.',
     emptyCertificates: 'No certificates yet.',
     emptyProjects: 'No projects yet.',
+    emptyReferences: 'No references yet.',
+    summaryHint: 'A few sentences about you: experience, strengths and what you are looking for.',
+    showGender: 'Show',
     language: 'Language',
     resizePanes: 'Pane width',
     accent: 'Accent color',
@@ -411,12 +430,16 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     skillScale: 'Level',
     skillStars: 'Stars',
     skillBars: 'Bars',
+    skillOff: 'Off',
     datePlace: 'Dates',
     dateAside: 'Beside title',
     dateBelow: 'Under title',
     timeline: 'Timeline',
     timelineOff: 'Off',
     timelineLine: 'Line',
+    entryOrder: 'Order',
+    orderManual: 'Custom',
+    orderNewest: 'Newest first',
     font: 'Font',
     pageNumbers: 'Page number',
     pageNumbersHint: 'Appears as soon as the CV has more than one page.',
@@ -441,7 +464,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     dataDeleted: 'All data has been deleted.',
     photoUnreadable: 'The image could not be read.',
     translate: 'Translate your texts',
-    translateIntro: 'Positions, degrees, descriptions and bullet points are translated directly on this device. No data is sent anywhere.',
+    translateIntro: '“About me”, positions, degrees, descriptions and bullet points are translated directly on this device. No data is sent anywhere.',
     translateFrom: 'From',
     translateTo: 'To',
     translateTexts: 'texts',
@@ -558,6 +581,9 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     emptyLanguages: 'Henüz dil yok.',
     emptyCertificates: 'Henüz sertifika yok.',
     emptyProjects: 'Henüz proje yok.',
+    emptyReferences: 'Henüz referans yok.',
+    summaryHint: 'Kendin hakkında birkaç cümle: deneyimin, güçlü yönlerin ve aradığın pozisyon.',
+    showGender: 'Göster',
     language: 'Dil',
     resizePanes: 'Alan genişliği',
     accent: 'Vurgu rengi',
@@ -565,12 +591,16 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     skillScale: 'Seviye',
     skillStars: 'Yıldız',
     skillBars: 'Çubuk',
+    skillOff: 'Kapalı',
     datePlace: 'Tarih',
     dateAside: 'Unvan yanında',
     dateBelow: 'Unvan altında',
     timeline: 'Zaman çizelgesi',
     timelineOff: 'Kapalı',
     timelineLine: 'Çizgi',
+    entryOrder: 'Sıralama',
+    orderManual: 'Özel',
+    orderNewest: 'En yeni önce',
     font: 'Yazı tipi',
     pageNumbers: 'Sayfa numarası',
     pageNumbersHint: 'Özgeçmiş birden fazla sayfa olduğunda görünür.',
@@ -595,7 +625,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     dataDeleted: 'Tüm veriler silindi.',
     photoUnreadable: 'Görsel okunamadı.',
     translate: 'Kendi metinlerinizi çevirin',
-    translateIntro: 'Pozisyonlar, dereceler, açıklamalar ve maddeler doğrudan bu cihazda çevrilir. Hiçbir veri gönderilmez.',
+    translateIntro: '“Hakkımda”, pozisyonlar, dereceler, açıklamalar ve maddeler doğrudan bu cihazda çevrilir. Hiçbir veri gönderilmez.',
     translateFrom: 'Kaynak',
     translateTo: 'Hedef',
     translateTexts: 'metin',

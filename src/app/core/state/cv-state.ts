@@ -233,11 +233,13 @@ export class CvState {
         data,
         options: {
           showPhoto: data.template.showPhoto,
+          showGender: data.template.showGender,
           accentColor: data.template.accentColor,
           language: data.template.language,
           skillScale: data.template.skillScale,
           datePlace: data.template.datePlace,
           timeline: data.template.timeline,
+          entryOrder: data.template.entryOrder,
           font: data.template.font,
           pageNumbers: data.template.pageNumbers,
           pageNumberPlace: data.template.pageNumberPlace,

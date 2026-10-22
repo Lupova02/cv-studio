@@ -19,7 +19,7 @@ describe('migrate', () => {
       extra: true,
     });
     assert.equal(result.personal.firstName, 'Ada');
-    assert.equal('summary' in result, false);
+    assert.equal(result.summary, 'Kurz');
     assert.equal('unknown' in result.personal, false);
     assert.equal('extra' in result, false);
     assert.equal('interests' in migrate({ interests: [{ label: 'Typografie' }] }), false);
@@ -57,7 +57,8 @@ describe('migrate', () => {
 
   it('lehnt zu lange Listen und falsche Typen ab', () => {
     assert.throws(() => migrate({ experience: Array.from({ length: 51 }, () => ({})) }), CvValidationError);
-    assert.equal('summary' in migrate({ summary: 12 }), false);
+    assert.throws(() => migrate({ summary: 12 }), CvValidationError);
+    assert.throws(() => migrate({ references: [{ name: 'x'.repeat(121) }] }), CvValidationError);
     assert.throws(() => migrate({ skills: 'TypeScript' }), CvValidationError);
   });
 
@@ -79,6 +80,12 @@ describe('migrate', () => {
     assert.equal(result.template.timeline, 'line');
     assert.equal(result.template.font, 'sourceSans');
     assert.equal(migrate({ template: { skillScale: 'bars' } }).template.skillScale, 'bars');
+    assert.equal(migrate({ template: { skillScale: 'off' } }).template.skillScale, 'off');
+    assert.equal(result.template.showGender, true);
+    assert.equal(migrate({ template: { showGender: false } }).template.showGender, false);
+    assert.equal(result.template.entryOrder, 'manual');
+    assert.equal(migrate({ template: { entryOrder: 'newest' } }).template.entryOrder, 'newest');
+    assert.equal(migrate({ template: { entryOrder: 'oldest' } }).template.entryOrder, 'manual');
     assert.equal(migrate({ template: { datePlace: 'below' } }).template.datePlace, 'below');
     assert.equal(migrate({ template: { timeline: 'off' } }).template.timeline, 'off');
     assert.equal(migrate({ template: { font: 'comicSans' } }).template.font, 'comicSans');
@@ -165,5 +172,16 @@ describe('migrate', () => {
     assert.deepEqual(migrate({ languages: [{ language: 'Englisch', level: 'fließend' }] }).languages, [{ id: 'en', level: 'c1' }]);
     assert.deepEqual(migrate({ languages: [{ language: 'Französisch', level: 'Anfänger' }] }).languages, [{ id: 'fr', level: 'a1' }]);
     assert.deepEqual(migrate({ skills: [{ name: 'Python', level: 'Anfänger' }] }).skills, [{ id: 'python', stars: 2 }]);
+  });
+
+  it('übernimmt Referenzen und ergänzt sie bei alten Ständen als leere Liste', () => {
+    const result = migrate({
+      references: [{ id: 'ref', name: ' Ada Muster ', position: 'Teamleitung', email: 'ada@example.com', extra: 1 }],
+    });
+    assert.deepEqual(result.references, [
+      { id: 'ref', name: 'Ada Muster', position: 'Teamleitung', company: '', email: 'ada@example.com', phone: '' },
+    ]);
+    assert.deepEqual(migrate({ personal: { firstName: 'Alt' } }).references, []);
+    assert.equal(migrate({ personal: { firstName: 'Alt' } }).summary, '');
   });
 });

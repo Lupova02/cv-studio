@@ -22,6 +22,8 @@ import {
   type PhoneKind,
   type PostalAddress,
   type ProjectItem,
+  type ReferenceItem,
+  type EntryOrder,
   type SkillItem,
   type SkillScale,
   type TimelineStyle,
@@ -147,6 +149,16 @@ export interface ProjectControls {
   bullets: FormArray<FormControl<string>>;
 }
 
+/** Controls einer Referenz. */
+export interface ReferenceControls {
+  id: FormControl<string>;
+  name: FormControl<string>;
+  position: FormControl<string>;
+  company: FormControl<string>;
+  email: FormControl<string>;
+  phone: FormControl<string>;
+}
+
 /** FormGroup einer Berufsstation (Kurzname für die Abschnitts-Komponenten). */
 export type ExperienceGroup = FormGroup<ExperienceControls>;
 /** FormGroup einer Ausbildung. */
@@ -159,23 +171,29 @@ export type LanguageGroup = FormGroup<LanguageControls>;
 export type CertificateGroup = FormGroup<CertificateControls>;
 /** FormGroup eines Projekts. */
 export type ProjectGroup = FormGroup<ProjectControls>;
+/** FormGroup einer Referenz. */
+export type ReferenceGroup = FormGroup<ReferenceControls>;
 
 /** Gesamtstruktur des Formulars: Inhalte plus die Design-Einstellungen (flach statt unter `template`). */
 export interface CvFormControls {
   personal: FormGroup<PersonalControls>;
+  summary: FormControl<string>;
   experience: FormArray<ExperienceGroup>;
   education: FormArray<EducationGroup>;
   skills: FormArray<SkillGroup>;
   languages: FormArray<LanguageGroup>;
   certificates: FormArray<CertificateGroup>;
   projects: FormArray<ProjectGroup>;
+  references: FormArray<ReferenceGroup>;
   templateId: FormControl<TemplateId>;
   showPhoto: FormControl<boolean>;
+  showGender: FormControl<boolean>;
   accentColor: FormControl<string>;
   language: FormControl<CvLanguage>;
   skillScale: FormControl<SkillScale>;
   datePlace: FormControl<DatePlace>;
   timeline: FormControl<TimelineStyle>;
+  entryOrder: FormControl<EntryOrder>;
   font: FormControl<CvFont>;
   pageNumbers: FormControl<PageNumberStyle>;
   pageNumberPlace: FormControl<PageNumberPlace>;
@@ -262,6 +280,18 @@ export function createProjectGroup(item?: Partial<ProjectItem>): ProjectGroup {
   });
 }
 
+/** Referenz; ohne Vorlage leer mit neuer id. */
+export function createReferenceGroup(item?: Partial<ReferenceItem>): ReferenceGroup {
+  return new FormGroup({
+    id: textControl(item?.id || createId(), LIMITS.id),
+    name: textControl(item?.name ?? '', LIMITS.shortText),
+    position: textControl(item?.position ?? '', LIMITS.shortText),
+    company: textControl(item?.company ?? '', LIMITS.shortText),
+    email: textControl(item?.email ?? '', LIMITS.email),
+    phone: textControl(item?.phone ?? '', LIMITS.phone),
+  });
+}
+
 /** Staatsangehörigkeit (Ländercode bzw. „Andere“ mit Freitext). */
 export function createNationalityGroup(item?: Partial<NationalityEntry>): FormGroup<NationalityControls> {
   return new FormGroup({
@@ -324,19 +354,23 @@ export function createCvForm(data: CvData): CvForm {
       website: textControl(person.website, LIMITS.url),
       photoFile: textControl(person.photoFile, 80),
     }),
+    summary: textControl(data.summary, LIMITS.longText),
     experience: new FormArray(data.experience.map((item) => createExperienceGroup(item))),
     education: new FormArray(data.education.map((item) => createEducationGroup(item))),
     skills: new FormArray(data.skills.map((item) => createSkillGroup(item))),
     languages: new FormArray(data.languages.map((item) => createLanguageGroup(item))),
     certificates: new FormArray(data.certificates.map((item) => createCertificateGroup(item))),
     projects: new FormArray(data.projects.map((item) => createProjectGroup(item))),
+    references: new FormArray(data.references.map((item) => createReferenceGroup(item))),
     templateId: new FormControl(data.template.templateId, { nonNullable: true }),
     showPhoto: boolControl(data.template.showPhoto),
+    showGender: boolControl(data.template.showGender),
     accentColor: textControl(data.template.accentColor, 7),
     language: new FormControl(data.template.language, { nonNullable: true }),
     skillScale: new FormControl(data.template.skillScale, { nonNullable: true }),
     datePlace: new FormControl(data.template.datePlace, { nonNullable: true }),
     timeline: new FormControl(data.template.timeline, { nonNullable: true }),
+    entryOrder: new FormControl(data.template.entryOrder, { nonNullable: true }),
     font: new FormControl(data.template.font, { nonNullable: true }),
     pageNumbers: new FormControl(data.template.pageNumbers, { nonNullable: true }),
     pageNumberPlace: new FormControl(data.template.pageNumberPlace, { nonNullable: true }),
@@ -351,20 +385,24 @@ export function formToCvData(value: CvFormValue): CvData {
   return {
     schemaVersion: 1,
     personal: { ...value.personal },
+    summary: value.summary,
     experience: value.experience.map((item) => ({ ...item, bullets: [...item.bullets] })),
     education: value.education.map((item) => ({ ...item })),
     skills: value.skills.map((item) => ({ ...item })),
     languages: value.languages.map((item) => ({ ...item })),
     certificates: value.certificates.map((item) => ({ ...item })),
     projects: value.projects.map((item) => ({ ...item, bullets: [...item.bullets] })),
+    references: value.references.map((item) => ({ ...item })),
     template: {
       templateId: value.templateId,
       showPhoto: value.showPhoto,
+      showGender: value.showGender,
       accentColor: value.accentColor,
       language: value.language,
       skillScale: value.skillScale,
       datePlace: value.datePlace,
       timeline: value.timeline,
+      entryOrder: value.entryOrder,
       font: value.font,
       pageNumbers: value.pageNumbers,
       pageNumberPlace: value.pageNumberPlace,
