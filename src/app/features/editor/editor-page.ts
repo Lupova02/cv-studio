@@ -3,6 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { addressFields } from '@shared/format/address-format';
 import { countriesFor, countryDial } from '@shared/catalogs/country-data';
 import { CV_FONT_LABELS, CV_FONTS, LIMITS, MAX_NATIONALITIES, MAX_PHONES, OTHER_NATIONALITY, PAGE_NUMBER_PLACES, PAGE_NUMBER_STYLES, cvFontStack, type CvData, type CvFont, type CvLanguage, type DatePlace, type EntryOrder, type PageNumberPlace, type PageNumberStyle, type SkillScale, type TemplateId, type TemplateOptions, type TimelineStyle } from '@shared/cv/cv-data';
+import { QUALITY_LIMITS, checkCv, type QualitySection } from '@shared/cv/cv-quality';
 import { countTranslatable } from '@shared/cv/cv-translate';
 import { formatPageNumber } from '@shared/format/format';
 import { sampleCv } from '@shared/cv/sample-cv';
@@ -11,9 +12,14 @@ import { APP_VERSION } from '../../core/app-version';
 import { getCvApi } from '../../core/api/cv-api';
 import { EditorCopy } from '../../core/state/editor-copy';
 import { CvState } from '../../core/state/cv-state';
+import { ThemeService } from '../../core/state/theme';
 import { toErrorMessage } from '../../core/errors';
 import { TemplateHost } from '../../templates/host/template-host';
 import { TEMPLATE_REGISTRY, findTemplate } from '../../templates/template-registry';
+import { EditorSection } from './list-chrome/editor-section';
+import { SectionCollapse } from './list-chrome/section-collapse';
+import { LibraryMenu } from './toolbar/library-menu';
+import { QualityPanel } from './toolbar/quality-panel';
 import { createCvForm, createNationalityGroup, createPhoneGroup, formToCvData, type CvForm } from './form/cv-form';
 import { EducationSection } from './sections/education/education-section';
 import { ExperienceSection } from './sections/experience/experience-section';
@@ -26,7 +32,8 @@ import { TrashIcon } from '../../ui/trash-icon/trash-icon';
 
 /**
  * Hauptseite der App: links der Editor (Werkzeugleiste, persönliche Daten, Abschnitte),
- * rechts Design-Optionen und die skalierte Live-Vorschau. Dazwischen ein verschiebbarer Trenner.
+ * rechts Design-Optionen und die skalierte Live-Vorschau. Dazwischen ein verschiebbarer Trenner;
+ * auf schmalen Bildschirmen stattdessen Tabs (Bearbeiten, Design, Vorschau).
  * Formularänderungen werden über CvState gespeichert; der Muster-Modus wird nie gespeichert.
  */
 @Component({
@@ -42,13 +49,21 @@ import { TrashIcon } from '../../ui/trash-icon/trash-icon';
     ProjectSection,
     ReferenceSection,
     TrashIcon,
+    EditorSection,
+    LibraryMenu,
+    QualityPanel,
   ],
+  host: {
+    '(document:keydown)': 'onShortcut($event)',
+  },
   templateUrl: './editor-page.html',
   styleUrl: './editor-page.scss',
 })
 export class EditorPage {
   protected readonly state = inject(CvState);
   protected readonly copy = inject(EditorCopy);
+  protected readonly theme = inject(ThemeService);
+  private readonly collapse = inject(SectionCollapse);
   protected readonly appVersion = APP_VERSION;
   protected readonly limits = LIMITS;
   protected readonly maxNationalities = MAX_NATIONALITIES;
@@ -108,6 +123,28 @@ export class EditorPage {
     };
   });
 
+  /** Schmaler Bildschirm (Handy, Tablet hochkant): Editor und Vorschau als Tabs statt nebeneinander. */
+  protected readonly narrow = signal(false);
+  /** Aktiver Tab auf schmalen Bildschirmen. */
+  protected readonly tab = signal<'edit' | 'design' | 'preview'>('edit');
+  /** Schlüssel für die Vorschau: ändert sich nur beim Vorlagenwechsel, damit das Blatt dann neu einblendet. */
+  protected readonly templateKey = computed(() => [this.state.data().template.templateId]);
+  /** Seitenzahl laut Vorschau. */
+  protected readonly pageCount = computed(() => this.sheetHost()?.pages() ?? 1);
+  /** Hinweise des Qualitätschecks zum angezeigten Lebenslauf. */
+  protected readonly hints = computed(() => {
+    const data = this.state.data();
+    return checkCv(data, {
+      pages: this.pageCount(),
+      photoShown: data.template.showPhoto && findTemplate(data.template.templateId).supportsPhoto,
+    });
+  });
+  /** Länge von „Über mich“ und empfohlene Höchstlänge. */
+  protected readonly summaryLength = computed(() => this.state.data().summary.trim().length);
+  protected readonly summaryMax = QUALITY_LIMITS.summary;
+
+  /** Eingebettete Vorschau-Vorlage (liefert die Seitenzahl). */
+  private readonly sheetHost = viewChild(TemplateHost);
   /** Sichtbarer Vorschau-Bereich (bestimmt die verfügbare Breite). */
   private readonly frame = viewChild<ElementRef<HTMLElement>>('previewFrame');
   /** Unskaliertes Vorschau-Blatt (liefert Originalbreite und -höhe). */
@@ -172,11 +209,83 @@ export class EditorPage {
       this.splitObserver.observe(workspace);
       apply();
     });
+    // Schmale Bildschirme erkennen (gleiche Grenze wie im Stylesheet).
+    const media = window.matchMedia('(max-width: 900px)');
+    const updateNarrow = () => this.narrow.set(media.matches);
+    updateNarrow();
+    media.addEventListener('change', updateNarrow);
+    // Hinweise verschwinden nach einigen Sekunden von selbst; Fehler bleiben, bis sie geschlossen werden.
+    let noticeTimer: ReturnType<typeof setTimeout> | null = null;
+    effect(() => {
+      const notice = this.state.notice();
+      if (noticeTimer) {
+        clearTimeout(noticeTimer);
+        noticeTimer = null;
+      }
+      if (notice) {
+        // Mit „Rückgängig“-Knopf etwas länger stehen lassen.
+        const delay = untracked(() => this.state.canUndoTranslation()) ? 9000 : 4500;
+        noticeTimer = setTimeout(() => {
+          if (this.state.notice() === notice) {
+            this.state.notice.set(null);
+          }
+        }, delay);
+      }
+    });
     destroyRef.onDestroy(() => {
       this.formSub?.unsubscribe();
       this.observer?.disconnect();
       this.splitObserver?.disconnect();
+      media.removeEventListener('change', updateNarrow);
+      if (noticeTimer) {
+        clearTimeout(noticeTimer);
+      }
     });
+  }
+
+  // --- Tastenkürzel, Farbschema, Sprung zu Abschnitten ---
+
+  /** Strg/⌘+Z = Rückgängig, Strg/⌘+Umschalt+Z bzw. Strg+Y = Wiederholen (gilt für den ganzen Lebenslauf). */
+  protected onShortcut(event: KeyboardEvent): void {
+    if (!(event.metaKey || event.ctrlKey) || event.altKey || this.state.busy()) {
+      return;
+    }
+    // In Menüs (z. B. beim Umbenennen) bleibt das normale Verhalten des Eingabefelds erhalten.
+    if (event.target instanceof HTMLElement && event.target.closest('.popover')) {
+      return;
+    }
+    const key = event.key.toLowerCase();
+    if (key === 'z' && !event.shiftKey) {
+      event.preventDefault();
+      this.state.undo();
+    } else if ((key === 'z' && event.shiftKey) || (key === 'y' && event.ctrlKey)) {
+      event.preventDefault();
+      this.state.redo();
+    }
+  }
+
+  /** Beschriftung des Farbschema-Knopfs: aktuelle Wahl. */
+  protected themeLabel(): string {
+    const ui = this.copy.ui();
+    const mode = this.theme.mode();
+    const name = mode === 'light' ? ui.themeLight : mode === 'dark' ? ui.themeDark : ui.themeSystem;
+    return `${ui.theme}: ${name}`;
+  }
+
+  /** Springt aus dem Qualitätscheck zum betroffenen Abschnitt (klappt ihn auf und scrollt hin). */
+  protected jumpTo(section: QualitySection): void {
+    if (section === 'layout') {
+      this.tab.set('preview');
+      return;
+    }
+    this.tab.set('edit');
+    this.collapse.open(section);
+    setTimeout(() => {
+      const target = document.getElementById(`sec-${section}`);
+      const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+      target?.querySelector<HTMLElement>('.section-title')?.focus({ preventScroll: true });
+    }, 60);
   }
 
   // --- Trenner zwischen Editor und Vorschau ---

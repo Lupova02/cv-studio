@@ -160,6 +160,75 @@ export interface UiText {
   dialogPdf: string;
   /** Vorgeschlagener Dateiname (ohne Endung) für JSON-Sicherungen. */
   backupFileBase: string;
+  // --- Mehrere Lebensläufe, Rückgängig, Qualitätscheck, Darstellung, Mobile ---
+  /** Name eines Lebenslaufs ohne eigenen Namen. */
+  cvDefaultName: string;
+  cvLastOne: string;
+  cvMissing: string;
+  /** `{max}` wird durch die Höchstzahl ersetzt. */
+  cvTooMany: string;
+  documents: string;
+  newCv: string;
+  duplicateCv: string;
+  renameCv: string;
+  deleteCv: string;
+  openCv: string;
+  /** Markiert den gerade geöffneten Lebenslauf in der Liste. */
+  cvOpen: string;
+  /** Wird beim Duplizieren an den Namen angehängt. */
+  copySuffix: string;
+  lastEdited: string;
+  /** `{name}` wird durch den Namen des Lebenslaufs ersetzt. */
+  confirmDeleteCv: string;
+  cvCreated: string;
+  cvDuplicated: string;
+  cvDeleted: string;
+  close: string;
+  save: string;
+  redo: string;
+  undoHint: string;
+  redoHint: string;
+  quality: string;
+  qualityIntro: string;
+  qualityAllGood: string;
+  qMissingName: string;
+  qMissingEmail: string;
+  qInvalidEmail: string;
+  qMissingPhone: string;
+  qMissingPhoto: string;
+  qMissingSummary: string;
+  /** `{count}` und `{max}` werden ersetzt. */
+  qLongSummary: string;
+  qNoExperience: string;
+  qNoEducation: string;
+  qNoSkills: string;
+  qNoLanguages: string;
+  /** `{name}` = Sprache. */
+  qLanguageLevel: string;
+  /** `{entry}` = Abschnitt und Nummer, z. B. „Berufserfahrung 2“. */
+  qEntryTitle: string;
+  qEntryDates: string;
+  qEntryOrder: string;
+  qEntryFuture: string;
+  qEntryLong: string;
+  /** `{bullet}` = Nummer des Stichpunkts. */
+  qBulletLong: string;
+  qBulletEmpty: string;
+  /** `{pages}` = Seitenzahl. */
+  qPages: string;
+  theme: string;
+  themeSystem: string;
+  themeLight: string;
+  themeDark: string;
+  /** Tabs auf schmalen Bildschirmen. */
+  tabEdit: string;
+  tabDesign: string;
+  tabPreview: string;
+  menu: string;
+  /** Titel des Teilen-Dialogs auf Mobilgeräten. */
+  shareTitle: string;
+  pdfReady: string;
+  backupReady: string;
   // --- Namen von Vorlagen und Sprachen ---
   design: Record<TemplateId, string>;
   languageName: Record<CvLanguage, string>;
@@ -175,7 +244,8 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     unsaved: 'Nicht gespeichert',
     ready: 'Bereit',
     sample: 'Muster',
-    sampleOnHint: 'Muster-Lebenslauf ist aktiv. Klicken, um ihn zu entfernen und die eigenen Eingaben zurückzuholen.',
+    sampleOnHint:
+      'Muster-Lebenslauf ist aktiv. Klicken, um ihn zu entfernen und die eigenen Eingaben zurückzuholen.',
     sampleOffHint: 'Muster-Lebenslauf einblenden. Die eigenen Eingaben bleiben erhalten.',
     sampleStatus: 'Muster aktiv · wird nicht gespeichert',
     pdfHint: 'Lebenslauf als PDF herunterladen',
@@ -255,7 +325,8 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     chooseCategory: 'Kategorie wählen',
     chooseLanguage: 'Sprache wählen',
     chooseLevel: 'Stufe wählen',
-    languageHint: 'Sprache auswählen und die passende Stufe setzen. Die Liste sortiert sich alphabetisch.',
+    languageHint:
+      'Sprache auswählen und die passende Stufe setzen. Die Liste sortiert sich alphabetisch.',
     emptyLanguages: 'Noch keine Sprachen.',
     emptyCertificates: 'Noch keine Zertifikate.',
     emptyProjects: 'Noch keine Projekte.',
@@ -292,23 +363,27 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     confirmImport: 'Die aktuellen Eingaben werden durch die Sicherungsdatei ersetzt.',
     confirmRemovePhoto: 'Das Profilfoto wird entfernt.',
     confirmEmpty: 'Die vorhandene Datei wird mit einem leeren Lebenslauf überschrieben.',
-    confirmDeleteAll: 'Alle Eingaben und das Foto werden dauerhaft gelöscht. Tipp: Vorher eine Sicherung (JSON) exportieren.',
+    confirmDeleteAll:
+      'Alle Eingaben und das Foto werden dauerhaft gelöscht. Tipp: Vorher eine Sicherung (JSON) exportieren.',
     invalidExport: 'Bitte die zu langen Felder kürzen, bevor exportiert wird.',
     invalidLength: 'Einige Felder überschreiten die erlaubte Länge.',
     backupImported: 'Sicherung übernommen.',
     backupSaved: 'Sicherung gespeichert.',
     backupInvalid: 'Die Datei ist keine gültige CV-Studio-Sicherung.',
-    backupTooNew: 'Diese Sicherung stammt aus einer neueren Programmversion und kann nicht geöffnet werden.',
+    backupTooNew:
+      'Diese Sicherung stammt aus einer neueren Programmversion und kann nicht geöffnet werden.',
     backupTooLarge: 'Die Sicherungsdatei ist zu groß.',
     dataDeleted: 'Alle Daten wurden gelöscht.',
     photoUnreadable: 'Das Bild konnte nicht gelesen werden.',
     translate: 'Eigene Texte übersetzen',
-    translateIntro: '„Über mich“, Positionen, Abschlüsse, Beschreibungen und Stichpunkte werden direkt auf diesem Gerät übersetzt. Es werden keine Daten verschickt.',
+    translateIntro:
+      '„Über mich“, Positionen, Abschlüsse, Beschreibungen und Stichpunkte werden direkt auf diesem Gerät übersetzt. Es werden keine Daten verschickt.',
     translateFrom: 'Von',
     translateTo: 'Nach',
     translateTexts: 'Texte',
     translateNothing: 'Noch keine eigenen Texte zum Übersetzen vorhanden.',
-    translateReview: 'Maschinelle Übersetzung – bitte danach gegenlesen. Die Sprache des Lebenslaufs wird mit umgestellt.',
+    translateReview:
+      'Maschinelle Übersetzung – bitte danach gegenlesen. Die Sprache des Lebenslaufs wird mit umgestellt.',
     translateStart: 'Übersetzen',
     translating: 'Übersetzt…',
     cancel: 'Abbrechen',
@@ -324,8 +399,64 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     dialogPhoto: 'Profilfoto wählen',
     dialogImages: 'Bilder',
     dialogPdf: 'Lebenslauf als PDF speichern',
+    cvDefaultName: 'Mein Lebenslauf',
+    cvLastOne: 'Der letzte Lebenslauf kann nicht gelöscht werden.',
+    cvMissing: 'Dieser Lebenslauf existiert nicht mehr.',
+    cvTooMany: 'Es können höchstens {max} Lebensläufe gespeichert werden.',
+    documents: 'Lebensläufe',
+    newCv: 'Neuer Lebenslauf',
+    duplicateCv: 'Duplizieren',
+    renameCv: 'Umbenennen',
+    deleteCv: 'Löschen',
+    openCv: 'Öffnen',
+    cvOpen: 'Geöffnet',
+    copySuffix: 'Kopie',
+    lastEdited: 'Zuletzt bearbeitet',
+    confirmDeleteCv: 'Lebenslauf „{name}“ samt Foto endgültig löschen?',
+    cvCreated: 'Neuer Lebenslauf angelegt.',
+    cvDuplicated: 'Lebenslauf dupliziert.',
+    cvDeleted: 'Lebenslauf gelöscht.',
+    close: 'Schließen',
+    save: 'Speichern',
+    redo: 'Wiederholen',
+    undoHint: 'Rückgängig (Strg/⌘ + Z)',
+    redoHint: 'Wiederholen (Strg/⌘ + Umschalt + Z)',
+    quality: 'Qualitätscheck',
+    qualityIntro: 'Hinweise zu fehlenden Angaben und langen Texten. Nichts davon ist Pflicht.',
+    qualityAllGood: 'Sieht gut aus – keine Hinweise.',
+    qMissingName: 'Vor- und Nachname fehlen.',
+    qMissingEmail: 'Keine E-Mail-Adresse angegeben.',
+    qInvalidEmail: 'Die E-Mail-Adresse sieht ungültig aus.',
+    qMissingPhone: 'Keine Telefonnummer angegeben.',
+    qMissingPhoto: 'Kein Foto – im deutschsprachigen Raum oft erwartet.',
+    qMissingSummary: '„Über mich“ ist leer – zwei, drei Sätze machen neugierig.',
+    qLongSummary: '„Über mich“ ist lang ({count} Zeichen, empfohlen bis {max}).',
+    qNoExperience: 'Noch keine Berufserfahrung eingetragen.',
+    qNoEducation: 'Noch keine Ausbildung eingetragen.',
+    qNoSkills: 'Noch keine Kenntnisse gewählt.',
+    qNoLanguages: 'Noch keine Sprachen gewählt.',
+    qLanguageLevel: '{name}: Niveau fehlt.',
+    qEntryTitle: '{entry}: Titel fehlt.',
+    qEntryDates: '{entry}: Zeitraum fehlt.',
+    qEntryOrder: '{entry}: Ende liegt vor dem Beginn.',
+    qEntryFuture: '{entry}: Beginn liegt in der Zukunft.',
+    qEntryLong: '{entry}: Beschreibung ist lang ({count} Zeichen).',
+    qBulletLong: '{entry}: Stichpunkt {bullet} ist lang ({count} Zeichen).',
+    qBulletEmpty: '{entry}: Stichpunkt {bullet} ist leer.',
+    qPages: 'Der Lebenslauf hat {pages} Seiten – üblich sind 1–2.',
+    theme: 'Darstellung',
+    themeSystem: 'System',
+    themeLight: 'Hell',
+    themeDark: 'Dunkel',
+    tabEdit: 'Bearbeiten',
+    tabDesign: 'Design',
+    tabPreview: 'Vorschau',
+    menu: 'Menü',
+    shareTitle: 'Lebenslauf teilen',
+    pdfReady: 'PDF erstellt.',
+    backupReady: 'Sicherung erstellt.',
     backupFileBase: 'lebenslauf-sicherung',
-    design: { classic: 'Klassisch', modern: 'Modern', minimal: 'Minimal' },
+    design: { classic: 'Klassisch', modern: 'Modern', minimal: 'Minimal', elegant: 'Elegant', banner: 'Banner' },
     languageName: { de: 'Deutsch', en: 'Englisch', tr: 'Türkisch' },
   },
   en: {
@@ -453,7 +584,8 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     confirmImport: 'The current entries will be replaced by the backup file.',
     confirmRemovePhoto: 'The profile photo will be removed.',
     confirmEmpty: 'The existing file will be overwritten with an empty CV.',
-    confirmDeleteAll: 'All entries and the photo will be deleted permanently. Tip: export a backup (JSON) first.',
+    confirmDeleteAll:
+      'All entries and the photo will be deleted permanently. Tip: export a backup (JSON) first.',
     invalidExport: 'Shorten the fields that are too long before exporting.',
     invalidLength: 'Some fields exceed the allowed length.',
     backupImported: 'Backup imported.',
@@ -464,12 +596,14 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     dataDeleted: 'All data has been deleted.',
     photoUnreadable: 'The image could not be read.',
     translate: 'Translate your texts',
-    translateIntro: '“About me”, positions, degrees, descriptions and bullet points are translated directly on this device. No data is sent anywhere.',
+    translateIntro:
+      '“About me”, positions, degrees, descriptions and bullet points are translated directly on this device. No data is sent anywhere.',
     translateFrom: 'From',
     translateTo: 'To',
     translateTexts: 'texts',
     translateNothing: 'There are no texts of your own to translate yet.',
-    translateReview: 'Machine translation – please proofread afterwards. The CV language is switched as well.',
+    translateReview:
+      'Machine translation – please proofread afterwards. The CV language is switched as well.',
     translateStart: 'Translate',
     translating: 'Translating…',
     cancel: 'Cancel',
@@ -485,8 +619,64 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     dialogPhoto: 'Choose profile photo',
     dialogImages: 'Images',
     dialogPdf: 'Save CV as PDF',
+    cvDefaultName: 'My CV',
+    cvLastOne: 'The last CV cannot be deleted.',
+    cvMissing: 'This CV no longer exists.',
+    cvTooMany: 'You can store at most {max} CVs.',
+    documents: 'CVs',
+    newCv: 'New CV',
+    duplicateCv: 'Duplicate',
+    renameCv: 'Rename',
+    deleteCv: 'Delete',
+    openCv: 'Open',
+    cvOpen: 'Open now',
+    copySuffix: 'copy',
+    lastEdited: 'Last edited',
+    confirmDeleteCv: 'Delete the CV “{name}” and its photo permanently?',
+    cvCreated: 'New CV created.',
+    cvDuplicated: 'CV duplicated.',
+    cvDeleted: 'CV deleted.',
+    close: 'Close',
+    save: 'Save',
+    redo: 'Redo',
+    undoHint: 'Undo (Ctrl/⌘ + Z)',
+    redoHint: 'Redo (Ctrl/⌘ + Shift + Z)',
+    quality: 'Quality check',
+    qualityIntro: 'Hints about missing details and long texts. None of them are mandatory.',
+    qualityAllGood: 'Looks good – no hints.',
+    qMissingName: 'First and last name are missing.',
+    qMissingEmail: 'No email address given.',
+    qInvalidEmail: 'The email address looks invalid.',
+    qMissingPhone: 'No phone number given.',
+    qMissingPhoto: 'No photo – often expected in German-speaking countries.',
+    qMissingSummary: '“About me” is empty – two or three sentences spark interest.',
+    qLongSummary: '“About me” is long ({count} characters, recommended up to {max}).',
+    qNoExperience: 'No work experience entered yet.',
+    qNoEducation: 'No education entered yet.',
+    qNoSkills: 'No skills selected yet.',
+    qNoLanguages: 'No languages selected yet.',
+    qLanguageLevel: '{name}: level is missing.',
+    qEntryTitle: '{entry}: title is missing.',
+    qEntryDates: '{entry}: dates are missing.',
+    qEntryOrder: '{entry}: end is before start.',
+    qEntryFuture: '{entry}: start lies in the future.',
+    qEntryLong: '{entry}: description is long ({count} characters).',
+    qBulletLong: '{entry}: bullet {bullet} is long ({count} characters).',
+    qBulletEmpty: '{entry}: bullet {bullet} is empty.',
+    qPages: 'The CV has {pages} pages – 1–2 are common.',
+    theme: 'Appearance',
+    themeSystem: 'System',
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    tabEdit: 'Edit',
+    tabDesign: 'Design',
+    tabPreview: 'Preview',
+    menu: 'Menu',
+    shareTitle: 'Share CV',
+    pdfReady: 'PDF created.',
+    backupReady: 'Backup created.',
     backupFileBase: 'cv-backup',
-    design: { classic: 'Classic', modern: 'Modern', minimal: 'Minimal' },
+    design: { classic: 'Classic', modern: 'Modern', minimal: 'Minimal', elegant: 'Elegant', banner: 'Banner' },
     languageName: { de: 'German', en: 'English', tr: 'Turkish' },
   },
   tr: {
@@ -497,7 +687,8 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     unsaved: 'Kaydedilmedi',
     ready: 'Hazır',
     sample: 'Örnek',
-    sampleOnHint: 'Örnek özgeçmiş etkin. Kaldırmak ve kendi girişlerinizi geri getirmek için tıklayın.',
+    sampleOnHint:
+      'Örnek özgeçmiş etkin. Kaldırmak ve kendi girişlerinizi geri getirmek için tıklayın.',
     sampleOffHint: 'Örnek özgeçmişi göster. Kendi girişleriniz korunur.',
     sampleStatus: 'Örnek etkin · kaydedilmiyor',
     pdfHint: 'Özgeçmişi PDF olarak indir',
@@ -614,7 +805,8 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     confirmImport: 'Geçerli girişler yedek dosyasıyla değiştirilecek.',
     confirmRemovePhoto: 'Profil fotoğrafı kaldırılacak.',
     confirmEmpty: 'Mevcut dosyanın üzerine boş bir özgeçmiş yazılacak.',
-    confirmDeleteAll: 'Tüm girişler ve fotoğraf kalıcı olarak silinecek. İpucu: Önce bir yedek (JSON) dışa aktarın.',
+    confirmDeleteAll:
+      'Tüm girişler ve fotoğraf kalıcı olarak silinecek. İpucu: Önce bir yedek (JSON) dışa aktarın.',
     invalidExport: 'Dışa aktarmadan önce çok uzun alanları kısaltın.',
     invalidLength: 'Bazı alanlar izin verilen uzunluğu aşıyor.',
     backupImported: 'Yedek içe aktarıldı.',
@@ -625,12 +817,14 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     dataDeleted: 'Tüm veriler silindi.',
     photoUnreadable: 'Görsel okunamadı.',
     translate: 'Kendi metinlerinizi çevirin',
-    translateIntro: '“Hakkımda”, pozisyonlar, dereceler, açıklamalar ve maddeler doğrudan bu cihazda çevrilir. Hiçbir veri gönderilmez.',
+    translateIntro:
+      '“Hakkımda”, pozisyonlar, dereceler, açıklamalar ve maddeler doğrudan bu cihazda çevrilir. Hiçbir veri gönderilmez.',
     translateFrom: 'Kaynak',
     translateTo: 'Hedef',
     translateTexts: 'metin',
     translateNothing: 'Henüz çevrilecek kendi metniniz yok.',
-    translateReview: 'Makine çevirisi – lütfen sonrasında kontrol edin. Özgeçmişin dili de değiştirilir.',
+    translateReview:
+      'Makine çevirisi – lütfen sonrasında kontrol edin. Özgeçmişin dili de değiştirilir.',
     translateStart: 'Çevir',
     translating: 'Çevriliyor…',
     cancel: 'İptal',
@@ -646,8 +840,64 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     dialogPhoto: 'Profil fotoğrafı seç',
     dialogImages: 'Görseller',
     dialogPdf: 'Özgeçmişi PDF olarak kaydet',
+    cvDefaultName: 'Özgeçmişim',
+    cvLastOne: 'Son özgeçmiş silinemez.',
+    cvMissing: 'Bu özgeçmiş artık mevcut değil.',
+    cvTooMany: 'En fazla {max} özgeçmiş kaydedilebilir.',
+    documents: 'Özgeçmişler',
+    newCv: 'Yeni özgeçmiş',
+    duplicateCv: 'Çoğalt',
+    renameCv: 'Yeniden adlandır',
+    deleteCv: 'Sil',
+    openCv: 'Aç',
+    cvOpen: 'Açık',
+    copySuffix: 'kopya',
+    lastEdited: 'Son düzenleme',
+    confirmDeleteCv: '“{name}” özgeçmişi fotoğrafıyla birlikte kalıcı olarak silinsin mi?',
+    cvCreated: 'Yeni özgeçmiş oluşturuldu.',
+    cvDuplicated: 'Özgeçmiş çoğaltıldı.',
+    cvDeleted: 'Özgeçmiş silindi.',
+    close: 'Kapat',
+    save: 'Kaydet',
+    redo: 'Yinele',
+    undoHint: 'Geri al (Ctrl/⌘ + Z)',
+    redoHint: 'Yinele (Ctrl/⌘ + Shift + Z)',
+    quality: 'Kalite kontrolü',
+    qualityIntro: 'Eksik bilgiler ve uzun metinlerle ilgili ipuçları. Hiçbiri zorunlu değildir.',
+    qualityAllGood: 'İyi görünüyor – ipucu yok.',
+    qMissingName: 'Ad ve soyad eksik.',
+    qMissingEmail: 'E-posta adresi girilmemiş.',
+    qInvalidEmail: 'E-posta adresi geçersiz görünüyor.',
+    qMissingPhone: 'Telefon numarası girilmemiş.',
+    qMissingPhoto: 'Fotoğraf yok – birçok ülkede beklenir.',
+    qMissingSummary: '“Hakkımda” boş – iki üç cümle ilgi uyandırır.',
+    qLongSummary: '“Hakkımda” uzun ({count} karakter, önerilen en fazla {max}).',
+    qNoExperience: 'Henüz iş deneyimi girilmedi.',
+    qNoEducation: 'Henüz eğitim girilmedi.',
+    qNoSkills: 'Henüz beceri seçilmedi.',
+    qNoLanguages: 'Henüz dil seçilmedi.',
+    qLanguageLevel: '{name}: seviye eksik.',
+    qEntryTitle: '{entry}: başlık eksik.',
+    qEntryDates: '{entry}: tarih aralığı eksik.',
+    qEntryOrder: '{entry}: bitiş başlangıçtan önce.',
+    qEntryFuture: '{entry}: başlangıç gelecekte.',
+    qEntryLong: '{entry}: açıklama uzun ({count} karakter).',
+    qBulletLong: '{entry}: madde {bullet} uzun ({count} karakter).',
+    qBulletEmpty: '{entry}: madde {bullet} boş.',
+    qPages: 'Özgeçmiş {pages} sayfa – genellikle 1–2 sayfa olur.',
+    theme: 'Görünüm',
+    themeSystem: 'Sistem',
+    themeLight: 'Açık',
+    themeDark: 'Koyu',
+    tabEdit: 'Düzenle',
+    tabDesign: 'Tasarım',
+    tabPreview: 'Önizleme',
+    menu: 'Menü',
+    shareTitle: 'Özgeçmişi paylaş',
+    pdfReady: 'PDF oluşturuldu.',
+    backupReady: 'Yedek oluşturuldu.',
     backupFileBase: 'ozgecmis-yedek',
-    design: { classic: 'Klasik', modern: 'Modern', minimal: 'Minimal' },
+    design: { classic: 'Klasik', modern: 'Modern', minimal: 'Minimal', elegant: 'Zarif', banner: 'Bant' },
     languageName: { de: 'Almanca', en: 'İngilizce', tr: 'Türkçe' },
   },
 };

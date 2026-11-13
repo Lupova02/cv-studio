@@ -6,12 +6,12 @@ import { LIMITS } from '@shared/cv/cv-data';
 import { createEducationGroup, type EducationGroup } from '../../form/cv-form';
 import { dropFormItem, moveFormItem } from '../../form/form-array';
 import { ItemActions } from '../../list-chrome/item-actions';
-import { ListHeader } from '../../list-chrome/list-header';
+import { EditorSection } from '../../list-chrome/editor-section';
 
 /** Abschnitt „Ausbildung“: Einträge mit Abschluss, Einrichtung, Ort, Zeitraum und Beschreibung. */
 @Component({
   selector: 'app-education-section',
-  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, ListHeader, ItemActions],
+  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, EditorSection, ItemActions],
   templateUrl: './education-section.html',
 })
 export class EducationSection {

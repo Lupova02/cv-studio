@@ -6,12 +6,12 @@ import { EditorCopy } from '../../../../core/state/editor-copy';
 import { createReferenceGroup, type ReferenceGroup } from '../../form/cv-form';
 import { dropFormItem, moveFormItem } from '../../form/form-array';
 import { ItemActions } from '../../list-chrome/item-actions';
-import { ListHeader } from '../../list-chrome/list-header';
+import { EditorSection } from '../../list-chrome/editor-section';
 
 /** Abschnitt „Referenzen“: Liste mit Name, Position, Firma, E-Mail und Telefon der Referenzperson. */
 @Component({
   selector: 'app-reference-section',
-  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, ListHeader, ItemActions],
+  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, EditorSection, ItemActions],
   templateUrl: './reference-section.html',
 })
 export class ReferenceSection {

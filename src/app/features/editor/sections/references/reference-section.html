@@ -1,5 +1,4 @@
-<section class="block">
-  <app-list-header [title]="copy.cv().references" [disabled]="items().length >= limits.items" (add)="add()" />
+<app-editor-section section="references" [title]="copy.cv().references" [count]="items().length" [addable]="true" [addDisabled]="items().length >= limits.items" (add)="add()">
   <!-- Einträge lassen sich per Ziehgriff oder Pfeilen umsortieren -->
   <div cdkDropList (cdkDropListDropped)="drop($event)">
     @for (group of items().controls; track group.controls.id.value; let index = $index) {
@@ -17,4 +16,4 @@
       <p class="empty">{{ copy.ui().emptyReferences }}</p>
     }
   </div>
-</section>
+</app-editor-section>

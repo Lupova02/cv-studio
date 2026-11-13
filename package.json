@@ -14,7 +14,12 @@
     "build": "npm run models && ng build && tsc -p tsconfig.electron.json",
     "test": "tsc -p tsconfig.tests.json && node --test \"dist-tests/**/*.test.js\"",
     "dist:mac": "npm run build && electron-builder --mac --arm64",
-    "dist:win": "npm run build && electron-builder --win --x64"
+    "dist:win": "npm run build && electron-builder --win --x64",
+    "icons": "node scripts/generate-icons.mjs && capacitor-assets generate --android --ios --iconBackgroundColor '#2a55ad' --iconBackgroundColorDark '#2a55ad' --splashBackgroundColor '#1f4288' --splashBackgroundColorDark '#0e1015'",
+    "build:mobile": "npm run build && cap sync",
+    "android": "npm run build:mobile && cap run android",
+    "android:apk": "npm run build:mobile && cd android && ./gradlew assembleDebug",
+    "ios": "npm run build:mobile && cap run ios"
   },
   "devDependencies": {
     "@angular/build": "^22.0.4",
@@ -27,6 +32,13 @@
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/ios": "^8.6.2",
+    "@capacitor/share": "^8.0.3",
     "@fontsource/comic-neue": "^5.3.0",
     "@fontsource/ibm-plex-sans": "^5.3.0",
     "@fontsource/libre-baskerville": "^5.3.0",

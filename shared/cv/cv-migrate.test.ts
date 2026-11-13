@@ -9,6 +9,8 @@ describe('migrate', () => {
     assert.deepEqual(migrate(null), emptyCv());
     assert.equal(migrate({}).schemaVersion, SCHEMA_VERSION);
     assert.equal(migrate({}).template.templateId, 'classic');
+    assert.equal(migrate({ template: { templateId: 'elegant' } }).template.templateId, 'elegant');
+    assert.equal(migrate({ template: { templateId: 'banner' } }).template.templateId, 'banner');
   });
 
   it('übernimmt bekannte Felder und verwirft Unbekanntes', () => {

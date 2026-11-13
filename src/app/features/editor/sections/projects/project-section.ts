@@ -7,12 +7,12 @@ import { TrashIcon } from '../../../../ui/trash-icon/trash-icon';
 import { bulletControl, createProjectGroup, type ProjectGroup } from '../../form/cv-form';
 import { dropFormItem, moveFormItem } from '../../form/form-array';
 import { ItemActions } from '../../list-chrome/item-actions';
-import { ListHeader } from '../../list-chrome/list-header';
+import { EditorSection } from '../../list-chrome/editor-section';
 
 /** Abschnitt „Projekte“: Liste mit Name, Rolle, Zeitraum, Beschreibung und Stichpunkten. */
 @Component({
   selector: 'app-project-section',
-  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, ListHeader, ItemActions, TrashIcon],
+  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, EditorSection, ItemActions, TrashIcon],
   templateUrl: './project-section.html',
 })
 export class ProjectSection {

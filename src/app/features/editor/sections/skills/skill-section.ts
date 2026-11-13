@@ -3,6 +3,7 @@ import { FormArray } from '@angular/forms';
 import { skillCatalog, skillsInCatalogOrder } from '@shared/catalogs/skill-catalog';
 import { LIMITS } from '@shared/cv/cv-data';
 import { EditorCopy } from '../../../../core/state/editor-copy';
+import { EditorSection } from '../../list-chrome/editor-section';
 import { StarRating } from '../../../../ui/star-rating/star-rating';
 import { createSkillGroup, type SkillGroup } from '../../form/cv-form';
 
@@ -13,7 +14,7 @@ import { createSkillGroup, type SkillGroup } from '../../form/cv-form';
  */
 @Component({
   selector: 'app-skill-section',
-  imports: [StarRating],
+  imports: [StarRating, EditorSection],
   templateUrl: './skill-section.html',
   styleUrl: './skill-section.scss',
 })
@@ -76,12 +77,17 @@ export class SkillSection {
     return new Map(this.items().getRawValue().map((item) => [item.id, item.stars]));
   }
 
-  /** Baut die Formular-Liste neu auf, sortiert nach Katalog-Reihenfolge. */
+  /**
+   * Baut die Formular-Liste neu auf, sortiert nach Katalog-Reihenfolge. Die Einzelschritte melden sich nicht,
+   * erst am Ende gibt es genau eine Änderung – sonst würde jeder Eintrag einzeln gespeichert.
+   */
   private write(chosen: Map<string, number>): void {
     const next = skillsInCatalogOrder(chosen);
-    this.items().clear();
+    const items = this.items();
+    items.clear({ emitEvent: false });
     for (const item of next) {
-      this.items().push(createSkillGroup(item));
+      items.push(createSkillGroup(item), { emitEvent: false });
     }
+    items.updateValueAndValidity();
   }
 }

@@ -2,16 +2,9 @@
   display: block;
 }
 
-h2 {
-  margin: 0;
-  font-size: 1.08rem;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-}
-
 .hint {
   margin: 0.3rem 0 0.85rem;
-  color: #78716c;
+  color: var(--text-subtle);
   font-size: 0.84rem;
   line-height: 1.4;
 }
@@ -21,7 +14,7 @@ h2 {
   flex-direction: column;
   gap: 0.3rem;
   margin: 0;
-  color: #44403c;
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
 }
@@ -32,9 +25,9 @@ ul {
   margin: 0.8rem 0 0;
   padding: 0;
   overflow: hidden;
-  border: 1px solid #e7e5e4;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
 }
 
 li {
@@ -43,7 +36,7 @@ li {
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.62rem 0.8rem;
-  border-bottom: 1px solid #f5f5f4;
+  border-bottom: 1px solid var(--surface-3);
 }
 
 li:last-child {
@@ -51,7 +44,7 @@ li:last-child {
 }
 
 li.chosen {
-  background: #fafaf9;
+  background: var(--accent-soft);
 }
 
 li label {
@@ -60,7 +53,7 @@ li label {
   align-items: center;
   gap: 0.55rem;
   margin: 0;
-  color: #1c1917;
+  color: var(--text);
   font-size: 0.92rem;
   font-weight: 500;
 }
@@ -68,5 +61,5 @@ li label {
 input {
   width: 1.05rem;
   height: 1.05rem;
-  accent-color: #1f4b99;
+  accent-color: var(--accent);
 }

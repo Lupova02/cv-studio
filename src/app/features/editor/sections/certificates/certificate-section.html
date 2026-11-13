@@ -1,5 +1,4 @@
-<section class="block">
-  <app-list-header [title]="copy.cv().certificates" [disabled]="items().length >= limits.items" (add)="add()" />
+<app-editor-section section="certificates" [title]="copy.cv().certificates" [count]="items().length" [addable]="true" [addDisabled]="items().length >= limits.items" (add)="add()">
   <!-- Einträge lassen sich per Ziehgriff oder Pfeilen umsortieren -->
   <div cdkDropList (cdkDropListDropped)="drop($event)">
     @for (group of items().controls; track group.controls.id.value; let index = $index) {
@@ -16,4 +15,4 @@
       <p class="empty">{{ copy.ui().emptyCertificates }}</p>
     }
   </div>
-</section>
+</app-editor-section>

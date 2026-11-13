@@ -15,7 +15,7 @@ extraMetadata:
 mac:
   category: public.app-category.business
   identity: null
-  icon: build/icon.png
+  icon: build/icon.icns
   target:
     - target: dmg
       arch:

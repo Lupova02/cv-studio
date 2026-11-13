@@ -1,4 +1,4 @@
-import { Component, Injector, afterNextRender, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, Injector, afterNextRender, inject, signal, viewChild } from '@angular/core';
 import type { TemplateOptions } from '@shared/cv/cv-data';
 import type { PrintJob } from '@shared/ipc/ipc-api';
 import { getCvApi } from '../../core/api/cv-api';
@@ -24,6 +24,10 @@ export class PrintPage {
   private signaled = false;
 
   constructor() {
+    // Papier bleibt weiß, auch wenn die Oberfläche im dunklen Farbschema läuft.
+    const root = document.documentElement;
+    root.classList.add('print-mode');
+    inject(DestroyRef).onDestroy(() => root.classList.remove('print-mode'));
     void this.load();
   }
 

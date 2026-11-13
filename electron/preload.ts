@@ -1,7 +1,7 @@
 // Preload-Brücke zwischen Angular-Oberfläche und Hauptprozess: stellt über contextBridge
 // genau die typisierten Funktionen aus `CvApi` als `window.cvApi` bereit – kein direkter IPC-Zugriff.
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron';
-import type { CvData } from '../shared/cv/cv-data';
+import type { CvData, TemplateSettings } from '../shared/cv/cv-data';
 import type { CvApi, PrintJob } from '../shared/ipc/ipc-api';
 
 /**
@@ -12,6 +12,13 @@ const api: CvApi = {
   ping: () => ipcRenderer.invoke('cv:ping'),
   load: () => ipcRenderer.invoke('cv:load'),
   save: (data: CvData) => ipcRenderer.invoke('cv:save', data),
+  library: () => ipcRenderer.invoke('cv:library'),
+  switchCv: (id: string) => ipcRenderer.invoke('cv:switch', id),
+  createCv: (name: string, data: CvData | null) => ipcRenderer.invoke('cv:create', name, data),
+  duplicateCv: (id: string, name: string) => ipcRenderer.invoke('cv:duplicate', id, name),
+  renameCv: (id: string, name: string) => ipcRenderer.invoke('cv:rename', id, name),
+  deleteCv: (id: string) => ipcRenderer.invoke('cv:delete', id),
+  resetAll: (template: TemplateSettings) => ipcRenderer.invoke('cv:reset', template),
   importBackup: () => ipcRenderer.invoke('cv:import-backup'),
   exportBackup: (data: CvData) => ipcRenderer.invoke('cv:export-backup', data),
   importPhoto: () => ipcRenderer.invoke('cv:import-photo'),

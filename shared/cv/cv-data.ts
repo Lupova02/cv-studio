@@ -22,8 +22,8 @@ export const LIMITS = {
   id: 80,
 } as const;
 
-/** Kennungen der drei Lebenslauf-Vorlagen (Klassisch, Modern, Minimal). */
-export const TEMPLATE_IDS = ['classic', 'modern', 'minimal'] as const;
+/** Kennungen der Lebenslauf-Vorlagen (Klassisch, Modern, Minimal, Elegant, Banner). */
+export const TEMPLATE_IDS = ['classic', 'modern', 'minimal', 'elegant', 'banner'] as const;
 /** Kennung einer Lebenslauf-Vorlage. */
 export type TemplateId = (typeof TEMPLATE_IDS)[number];
 /** Sprache, in der der Lebenslauf (Überschriften, Datumsangaben, Kataloge) ausgegeben wird. */

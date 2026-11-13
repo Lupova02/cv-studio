@@ -13,10 +13,10 @@ import type { SkillScale } from '@shared/cv/cv-data';
         <span class="fill" [style.width.%]="share()"></span>
       </span>
     } @else {
-      <span class="rating" [attr.role]="interactive() ? null : 'img'" [attr.aria-label]="interactive() ? null : value() + ' / 5'">
+      <span class="rating" [attr.role]="interactive() ? 'group' : 'img'" [attr.aria-label]="interactive() ? label() || null : value() + ' / 5'">
         @for (star of scale; track star) {
           @if (interactive()) {
-            <button type="button" [class.on]="star <= value()" (click)="pick.emit(star)" [attr.aria-label]="star + ' / 5'">
+            <button type="button" [class.on]="star <= value()" (click)="pick.emit(star)" [attr.aria-label]="star + ' / 5'" [attr.aria-pressed]="star === value()">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4l2.6 6.2 6.7.6-5.1 4.4 1.6 6.5L12 16.7 6.2 20.1l1.6-6.5L2.7 9.2l6.7-.6z" /></svg>
             </button>
           } @else {
@@ -48,9 +48,14 @@ import type { SkillScale } from '@shared/cv/cv-data';
       opacity: 0.4;
     }
 
-    svg.on,
-    button.on svg {
+    svg.on {
       fill: #f5a018;
+      stroke: none;
+      opacity: 1;
+    }
+
+    button.on svg {
+      fill: var(--star);
       stroke: none;
       opacity: 1;
     }
@@ -60,18 +65,29 @@ import type { SkillScale } from '@shared/cv/cv-data';
       padding: 0;
       border: 0;
       background: transparent;
-      color: #d6d3d1;
+      color: var(--border-strong);
       line-height: 0;
       cursor: pointer;
     }
 
     button svg {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1.35rem;
+      height: 1.35rem;
+      transition: transform var(--fast) ease;
+    }
+
+    button:hover svg {
+      transform: scale(1.12);
     }
 
     button.on {
-      color: #f5a018;
+      color: var(--star);
+    }
+
+    @media (pointer: coarse) {
+      button {
+        padding: 0.3rem 0.15rem;
+      }
     }
 
     .track {
@@ -99,6 +115,8 @@ export class StarRating {
   readonly interactive = input(false);
   /** Darstellung in der Anzeige: Sterne oder Balken. */
   readonly mode = input<SkillScale>('stars');
+  /** Bedienhilfe-Name der Sterngruppe im Editor (z. B. Name der Kenntnis). */
+  readonly label = input('');
   /** Meldet den angeklickten Stern (1–5). */
   readonly pick = output<number>();
   protected readonly scale = [1, 2, 3, 4, 5];

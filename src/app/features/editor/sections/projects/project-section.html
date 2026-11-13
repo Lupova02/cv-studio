@@ -1,6 +1,4 @@
-<section class="block">
-  <!-- Überschrift mit „Hinzufügen“-Knopf -->
-  <app-list-header [title]="copy.cv().projects" [disabled]="items().length >= limits.items" (add)="add()" />
+<app-editor-section section="projects" [title]="copy.cv().projects" [count]="items().length" [addable]="true" [addDisabled]="items().length >= limits.items" (add)="add()">
   <!-- Per Drag & Drop sortierbare Liste der Projekte -->
   <div cdkDropList (cdkDropListDropped)="drop($event)">
     @for (group of items().controls; track group.controls.id.value; let index = $index) {
@@ -32,4 +30,4 @@
       <p class="empty">{{ copy.ui().emptyProjects }}</p>
     }
   </div>
-</section>
+</app-editor-section>

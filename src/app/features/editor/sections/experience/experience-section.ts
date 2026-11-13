@@ -7,13 +7,13 @@ import { LIMITS } from '@shared/cv/cv-data';
 import { bulletControl, createExperienceGroup, type ExperienceGroup } from '../../form/cv-form';
 import { dropFormItem, moveFormItem } from '../../form/form-array';
 import { ItemActions } from '../../list-chrome/item-actions';
-import { ListHeader } from '../../list-chrome/list-header';
+import { EditorSection } from '../../list-chrome/editor-section';
 import { TrashIcon } from '../../../../ui/trash-icon/trash-icon';
 
 /** Abschnitt „Berufserfahrung“: Stationen mit Position, Firma, Ort, Zeitraum, Beschreibung und Stichpunkten. */
 @Component({
   selector: 'app-experience-section',
-  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, ListHeader, ItemActions, TrashIcon],
+  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, EditorSection, ItemActions, TrashIcon],
   templateUrl: './experience-section.html',
 })
 export class ExperienceSection {

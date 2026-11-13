@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { onAccentColor } from './color';
+import { contrastRatio, onAccentColor } from './color';
 import { suggestFileBase } from './file-name';
 import { addressLine, addressLines, contactEntries, formatPageNumber, formatRange, formatYearMonth, linkEntries, nationalityLine } from './format';
 import { emptyPersonal } from '../cv/cv-data';
@@ -33,6 +33,17 @@ describe('Format und Exportauftrag', () => {
     assert.equal(onAccentColor('#1f4b99'), '#ffffff');
     assert.equal(onAccentColor('#f5e27a'), '#111111');
     assert.equal(onAccentColor('blau'), '#ffffff');
+    // Orange: Weiß hätte nur 2,4:1 Kontrast, Schwarz deutlich mehr.
+    assert.equal(onAccentColor('#ff8c00'), '#111111');
+    assert.equal(onAccentColor('#2e7d32'), '#ffffff');
+  });
+
+  it('erreicht für jede Akzentfarbe mindestens AA-Kontrast für große Schrift', () => {
+    for (let value = 0; value < 0x1000000; value += 0x0f0f0f + 0x101) {
+      const hex = `#${value.toString(16).padStart(6, '0')}`;
+      const ratio = contrastRatio(hex, onAccentColor(hex)) ?? 0;
+      assert.ok(ratio >= 3, `${hex}: ${ratio.toFixed(2)}`);
+    }
   });
 
   it('bildet einen sicheren Dateinamen', () => {
@@ -44,6 +55,15 @@ describe('Format und Exportauftrag', () => {
     data.personal.firstName = 'Yıldız';
     data.personal.lastName = 'Strauß';
     assert.equal(suggestFileBase(data), 'Yildiz-Strauss');
+  });
+
+  it('nennt die PDF ohne Namen in der Sprache des Lebenslaufs', () => {
+    const data = sampleCv();
+    data.personal.firstName = '';
+    data.personal.lastName = '—';
+    assert.equal(suggestFileBase({ ...data, template: { ...data.template, language: 'de' } }), 'Lebenslauf');
+    assert.equal(suggestFileBase({ ...data, template: { ...data.template, language: 'en' } }), 'CV');
+    assert.equal(suggestFileBase({ ...data, template: { ...data.template, language: 'tr' } }), 'Ozgecmis');
   });
 
   it('formatiert Staatsangehörigkeit und Adresse je Land', () => {

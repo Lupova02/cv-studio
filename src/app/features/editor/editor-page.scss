@@ -16,120 +16,7 @@
   height: 100%;
 }
 
-// --- Obere Werkzeugleiste ---
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: center;
-  padding: 0.7rem 1rem;
-  background: #1c1917;
-  color: #fafaf9;
-}
-
-.brand {
-  display: flex;
-  gap: 0.7rem;
-  align-items: center;
-}
-
-.brand strong {
-  letter-spacing: -0.02em;
-}
-
-.brand span {
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #d6d3d1;
-  font-size: 0.75rem;
-}
-
-.toolbar-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.toolbar-actions button {
-  display: inline-flex;
-  gap: 0.45rem;
-  align-items: center;
-  min-height: 2.15rem;
-  padding: 0.38rem 0.8rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.88rem;
-  white-space: nowrap;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-}
-
-.toolbar-actions button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-// --- Muster-Schalter (rot = aus, grün = an) ---
-.sample-toggle {
-  --tone: #ef4444;
-  border-color: color-mix(in srgb, var(--tone) 65%, transparent);
-  background: color-mix(in srgb, var(--tone) 14%, transparent);
-  color: color-mix(in srgb, var(--tone) 35%, #fff);
-}
-
-.sample-toggle.on {
-  --tone: #22c55e;
-}
-
-.sample-toggle:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--tone) 24%, transparent);
-}
-
-.switch {
-  position: relative;
-  width: 1.75rem;
-  height: 1rem;
-  flex: none;
-  border-radius: 999px;
-  background: var(--tone);
-  transition: background 160ms ease;
-}
-
-.knob {
-  position: absolute;
-  top: 0.125rem;
-  left: 0.125rem;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
-  transition: transform 180ms ease;
-}
-
-.sample-toggle.on .knob {
-  transform: translateX(0.75rem);
-}
-
-// --- PDF-Export-Knopf ---
-.export {
-  border-color: var(--tone);
-  background: var(--tone);
-  color: #fff;
-}
-
-.export:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--tone) 86%, #000);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--tone) 40%, transparent);
-}
-
-.export.pdf {
-  --tone: #d93025;
-}
-
-.export svg {
-  width: 1.1rem;
-  height: 1.1rem;
+svg {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -137,19 +24,151 @@
   stroke-linejoin: round;
 }
 
-// --- Hinweisbalken ---
-.banner {
-  margin: 0;
-  padding: 0.55rem 1rem;
-  background: #ecfccb;
-  animation: rise 220ms ease;
+// --- Obere Werkzeugleiste ---
+.toolbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  padding: calc(0.5rem + env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) 0.5rem max(1rem, env(safe-area-inset-left));
+  border-bottom: 1px solid var(--border);
+  background: var(--toolbar);
 }
 
-.banner.error {
-  background: #fee2e2;
+.brand,
+.toolbar-actions,
+.history {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
-// --- Arbeitsfläche: Editor-Spalte ---
+.toolbar-actions {
+  flex: none;
+}
+
+.history {
+  gap: 0.15rem;
+}
+
+.logo {
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  stroke: none;
+}
+
+.wordmark {
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.status {
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.status.error {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.tool,
+.toolbar-actions > button {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.tool {
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.tool:hover:not(:disabled) {
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.tool svg,
+.export svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+// --- Muster-Schalter ---
+.sample-toggle {
+  color: var(--text-muted);
+}
+
+.switch {
+  position: relative;
+  width: 1.9rem;
+  height: 1.1rem;
+  flex: none;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition: background var(--fast) ease;
+}
+
+.knob {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+  transition: transform var(--medium) var(--ease);
+}
+
+.sample-toggle.on {
+  border-color: color-mix(in srgb, var(--success) 50%, transparent);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.sample-toggle.on .switch {
+  background: var(--success);
+}
+
+.sample-toggle.on .knob {
+  transform: translateX(0.8rem);
+}
+
+// --- PDF-Export-Knopf ---
+.export {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.export:hover:not(:disabled) {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+// --- Arbeitsfläche ---
 .workspace {
   display: flex;
   flex: 1;
@@ -165,9 +184,10 @@
 .editor {
   flex: none;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 0 1.35rem 2.4rem;
-  background: #fafaf9;
-  transition: width 180ms ease;
+  background: var(--bg);
+  transition: width var(--medium) var(--ease);
 }
 
 .workspace.resizing .editor,
@@ -176,17 +196,14 @@
   transition: none;
 }
 
-.editor > :not(:first-child) {
+.editor > :not(.editor-bar) {
   display: block;
-  margin-top: 1.7rem;
-  padding-top: 1.35rem;
-  border-top: 1px solid #e7e5e4;
-}
-
-.editor > .personal {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
+  margin-top: 1.1rem;
+  padding: 1rem 1.05rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 // --- Trenner zwischen Editor und Vorschau ---
@@ -195,10 +212,7 @@
   display: grid;
   width: 14px;
   place-items: center;
-  border: 0;
-  border-radius: 0;
-  background: #e7e5e4;
-  padding: 0;
+  background: var(--surface-3);
   cursor: col-resize;
   touch-action: none;
 }
@@ -207,15 +221,17 @@
   width: 4px;
   height: 36px;
   border-radius: 99px;
-  background: #a8a29e;
-  transition: height 160ms ease, background 160ms ease;
+  background: var(--border-strong);
+  transition:
+    height var(--fast) ease,
+    background var(--fast) ease;
 }
 
 .splitter:hover span,
 .splitter:focus-visible span,
 .workspace.resizing .splitter span {
   height: 64px;
-  background: #1f4b99;
+  background: var(--accent);
 }
 
 // --- Vorschau-Spalte und Design-Leiste ---
@@ -224,7 +240,7 @@
   flex: 1;
   flex-direction: column;
   overflow: hidden;
-  background: #d6d3d1;
+  background: var(--canvas);
 }
 
 .preview-options {
@@ -233,42 +249,42 @@
   gap: 0.7rem 0.9rem;
   align-items: end;
   padding: 0.7rem 1rem;
-  background: rgba(245, 245, 244, 0.94);
-  border-bottom: 1px solid #e7e5e4;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
 }
 
-.designs {
+.preview-options label {
+  margin-top: 0;
+}
+
+.designs,
+.skill-scale div {
   display: flex;
-  gap: 0.4rem;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 
 .skill-scale {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  color: #57534e;
+  color: var(--text-muted);
   font-size: 0.78rem;
+  font-weight: 600;
 }
 
-.skill-scale div {
-  display: flex;
-  gap: 0.35rem;
+.skill-scale button {
+  min-height: var(--tap);
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
-.skill-scale button,
-.design {
-  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
-}
-
-.skill-scale button:hover:not(:disabled),
-.design:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.skill-scale button.active {
-  border-color: #1c1917;
-  background: #fff;
+.skill-scale button.active,
+.design.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .skill-scale.muted {
@@ -280,51 +296,82 @@
   flex-direction: column;
   gap: 0.25rem;
   align-items: center;
-  min-width: 4.5rem;
+  min-width: 4.6rem;
   font-size: 0.75rem;
 }
 
-.design.active {
-  border-color: #1c1917;
-  background: #fff;
-}
-
-// --- Vorlagen-Miniaturen ---
+// --- Vorlagen-Miniaturen (Papier bleibt hell, Akzent = gewählte Farbe) ---
 .thumb {
+  --ink: #1c1917;
+  --line: #a8a29e;
   width: 34px;
   height: 46px;
-  border: 1px solid #d6d3d1;
+  border: 1px solid var(--border);
+  border-radius: 2px;
   background:
-    linear-gradient(#1c1917, #1c1917) 4px 8px / 18px 2px no-repeat,
-    linear-gradient(#a8a29e, #a8a29e) 4px 14px / 24px 1px no-repeat,
-    linear-gradient(#a8a29e, #a8a29e) 4px 18px / 20px 1px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 4px 8px / 18px 2px no-repeat,
+    linear-gradient(var(--line), var(--line)) 4px 14px / 24px 1px no-repeat,
+    linear-gradient(var(--line), var(--line)) 4px 18px / 20px 1px no-repeat,
     #fff;
+  transition: transform var(--medium) var(--ease);
+}
+
+.design:hover .thumb {
+  transform: translateY(-2px);
 }
 
 .thumb[data-design='modern'] {
   background:
-    linear-gradient(#1f4b99, #1f4b99) left / 12px 100% no-repeat,
-    linear-gradient(#1c1917, #1c1917) 16px 8px / 14px 2px no-repeat,
+    linear-gradient(var(--thumb-accent), var(--thumb-accent)) left / 12px 100% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 16px 8px / 14px 2px no-repeat,
+    linear-gradient(var(--line), var(--line)) 16px 14px / 14px 1px no-repeat,
     #fff;
 }
 
 .thumb[data-design='minimal'] {
   background:
-    linear-gradient(#111, #111) 4px 16px / 12px 2px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 4px 16px / 12px 2px no-repeat,
+    linear-gradient(var(--line), var(--line)) 4px 22px / 22px 1px no-repeat,
     #fff;
+}
+
+.thumb[data-design='elegant'] {
+  background:
+    linear-gradient(var(--ink), var(--ink)) 8px 7px / 18px 2px no-repeat,
+    linear-gradient(var(--thumb-accent), var(--thumb-accent)) 13px 12px / 8px 1px no-repeat,
+    linear-gradient(var(--line), var(--line)) 4px 18px / 26px 1px no-repeat,
+    linear-gradient(var(--line), var(--line)) 4px 22px / 26px 1px no-repeat,
+    #fff;
+}
+
+.thumb[data-design='banner'] {
+  background:
+    linear-gradient(#fff, #fff) 4px 6px / 14px 2px no-repeat,
+    linear-gradient(var(--thumb-accent), var(--thumb-accent)) top / 100% 13px no-repeat,
+    linear-gradient(var(--line), var(--line)) 4px 18px / 16px 1px no-repeat,
+    linear-gradient(var(--line), var(--line)) 23px 18px / 7px 1px no-repeat,
+    #fff;
+}
+
+.accent-pick input {
+  width: 3.25rem;
+  height: var(--tap);
 }
 
 // --- Skalierte Vorschau ---
 .preview-frame {
   flex: 1;
   overflow: hidden auto;
+  overscroll-behavior: contain;
   padding: 1.25rem 0 2rem;
 }
 
 .scale-slot {
   position: relative;
   margin: 0 auto;
-  transition: width 180ms ease, height 180ms ease;
+  transition:
+    width var(--medium) var(--ease),
+    height var(--medium) var(--ease);
 }
 
 .scale-inner {
@@ -333,62 +380,118 @@
   left: 0;
   width: 210mm;
   transform-origin: top left;
-  box-shadow: 0 18px 40px rgba(28, 25, 23, 0.16);
-  transition: transform 180ms ease;
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--medium) var(--ease);
 }
 
-// --- Editor-Leiste (klebt oben): Version und Symbolknopf-Zustände ---
+.sheet-swap {
+  position: relative;
+  animation: sheet-in 320ms var(--ease);
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+}
+
+// --- Seitenumbruch-Streifen in der Vorschau ---
+.page-gap {
+  position: absolute;
+  z-index: 5;
+  left: -120px;
+  right: -120px;
+  background: var(--canvas);
+  box-shadow:
+    inset 0 14px 14px -14px rgb(0 0 0 / 0.28),
+    inset 0 -14px 14px -14px rgb(0 0 0 / 0.28);
+  pointer-events: none;
+}
+
+// --- Editor-Leiste (klebt oben) ---
 .editor-bar {
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 4;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin: 0 -1.35rem 1.15rem;
-  padding: 0.85rem 1.35rem;
-  background: rgba(250, 250, 249, 0.92);
-  border-bottom: 1px solid #e7e5e4;
+  margin: 0 -1.35rem;
+  padding: 0.7rem 1.35rem;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
 }
 
 .app-version {
   padding: 0.2rem 0.6rem;
-  border: 1px solid #e7e5e4;
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: #fff;
-  color: #57534e;
+  background: var(--surface);
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
 }
 
-.group.identity-card {
-  margin-top: 0;
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.lang-pick {
+  width: auto;
+  min-width: 7.4rem;
+  height: 2.35rem;
+  padding: 0 0.6rem;
+}
+
+.icon-button {
+  display: grid;
+  width: max(2.35rem, var(--tap));
+  height: max(2.35rem, var(--tap));
+  place-items: center;
+  padding: 0;
+  color: var(--text-muted);
+}
+
+.icon-button svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.icon-button:hover:not(:disabled) {
+  color: var(--text);
 }
 
 .icon-button.danger {
-  color: #b91c1c;
+  color: var(--danger);
+}
+
+.icon-button.danger:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  background: var(--danger-soft);
 }
 
 .icon-button.active {
-  border-color: #1f4b99;
-  background: #eef2fb;
-  color: #1f4b99;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 // --- Übersetzen-Panel ---
 .translate-panel {
   flex-basis: 100%;
   padding: 0.85rem 0.95rem 0.9rem;
-  border: 1px solid #e7e5e4;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(28, 25, 23, 0.08);
-  animation: rise 180ms ease;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  animation: pop-in var(--medium) var(--ease);
 }
 
 .translate-head {
@@ -401,11 +504,10 @@
 .translate-head h4 {
   margin: 0;
   font-size: 0.95rem;
-  font-weight: 650;
 }
 
 .translate-count {
-  color: #78716c;
+  color: var(--text-subtle);
   font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -414,14 +516,14 @@
 .translate-intro,
 .translate-hint {
   margin: 0.35rem 0 0;
-  color: #57534e;
+  color: var(--text-muted);
   font-size: 0.8rem;
   line-height: 1.4;
 }
 
 .translate-hint {
   margin-top: 0.6rem;
-  color: #92400e;
+  color: var(--warning);
 }
 
 .translate-langs {
@@ -433,7 +535,7 @@
 
 .translate-arrow {
   padding-bottom: 0.55rem;
-  color: #a8a29e;
+  color: var(--text-subtle);
 }
 
 .translate-actions {
@@ -443,41 +545,83 @@
   margin-top: 0.75rem;
 }
 
-// --- „Rückgängig“-Knopf im Hinweisbalken ---
-.banner-action {
-  margin-left: 0.6rem;
-  padding: 0.12rem 0.6rem;
-  border-color: #84cc16;
-  background: #fff;
-  font-size: 0.85rem;
-  font-weight: 600;
+// --- Karten „Persönliches“ ---
+.personal {
+  display: grid;
+  gap: 0.9rem;
 }
 
-.banner-action:hover {
-  background: #f7fee7;
+.group {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem 1.05rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
 }
 
-// --- Ergänzungen: Löschen-Hover, Sprachwahl, Foto-Schalter ---
-.icon-button.danger:hover:not(:disabled) {
-  border-color: #fca5a5;
-  background: #fef2f2;
+.group h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
 }
 
-.lang-pick {
-  width: auto;
-  min-width: 7.4rem;
-  height: 2.35rem;
-  padding: 0 0.6rem;
+.identity {
+  display: grid;
+  grid-template-columns: 7.25rem minmax(0, 1fr);
+  gap: 0.85rem 1rem;
+  align-items: start;
 }
 
-.photo-toggle {
-  justify-content: center;
-  margin-top: 0.1rem;
-  font-size: 0.78rem;
-  font-weight: 500;
+.name-fields {
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
 }
 
-// --- Geschlecht mit Schalter „Anzeigen“ in der Beschriftungszeile ---
+.name-fields label,
+.identity .fields label,
+.fields label,
+.phone-card label,
+.choice label {
+  margin-top: 0;
+}
+
+.identity .fields {
+  grid-column: 1 / -1;
+  gap: 0.7rem 0.75rem;
+}
+
+.fields {
+  align-items: start;
+}
+
+.group .fields {
+  gap: 0.7rem 0.75rem;
+}
+
+.group.links .fields {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.field-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.field-name svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+}
+
+.field-name svg.mark {
+  fill: currentColor;
+  stroke: none;
+}
+
 .gender-field {
   display: flex;
   flex-direction: column;
@@ -496,122 +640,18 @@
 }
 
 .gender-field .check {
+  min-height: 0;
   gap: 0.3rem;
-  color: #57534e;
+  color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 500;
 }
 
 .gender-field.hidden-in-cv select {
-  color: #a8a29e;
+  color: var(--text-subtle);
 }
 
-// --- Seitenumbruch-Streifen in der Vorschau ---
-.page-gap {
-  position: absolute;
-  z-index: 5;
-  left: -120px;
-  right: -120px;
-  background: #d6d3d1;
-  box-shadow:
-    inset 0 14px 14px -14px rgba(28, 25, 23, 0.28),
-    inset 0 -14px 14px -14px rgba(28, 25, 23, 0.28);
-  pointer-events: none;
-}
-
-// --- Karte „Persönliches“ ---
-.identity {
-  display: grid;
-  grid-template-columns: 7.25rem minmax(0, 1fr);
-  gap: 0.85rem 1rem;
-  align-items: start;
-}
-
-.name-fields {
-  display: grid;
-  align-content: start;
-  gap: 0.15rem;
-}
-
-.name-fields label,
-.identity .fields label {
-  margin-top: 0;
-}
-
-.identity .fields {
-  grid-column: 1 / -1;
-  gap: 0.7rem 0.75rem;
-}
-
-// --- Formular-Karten und Links ---
-.fields {
-  align-items: start;
-}
-
-.fields label,
-.phone-card label,
-.choice label {
-  margin-top: 0;
-}
-
-.group {
-  display: grid;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  padding: 0.95rem 1rem 1.05rem;
-  border: 1px solid #e7e5e4;
-  border-radius: 12px;
-  background: #fff;
-}
-
-.group h3 {
-  margin: 0;
-  color: #1c1917;
-  font-size: 0.95rem;
-  font-weight: 650;
-}
-
-.group.links {
-  gap: 0.7rem;
-}
-
-.group .fields {
-  gap: 0.7rem 0.75rem;
-}
-
-.group.links .fields {
-  grid-template-columns: 1fr;
-  gap: 0.7rem;
-}
-
-.group.links .field-name {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #44403c;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.group.links .field-name svg {
-  width: 1.15rem;
-  height: 1.15rem;
-  flex: none;
-}
-
-.group.links .field-name svg.mark {
-  fill: currentColor;
-}
-
-.group.links .field-name svg.line {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-// --- Staatsangehörigkeit: Auswahl und Text-Knöpfe ---
+// --- Staatsangehörigkeit und Telefon ---
 .choice {
   display: grid;
   gap: 0.35rem;
@@ -620,33 +660,37 @@
 .choice-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.2rem 0.85rem;
 }
 
 .quiet {
   justify-self: start;
+  min-height: var(--tap);
   border-color: transparent;
   background: transparent;
-  color: #1f4b99;
+  color: var(--accent);
   padding: 0.15rem 0;
   font-size: 0.88rem;
+  font-weight: 600;
 }
 
 .quiet:hover:not(:disabled) {
+  border-color: transparent;
   text-decoration: underline;
 }
 
-// --- Nur für Screenreader sichtbar ---
-.sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.phone-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.65rem 0.75rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.phone-card:last-of-type {
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
 // --- Foto-Spalte ---
@@ -657,12 +701,14 @@
   width: 7.25rem;
 }
 
-.photo-side .btn-solid {
-  width: 100%;
+.photo-buttons {
+  display: flex;
+  gap: 0.35rem;
 }
 
-.photo-side .icon-btn {
-  align-self: center;
+.photo-buttons .btn-solid {
+  flex: 1;
+  min-height: var(--tap);
 }
 
 .photo-side img,
@@ -670,91 +716,183 @@
   width: 7.25rem;
   height: 7.25rem;
   object-fit: cover;
-  border: 1px solid #e7e5e4;
-  border-radius: 12px;
-  background: #f5f5f4;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-3);
 }
 
 .photo-fallback {
   display: grid;
-  place-items: center;
-  color: #78716c;
+  place-content: center;
+  justify-items: center;
+  gap: 0.2rem;
+  color: var(--text-subtle);
   font-size: 0.8rem;
 }
 
-// --- Datei-Aktionen (Symbolknöpfe) ---
-.file-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
+.photo-fallback svg {
+  width: 2rem;
+  height: 2rem;
 }
 
-.icon-button {
+.photo-toggle {
+  justify-content: center;
+  margin-top: 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+// --- Über mich: Zeichenzähler ---
+.char-count {
+  margin: 0.3rem 0 0;
+  color: var(--text-subtle);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.char-count.over {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+// --- Tabs und Toasts auf schmalen Bildschirmen ---
+.tabbar {
   display: grid;
-  width: 2.35rem;
-  height: 2.35rem;
-  place-items: center;
-  padding: 0;
-  background: #fff;
-  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 0.25rem max(0.5rem, env(safe-area-inset-right)) calc(0.25rem + env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
+  border-top: 1px solid var(--border);
+  background: var(--toolbar);
 }
 
-.icon-button:hover:not(:disabled) {
-  border-color: #a8a29e;
-  transform: translateY(-1px);
-}
-
-// --- Telefon-Karten ---
-.phone-card {
+.tabbar button {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.65rem 0.75rem;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px solid #f5f5f4;
+  justify-items: center;
+  gap: 0.1rem;
+  min-height: 3.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-subtle);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-.phone-card:last-of-type {
-  padding-bottom: 0;
-  border-bottom: 0;
+.tabbar button svg {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
-// --- Reduzierte Bewegung: Animationen abschalten ---
-@media (prefers-reduced-motion: reduce) {
-  .banner,
-  .editor,
-  .scale-slot,
-  .scale-inner,
-  .splitter span,
-  .toolbar-actions button,
-  .switch,
-  .knob,
-  .skill-scale button,
-  .design,
-  .icon-button {
-    animation: none;
-    transition: none;
+.tabbar button[aria-selected='true'] {
+  color: var(--accent);
+}
+
+.tabbar button[aria-selected='true']::before {
+  content: '';
+  position: absolute;
+  top: -0.25rem;
+  left: 30%;
+  right: 30%;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--accent);
+}
+
+.tab-badge {
+  position: absolute;
+  top: 0.35rem;
+  right: calc(50% - 1.6rem);
+  min-width: 1.1rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.68rem;
+}
+
+.toasts.above-tabs {
+  right: 0.75rem;
+  left: 0.75rem;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  max-width: none;
+}
+
+@media (max-width: 1180px) {
+  .wordmark,
+  .sample-label {
+    display: none;
   }
 }
 
-// --- Einblend-Animation (Hinweisbalken, Übersetzen-Panel) ---
-@keyframes rise {
+@media (max-width: 900px) {
+  .workspace.narrow .editor {
+    width: 100%;
+    padding: 0 0.85rem 2rem;
+  }
+
+  .workspace.narrow .editor-bar {
+    margin: 0 -0.85rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .workspace.narrow[data-tab='edit'] .preview,
+  .workspace.narrow:not([data-tab='edit']) .editor {
+    display: none;
+  }
+
+  .workspace.narrow[data-tab='preview'] .preview-options {
+    display: none;
+  }
+
+  .workspace.narrow[data-tab='design'] .preview-options {
+    max-height: 55%;
+    overflow: auto;
+  }
+
+  .workspace.narrow .preview {
+    animation: pane-in var(--medium) var(--ease);
+  }
+
+  .toolbar {
+    gap: 0.4rem;
+    padding-left: max(0.6rem, env(safe-area-inset-left));
+    padding-right: max(0.6rem, env(safe-area-inset-right));
+  }
+
+  .status {
+    display: none;
+  }
+
+  .toolbar-actions {
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .identity {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .photo-side {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    width: auto;
+  }
+
+  .photo-side img,
+  .photo-fallback {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+
+  .export {
+    padding: 0.3rem 0.55rem;
+  }
+}
+
+@keyframes pane-in {
   from {
     opacity: 0;
-    transform: translateY(-6px);
   }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-// --- Symbole in den Symbolknöpfen ---
-.icon-button svg {
-  width: 1.15rem;
-  height: 1.15rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }

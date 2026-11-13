@@ -1,6 +1,7 @@
 // Vertrag zwischen Oberfläche und Datenhaltung: Schnittstelle `CvApi` samt Nachrichtentypen.
 // Umgesetzt vom Electron-Preload (window.cvApi, leitet an den Hauptprozess weiter) und von der Browser-Variante (IndexedDB).
-import type { CvData, CvLanguage, TemplateId, TemplateOptions } from '../cv/cv-data';
+import type { CvData, CvLanguage, TemplateId, TemplateOptions, TemplateSettings } from '../cv/cv-data';
+import type { CvLibrary } from '../cv/cv-library';
 
 /** Auftrag für den PDF-Export: welche Vorlage mit welchen Optionen und Daten gedruckt wird. */
 export interface PrintJob {
@@ -30,6 +31,19 @@ export interface CvApi {
   load(): Promise<CvData>;
   /** Speichert den Lebenslauf; die Daten werden vorher erneut geprüft. */
   save(data: CvData): Promise<void>;
+  /** Verzeichnis aller gespeicherten Lebensläufe samt aktivem. */
+  library(): Promise<CvLibrary>;
+  /** Öffnet einen anderen gespeicherten Lebenslauf und liefert seine Daten. Vorher ausstehende Änderungen speichern! */
+  switchCv(id: string): Promise<CvData>;
+  /** Legt einen neuen Lebenslauf an (ohne Foto) und macht ihn aktiv; `data` = `null` für einen leeren. */
+  createCv(name: string, data: CvData | null): Promise<CvLibrary>;
+  /** Kopiert einen gespeicherten Lebenslauf samt Foto und macht die Kopie aktiv. */
+  duplicateCv(id: string, name: string): Promise<CvLibrary>;
+  renameCv(id: string, name: string): Promise<CvLibrary>;
+  /** Löscht einen Lebenslauf samt Foto; der letzte bleibt bestehen. */
+  deleteCv(id: string): Promise<CvLibrary>;
+  /** „Alle Daten löschen“: entfernt alle Lebensläufe und Fotos, übrig bleibt ein leerer mit diesem Design. */
+  resetAll(template: TemplateSettings): Promise<void>;
   /** Lässt eine Sicherungsdatei auswählen und einlesen; `null` = abgebrochen. Speichert noch nichts außer dem Foto. */
   importBackup(): Promise<BackupImport | null>;
   /** Schreibt eine Sicherung inklusive Foto; `false` = abgebrochen. */
@@ -50,4 +64,4 @@ export interface CvApi {
   prepareForClose(save: () => Promise<void>): void;
 }
 
-export type { CvLanguage };
+export type { CvLanguage, CvLibrary };

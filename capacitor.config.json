@@ -1,0 +1,18 @@
+{
+  "appId": "app.cvstudio.mobile",
+  "appName": "CV-Studio",
+  "webDir": "dist/cv-studio/browser",
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "ios": {
+    "contentInset": "never",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css"
+    }
+  }
+}

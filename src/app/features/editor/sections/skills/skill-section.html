@@ -1,5 +1,4 @@
-<section class="block">
-  <h2>{{ copy.cv().skills }}</h2>
+<app-editor-section section="skills" [title]="copy.cv().skills" [count]="items().length">
   <p class="hint">{{ copy.ui().skillHint }}</p>
 
   <!-- Kategorie wählen; hinter jeder Kategorie steht die Anzahl gewählter Kenntnisse -->
@@ -26,9 +25,9 @@
             />
             <span>{{ skill.name }}</span>
           </label>
-          <app-star-rating [value]="stars(skill.id)" [interactive]="true" (pick)="setStars(skill.id, $event)" />
+          <app-star-rating [value]="stars(skill.id)" [interactive]="true" [label]="skill.name" (pick)="setStars(skill.id, $event)" />
         </li>
       }
     </ul>
   }
-</section>
+</app-editor-section>

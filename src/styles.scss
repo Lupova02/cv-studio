@@ -1,5 +1,98 @@
-// Globale Stile der App: Grundlayout, Formularelemente, Knöpfe, Eintragskarten,
-// Drag-&-Drop-Darstellung und Druckseite (A4 ohne Rand).
+// Globale Stile der App: Design-Tokens (Hell/Dunkel), Grundlayout, Formularelemente, Knöpfe, Eintragskarten,
+// Menüs/Panels, Toasts, Drag-&-Drop-Darstellung und Druckseite (A4 ohne Rand).
+// Das Lebenslauf-Blatt selbst bleibt immer „Papier“ (weiß) und nutzt keine dieser Tokens.
+
+// --- Design-Tokens ---
+// Hell ist Standard; Dunkel folgt dem System, außer die Nutzerin hat „Hell“ gewählt (data-theme am <html>).
+// Alle Text/Hintergrund-Paare erreichen mindestens WCAG AA (4,5:1, große Schrift/Bedienelemente 3:1).
+:root {
+  color-scheme: light;
+  --cv-font: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --ui-font: 'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --surface-2: #f8f9fb;
+  --surface-3: #eef0f4;
+  --border: #dfe2e8;
+  --border-strong: #c3c8d2;
+  --text: #16181d;
+  --text-muted: #4b5160;
+  --text-subtle: #626979;
+  --accent: #2851a3;
+  --accent-hover: #1f4288;
+  --accent-soft: #e8eefb;
+  --on-accent: #ffffff;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --success: #12733a;
+  --success-soft: #e6f6ec;
+  --warning: #8a4b00;
+  --warning-soft: #fff4e0;
+  --star: #e08a00;
+  --canvas: #d5d8de;
+  --toolbar: #ffffff;
+  --overlay: rgb(15 18 25 / 0.42);
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow-md: 0 6px 18px rgb(16 24 40 / 0.1);
+  --shadow-lg: 0 18px 44px rgb(16 24 40 / 0.18);
+  --focus: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --fast: 140ms;
+  --medium: 220ms;
+  --tap: 2.25rem;
+}
+
+@mixin dark-tokens {
+  color-scheme: dark;
+  --bg: #0e1015;
+  --surface: #171a21;
+  --surface-2: #1c2029;
+  --surface-3: #252a35;
+  --border: #2d3340;
+  --border-strong: #434b5c;
+  --text: #e9ebf0;
+  --text-muted: #b6bcc8;
+  --text-subtle: #99a0ae;
+  --accent: #8eb0ff;
+  --accent-hover: #adc6ff;
+  --accent-soft: #1f2a44;
+  --on-accent: #0b1020;
+  --danger: #ff8a80;
+  --danger-soft: #3a1d1c;
+  --success: #6fdc96;
+  --success-soft: #16301f;
+  --warning: #ffc266;
+  --warning-soft: #352712;
+  --star: #ffb020;
+  --canvas: #0a0c10;
+  --toolbar: #13161c;
+  --overlay: rgb(0 0 0 / 0.55);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 8px 22px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 20px 48px rgb(0 0 0 / 0.55);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-tokens;
+  }
+}
+
+:root[data-theme='dark'] {
+  @include dark-tokens;
+}
+
+// Grobe Zeiger (Touch): größere Bedienelemente, mindestens 44 px.
+@media (pointer: coarse) {
+  :root {
+    --tap: 2.75rem;
+  }
+}
 
 // --- Grundlagen ---
 *,
@@ -14,15 +107,19 @@ body {
   margin: 0;
 }
 
-// Standardschrift der Lebenslauf-Vorlagen; die Vorschau überschreibt sie je nach gewählter Schrift.
-:root {
-  --cv-font: 'Source Sans 3', 'Segoe UI', sans-serif;
+body {
+  font-family: var(--ui-font);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-body {
-  font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
-  color: #1c1917;
-  background: #e7e5e4;
+// Druckansicht und PDF: immer weißes Papier, unabhängig vom Farbschema.
+html.print-mode,
+html.print-mode body {
+  background: #fff;
+  color-scheme: light;
 }
 
 // --- Schrift-Vererbung und Knöpfe ---
@@ -35,11 +132,25 @@ select {
 }
 
 button {
-  border: 1px solid #d6d3d1;
-  border-radius: 6px;
-  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   padding: 0.4rem 0.7rem;
   cursor: pointer;
+  transition:
+    background var(--fast) ease,
+    border-color var(--fast) ease,
+    color var(--fast) ease,
+    box-shadow var(--fast) ease,
+    transform var(--fast) ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 button:disabled {
@@ -48,38 +159,52 @@ button:disabled {
 }
 
 .btn-solid {
-  border-color: #1c1917;
-  background: #1c1917;
-  color: #fafaf9;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
   padding: 0.45rem 0.95rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 .btn-solid:hover:not(:disabled) {
-  background: #292524;
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
 }
 
 .btn-ghost {
-  border: 1px solid #e7e5e4;
-  background: #fff;
-  color: #44403c;
-  padding: 0.28rem 0.65rem;
-  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  padding: 0.28rem 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 .btn-ghost:hover:not(:disabled) {
-  border-color: #d6d3d1;
-  background: #fafaf9;
-  color: #1c1917;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.btn-danger {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: var(--surface);
+  font-weight: 600;
 }
 
 // --- Tastatur-Fokus ---
-button:focus-visible,
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #1f4b99;
-  outline-offset: 2px;
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus);
 }
 
 // --- Editor-Abschnitte und Überschriften ---
@@ -90,7 +215,7 @@ select:focus-visible {
 .block h2,
 .block-head h2 {
   margin: 0;
-  font-size: 1.08rem;
+  font-size: 1.06rem;
   font-weight: 650;
   letter-spacing: -0.015em;
 }
@@ -99,7 +224,71 @@ select:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0.6rem;
+}
+
+.block-head .head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+// Aufklappbarer Abschnitt: Höhe animiert über grid-template-rows (0fr ↔ 1fr).
+.block-body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--medium) var(--ease);
+}
+
+.block-body > .block-inner {
+  min-height: 0;
+  overflow: hidden;
+  // Platz für Fokusrahmen, die sonst am Rand abgeschnitten würden.
+  margin: -4px;
+  padding: 4px;
+}
+
+.block-body.closed {
+  grid-template-rows: 0fr;
+}
+
+.collapse-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.collapse-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--medium) var(--ease);
+}
+
+.collapse-toggle[data-open='false'] svg {
+  transform: rotate(-90deg);
+}
+
+.block-count {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  vertical-align: 0.1em;
 }
 
 // --- Formularfelder ---
@@ -108,7 +297,7 @@ label {
   flex-direction: column;
   gap: 0.32rem;
   margin-top: 0.7rem;
-  color: #44403c;
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
 }
@@ -117,16 +306,59 @@ input,
 textarea,
 select {
   width: 100%;
-  border: 1px solid #d6d3d1;
+  min-height: var(--tap);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
-  padding: 0.52rem 0.7rem;
-  color: #1c1917;
+  background: var(--surface);
+  padding: 0.5rem 0.7rem;
+  color: var(--text);
   font-weight: 400;
+  transition:
+    border-color var(--fast) ease,
+    box-shadow var(--fast) ease;
+}
+
+input:hover:not(:disabled),
+textarea:hover:not(:disabled),
+select:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background: var(--surface-2);
+  color: var(--text-subtle);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  min-height: 0;
+  accent-color: var(--accent);
+}
+
+input[type='color'] {
+  padding: 0.2rem;
+  min-width: 3rem;
 }
 
 textarea {
   resize: vertical;
+  line-height: 1.45;
+}
+
+::placeholder {
+  color: var(--text-subtle);
+  opacity: 1;
+}
+
+// iOS zoomt bei Schrift unter 16 px in Eingabefelder hinein.
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
 }
 
 // --- Raster und Checkboxen ---
@@ -148,24 +380,36 @@ textarea {
   grid-column: 1 / -1;
 }
 
+// Auf sehr schmalen Bildschirmen untereinander.
+@media (max-width: 420px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .check {
   flex-direction: row;
   align-items: center;
-  gap: 0.4rem;
-  color: #1c1917;
+  gap: 0.45rem;
+  min-height: var(--tap);
+  color: var(--text);
 }
 
 .check input {
-  width: auto;
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
 // --- Eintragskarten, Knopfleisten und Stichpunkte ---
 .entry-card {
   margin-bottom: 0.85rem;
   padding: 0.85rem 0.95rem 1rem;
-  border: 1px solid #e7e5e4;
-  border-radius: 12px;
-  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  animation: card-in var(--medium) var(--ease);
 }
 
 .entry-card > .btn-ghost {
@@ -188,13 +432,17 @@ textarea {
 
 .icon-btn {
   display: grid;
-  width: 1.85rem;
-  height: 1.85rem;
+  width: var(--tap);
+  height: var(--tap);
   place-items: center;
   padding: 0;
   border-radius: 8px;
-  color: #44403c;
-  background: #fafaf9;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+.icon-btn:hover:not(:disabled) {
+  color: var(--text);
 }
 
 .icon-btn svg {
@@ -209,6 +457,7 @@ textarea {
 
 .icon-btn.grip {
   cursor: grab;
+  touch-action: none;
 }
 
 .icon-btn.grip svg {
@@ -217,48 +466,191 @@ textarea {
 }
 
 .icon-btn.danger {
-  color: #b91c1c;
+  color: var(--danger);
 }
 
 .icon-btn.danger:hover:not(:disabled) {
-  border-color: #fecaca;
-  background: #fef2f2;
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  background: var(--danger-soft);
 }
 
 .bullet-row {
   align-items: center;
+  flex-wrap: nowrap;
   margin-top: 0.4rem;
 }
 
 .bullet-row input {
   flex: 1;
+  min-width: 0;
 }
 
 // --- Hinweis bei leerer Liste ---
 .empty {
   margin: 0;
   padding: 0.9rem 1rem;
-  border: 1px dashed #d6d3d1;
-  border-radius: 12px;
-  background: #fff;
-  color: #78716c;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text-subtle);
   font-size: 0.9rem;
+}
+
+.hint {
+  color: var(--text-subtle);
+}
+
+// --- Menüs und Panels (Lebensläufe, Qualitätscheck, Übersetzen) ---
+.popover {
+  position: absolute;
+  z-index: 30;
+  min-width: 18rem;
+  max-width: min(26rem, calc(100vw - 1.5rem));
+  max-height: min(70vh, 34rem);
+  overflow: auto;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  transform-origin: top left;
+  animation: pop-in var(--medium) var(--ease);
+}
+
+.popover h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.popover .lead {
+  margin: 0 0 0.6rem;
+  color: var(--text-subtle);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+// --- Toasts (Hinweise unten) ---
+.toasts {
+  position: fixed;
+  z-index: 50;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  display: grid;
+  gap: 0.5rem;
+  max-width: min(26rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem 0.65rem 0.95rem;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--success);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-md);
+  font-size: 0.9rem;
+  pointer-events: auto;
+}
+
+.toast.error {
+  border-left-color: var(--danger);
+}
+
+.toast .toast-text {
+  flex: 1;
+  line-height: 1.35;
+}
+
+.toast-enter {
+  animation: toast-in var(--medium) var(--ease);
+}
+
+.toast-leave {
+  animation: toast-out var(--fast) ease forwards;
 }
 
 // --- Drag & Drop (Angular CDK) ---
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(28, 25, 23, 0.16);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  transform-origin: center;
+  opacity: 0.96;
 }
 
 .cdk-drag-placeholder {
-  opacity: 0.35;
+  opacity: 0.3;
+  border-style: dashed;
 }
 
 .cdk-drag-animating {
-  transition: transform 180ms ease;
+  transition: transform 220ms var(--ease);
+}
+
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 220ms var(--ease);
+}
+
+// --- Nur für Screenreader sichtbar ---
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// --- Animationen ---
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+// Reduzierte Bewegung: Animationen und Übergänge praktisch abschalten (Zustände bleiben gleich).
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 // --- Druck / PDF: A4 ohne Seitenrand ---

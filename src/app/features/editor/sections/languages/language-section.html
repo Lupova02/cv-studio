@@ -1,5 +1,4 @@
-<section class="block">
-  <h2>{{ copy.cv().languages }}</h2>
+<app-editor-section section="languages" [title]="copy.cv().languages" [count]="items().length">
   <p class="hint">{{ copy.ui().languageHint }}</p>
 
   <!-- Neue Sprache aus dem Katalog hinzufügen (bereits gewählte werden ausgeblendet) -->
@@ -21,10 +20,10 @@
       <li [formGroup]="group">
         <div class="row-head">
           <strong>{{ nameOf(group.controls.id.value) }}</strong>
-          <button type="button" class="icon-btn danger" (click)="remove(group.controls.id.value)" [attr.aria-label]="copy.ui().remove" [attr.title]="copy.ui().remove"><app-trash-icon /></button>
+          <button type="button" class="icon-btn danger" (click)="remove(group.controls.id.value)" [attr.aria-label]="copy.ui().remove + ': ' + nameOf(group.controls.id.value)" [attr.title]="copy.ui().remove"><app-trash-icon /></button>
         </div>
         <label class="pick">{{ copy.ui().level }}
-          <select formControlName="level">
+          <select formControlName="level" [attr.aria-label]="copy.ui().level + ': ' + nameOf(group.controls.id.value)">
             <option value="">{{ copy.ui().chooseLevel }}</option>
             @for (level of levels(); track level.id) {
               <option [value]="level.id">{{ level.name }}</option>
@@ -37,4 +36,4 @@
       </li>
     }
   </ul>
-</section>
+</app-editor-section>

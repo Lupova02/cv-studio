@@ -1,0 +1,40 @@
+// Vorlage „Banner“: übernimmt alle Regeln von „Klassisch“, der Kopf wird zum farbigen Band über die ganze Breite.
+@use '../classic/template-classic';
+
+// --- Kopfband in der Akzentfarbe (randlos bis zur Blattkante) ---
+.header {
+  margin: -18mm -18mm 0;
+  padding: 14mm 18mm 9mm;
+  border-bottom: 0;
+  background: var(--accent, #1f4b99);
+  color: var(--on-accent, #fff);
+}
+
+h1,
+.facts dd,
+.contact li,
+.contact app-contact-icon {
+  color: var(--on-accent, #fff);
+}
+
+.facts dt {
+  color: var(--on-accent, #fff);
+  opacity: 0.8;
+}
+
+.photo {
+  border: 0.8mm solid var(--on-accent, #fff);
+  border-radius: 2mm;
+}
+
+// --- Abschnittstitel als Akzent-Markierung links ---
+h2 {
+  padding-left: 3mm;
+  border-left: 1.2mm solid var(--accent, #1f4b99);
+  color: #1c1917;
+  letter-spacing: 0.1em;
+}
+
+section:first-of-type {
+  margin-top: 8mm;
+}

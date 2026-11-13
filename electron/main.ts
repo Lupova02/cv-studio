@@ -1,6 +1,6 @@
 // Einstiegspunkt des Electron-Hauptprozesses: registriert das eigene Protokoll cvstudio://,
 // setzt CSP und Navigationsschutz, richtet IPC-Handler und Menü ein und öffnet das Hauptfenster.
-import { app, BrowserWindow, Menu, protocol, session } from 'electron';
+import { app, BrowserWindow, Menu, nativeTheme, protocol, session } from 'electron';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { registerCloseGuard, registerIpcHandlers, securePreferences } from './ipc/handlers';
@@ -151,7 +151,8 @@ function createMainWindow(): void {
     minHeight: 640,
     show: false,
     title: 'CV-Studio',
-    backgroundColor: '#e7e5e4',
+    // Passend zum Farbschema der Oberfläche, damit beim Start nichts hell aufblitzt.
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#0e1015' : '#f3f4f6',
     webPreferences: securePreferences(preloadPath),
   });
   mainWindow = win;

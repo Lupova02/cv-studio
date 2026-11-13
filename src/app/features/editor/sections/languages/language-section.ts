@@ -3,6 +3,7 @@ import { FormArray, ReactiveFormsModule } from '@angular/forms';
 import { languageCatalog, languageLevels, levelWhen } from '@shared/catalogs/language-catalog';
 import { LIMITS } from '@shared/cv/cv-data';
 import { EditorCopy } from '../../../../core/state/editor-copy';
+import { EditorSection } from '../../list-chrome/editor-section';
 import { TrashIcon } from '../../../../ui/trash-icon/trash-icon';
 import { createLanguageGroup, type LanguageGroup } from '../../form/cv-form';
 
@@ -13,7 +14,7 @@ import { createLanguageGroup, type LanguageGroup } from '../../form/cv-form';
  */
 @Component({
   selector: 'app-language-section',
-  imports: [ReactiveFormsModule, TrashIcon],
+  imports: [ReactiveFormsModule, TrashIcon, EditorSection],
   templateUrl: './language-section.html',
   styleUrl: './language-section.scss',
 })

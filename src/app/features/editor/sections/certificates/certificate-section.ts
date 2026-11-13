@@ -6,12 +6,12 @@ import { EditorCopy } from '../../../../core/state/editor-copy';
 import { createCertificateGroup, type CertificateGroup } from '../../form/cv-form';
 import { dropFormItem, moveFormItem } from '../../form/form-array';
 import { ItemActions } from '../../list-chrome/item-actions';
-import { ListHeader } from '../../list-chrome/list-header';
+import { EditorSection } from '../../list-chrome/editor-section';
 
 /** Abschnitt „Zertifikate“: Liste mit Name, Aussteller, Datum und Beschreibung. */
 @Component({
   selector: 'app-certificate-section',
-  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, ListHeader, ItemActions],
+  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, EditorSection, ItemActions],
   templateUrl: './certificate-section.html',
 })
 export class CertificateSection {
