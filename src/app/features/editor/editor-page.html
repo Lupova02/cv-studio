@@ -11,7 +11,8 @@
 } @else if (form(); as cvForm) {
   <!-- Hauptansicht, an das Reactive Form gebunden -->
   <div class="shell" [formGroup]="cvForm" [attr.lang]="cvForm.controls.language.value">
-    <!-- Obere Werkzeugleiste: Logo, Lebenslauf-Auswahl, Status | Rückgängig, Qualitätscheck, Farbschema, Muster, PDF -->
+    <!-- Obere Werkzeugleiste: Logo, Lebenslauf-Auswahl, Status | Rückgängig, Qualitätscheck, Farbschema, Muster, PDF.
+         Auf schmalen Bildschirmen wandern Farbschema, Muster und die Datei-Aktionen ins „⋯“-Menü. -->
     <header class="toolbar">
       <div class="brand">
         <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
@@ -34,30 +35,32 @@
           </button>
         </div>
         <app-quality-panel [hints]="hints()" (jump)="jumpTo($event)" />
-        <button type="button" class="tool" (click)="theme.cycle()" [attr.aria-label]="themeLabel()" [attr.title]="themeLabel()">
-          @switch (theme.mode()) {
-            @case ('light') {
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+        @if (!narrow()) {
+          <button type="button" class="tool" (click)="theme.cycle()" [attr.aria-label]="themeLabel()" [attr.title]="themeLabel()">
+            @switch (theme.mode()) {
+              @case ('light') {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+              }
+              @case ('dark') {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /></svg>
+              }
+              @default {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8M12 17v4" /><path d="M12 7.5v6a3 3 0 0 0 0-6z" fill="currentColor" /></svg>
+              }
             }
-            @case ('dark') {
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /></svg>
-            }
-            @default {
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8M12 17v4" /><path d="M12 7.5v6a3 3 0 0 0 0-6z" fill="currentColor" /></svg>
-            }
-          }
-        </button>
-        <button
-          type="button"
-          class="sample-toggle"
-          [class.on]="state.sampleActive()"
-          [attr.aria-pressed]="state.sampleActive()"
-          [attr.title]="state.sampleActive() ? copy.ui().sampleOnHint : copy.ui().sampleOffHint"
-          (click)="toggleSample()"
-        >
-          <span class="switch" aria-hidden="true"><span class="knob"></span></span>
-          <span class="sample-label">{{ copy.ui().sample }}</span>
-        </button>
+          </button>
+          <button
+            type="button"
+            class="sample-toggle"
+            [class.on]="state.sampleActive()"
+            [attr.aria-pressed]="state.sampleActive()"
+            [attr.title]="state.sampleActive() ? copy.ui().sampleOnHint : copy.ui().sampleOffHint"
+            (click)="toggleSample()"
+          >
+            <span class="switch" aria-hidden="true"><span class="knob"></span></span>
+            <span class="sample-label">{{ copy.ui().sample }}</span>
+          </button>
+        }
         <button type="button" class="export" (click)="exportPdf()" [disabled]="state.busy()" [attr.title]="copy.ui().pdfHint">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
@@ -67,6 +70,11 @@
           </svg>
           {{ copy.ui().pdf }}
         </button>
+        @if (narrow()) {
+          <button type="button" class="tool more" (click)="menuOpen.set(true)" [attr.aria-expanded]="menuOpen()" aria-haspopup="dialog" [attr.aria-label]="copy.ui().more" [attr.title]="copy.ui().more">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="18.5" cy="12" r="1.6" /></svg>
+          </button>
+        }
       </div>
     </header>
 
@@ -74,97 +82,63 @@
     <div class="workspace" #workspace [class.resizing]="resizing()" [class.narrow]="narrow()" [attr.data-tab]="tab()">
       <!-- Linke Spalte: Editor -->
       <div class="editor" id="pane-edit" [style.width.px]="narrow() ? null : editorWidth()" [attr.role]="narrow() ? 'tabpanel' : null" [attr.aria-labelledby]="narrow() ? 'tab-edit' : null">
-        <!-- Editor-Leiste: Version, Sprache, Übersetzen, JSON-Import/-Export, Alle Daten löschen -->
-        <div class="editor-bar">
-          <span class="app-version" [attr.title]="copy.ui().version + ' ' + appVersion">V{{ appVersion }}</span>
-          <div class="file-actions">
-            <select class="lang-pick" formControlName="language" [attr.aria-label]="copy.ui().language" [attr.title]="copy.ui().language">
-              <option value="de">{{ copy.ui().languageName.de }}</option>
-              <option value="en">{{ copy.ui().languageName.en }}</option>
-              <option value="tr">{{ copy.ui().languageName.tr }}</option>
-            </select>
-            <button
-              type="button"
-              class="icon-button"
-              [class.active]="translateOpen()"
-              (click)="toggleTranslate()"
-              [attr.aria-expanded]="translateOpen()"
-              [attr.aria-label]="copy.ui().translate"
-              [attr.title]="copy.ui().translate"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3.5 5.5h9" />
-                <path d="M8 3.5v2" />
-                <path d="M10.5 5.5c-.8 3.6-3 6.6-6.5 8.5" />
-                <path d="M5.8 9.2c1.2 1.9 2.9 3.4 4.9 4.3" />
-                <path d="M12.5 20.5l4-9 4 9" />
-                <path d="M14 17.3h5" />
-              </svg>
-            </button>
-            <button type="button" class="icon-button" (click)="importBackup()" [attr.aria-label]="copy.ui().importJson" [attr.title]="copy.ui().importJson">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3v10" />
-                <path d="M8 9l4 4 4-4" />
-                <path d="M5 15v4h14v-4" />
-              </svg>
-            </button>
-            <button type="button" class="icon-button" (click)="exportBackup()" [attr.aria-label]="copy.ui().exportJson" [attr.title]="copy.ui().exportJson">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 13V3" />
-                <path d="M8 7l4-4 4 4" />
-                <path d="M5 15v4h14v-4" />
-              </svg>
-            </button>
-            <button type="button" class="icon-button danger" (click)="deleteAll()" [attr.aria-label]="copy.ui().deleteAll" [attr.title]="copy.ui().deleteAll">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 7h16" />
-                <path d="M9 7V4.5h6V7" />
-                <path d="M6.5 7l1 12.5h9l1-12.5" />
-                <path d="M10 11v5M14 11v5" />
-              </svg>
-            </button>
-          </div>
-          <!-- Übersetzen-Panel: Quell- und Zielsprache wählen, Übersetzung starten -->
-          @if (translateOpen()) {
-            <div class="translate-panel" role="dialog" [attr.aria-label]="copy.ui().translate" (keydown.escape)="translateOpen.set(false)">
-              <div class="translate-head">
-                <h4>{{ copy.ui().translate }}</h4>
-                <span class="translate-count">
-                  @if (translatableCount() > 0) {
-                    {{ translatableCount() }} {{ copy.ui().translateTexts }}
-                  }
-                </span>
-              </div>
-              <p class="translate-intro">{{ copy.ui().translateIntro }}</p>
-              <div class="translate-langs">
-                <label>
-                  {{ copy.ui().translateFrom }}
-                  <select (change)="chooseTranslateFrom($event)" [disabled]="state.busy()">
-                    @for (language of languages; track language) {
-                      <option [value]="language" [selected]="language === translateFrom()">{{ copy.ui().languageName[language] }}</option>
-                    }
-                  </select>
-                </label>
-                <span class="translate-arrow" aria-hidden="true">→</span>
-                <label>
-                  {{ copy.ui().translateTo }}
-                  <select (change)="chooseTranslateTo($event)" [disabled]="state.busy()">
-                    @for (language of languages; track language) {
-                      <option [value]="language" [selected]="language === translateTo()">{{ copy.ui().languageName[language] }}</option>
-                    }
-                  </select>
-                </label>
-              </div>
-              <p class="translate-hint">{{ translatableCount() > 0 ? copy.ui().translateReview : copy.ui().translateNothing }}</p>
-              <div class="translate-actions">
-                <button type="button" class="btn-ghost" (click)="translateOpen.set(false)" [disabled]="state.busy()">{{ copy.ui().cancel }}</button>
-                <button type="button" class="btn-solid" (click)="runTranslate()" [disabled]="state.busy() || translatableCount() === 0">
-                  {{ state.translating() ? copy.ui().translating : copy.ui().translateStart }}
-                </button>
-              </div>
+        <!-- Editor-Leiste (breite Bildschirme): Version, Sprache, Übersetzen, JSON-Import/-Export, Alle Daten löschen -->
+        @if (!narrow()) {
+          <div class="editor-bar">
+            <span class="app-version" [attr.title]="copy.ui().version + ' ' + appVersion">V{{ appVersion }}</span>
+            <div class="file-actions">
+              <select class="lang-pick" formControlName="language" [attr.aria-label]="copy.ui().language" [attr.title]="copy.ui().language">
+                <option value="de">{{ copy.ui().languageName.de }}</option>
+                <option value="en">{{ copy.ui().languageName.en }}</option>
+                <option value="tr">{{ copy.ui().languageName.tr }}</option>
+              </select>
+              <button
+                type="button"
+                class="icon-button"
+                [class.active]="translateOpen()"
+                (click)="toggleTranslate()"
+                [attr.aria-expanded]="translateOpen()"
+                [attr.aria-label]="copy.ui().translate"
+                [attr.title]="copy.ui().translate"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3.5 5.5h9" />
+                  <path d="M8 3.5v2" />
+                  <path d="M10.5 5.5c-.8 3.6-3 6.6-6.5 8.5" />
+                  <path d="M5.8 9.2c1.2 1.9 2.9 3.4 4.9 4.3" />
+                  <path d="M12.5 20.5l4-9 4 9" />
+                  <path d="M14 17.3h5" />
+                </svg>
+              </button>
+              <button type="button" class="icon-button" (click)="importBackup()" [attr.aria-label]="copy.ui().importJson" [attr.title]="copy.ui().importJson">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v10" />
+                  <path d="M8 9l4 4 4-4" />
+                  <path d="M5 15v4h14v-4" />
+                </svg>
+              </button>
+              <button type="button" class="icon-button" (click)="exportBackup()" [attr.aria-label]="copy.ui().exportJson" [attr.title]="copy.ui().exportJson">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 13V3" />
+                  <path d="M8 7l4-4 4 4" />
+                  <path d="M5 15v4h14v-4" />
+                </svg>
+              </button>
+              <button type="button" class="icon-button danger" (click)="deleteAll()" [attr.aria-label]="copy.ui().deleteAll" [attr.title]="copy.ui().deleteAll">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16" />
+                  <path d="M9 7V4.5h6V7" />
+                  <path d="M6.5 7l1 12.5h9l1-12.5" />
+                  <path d="M10 11v5M14 11v5" />
+                </svg>
+              </button>
             </div>
-          }
-        </div>
+            <!-- Übersetzen-Panel: Quell- und Zielsprache wählen, Übersetzung starten -->
+            @if (translateOpen()) {
+              <ng-container [ngTemplateOutlet]="translatePanel" />
+            }
+          </div>
+        }
         <!-- Persönliche Daten -->
         <app-editor-section section="personal" [title]="copy.cv().personal">
           <div class="personal" formGroupName="personal">
@@ -379,20 +353,23 @@
       <aside class="preview" id="pane-preview" [attr.role]="narrow() ? 'tabpanel' : null" [attr.aria-labelledby]="narrow() ? 'tab-' + tab() : null">
         <!-- Design-Leiste: Vorlage, Akzentfarbe, Skala, Datumsposition, Zeitleiste, Reihenfolge, Schrift, Seitenzahlen -->
         <div class="preview-options">
-          <div class="designs" role="radiogroup" [attr.aria-label]="copy.ui().tabDesign">
-            @for (item of templates; track item.id) {
-              <button
-                type="button"
-                class="design"
-                role="radio"
-                [class.active]="cvForm.controls.templateId.value === item.id"
-                [attr.aria-checked]="cvForm.controls.templateId.value === item.id"
-                (click)="chooseTemplate(item.id)"
-              >
-                <span class="thumb" [attr.data-design]="item.id" [style.--thumb-accent]="cvForm.controls.accentColor.value"></span>
-                {{ copy.ui().design[item.id] }}
-              </button>
-            }
+          <div class="skill-scale template-pick">
+            <span id="design-heading">{{ copy.ui().templateLabel }}</span>
+            <div class="designs" role="radiogroup" aria-labelledby="design-heading">
+              @for (item of templates; track item.id) {
+                <button
+                  type="button"
+                  class="design"
+                  role="radio"
+                  [class.active]="cvForm.controls.templateId.value === item.id"
+                  [attr.aria-checked]="cvForm.controls.templateId.value === item.id"
+                  (click)="chooseTemplate(item.id)"
+                >
+                  <span class="thumb" [attr.data-design]="item.id" [style.--thumb-accent]="cvForm.controls.accentColor.value"></span>
+                  {{ copy.ui().design[item.id] }}
+                </button>
+              }
+            </div>
           </div>
           <label class="accent-pick">{{ copy.ui().accent }} <input type="color" formControlName="accentColor" /></label>
           <div class="skill-scale" role="group" [attr.aria-label]="copy.ui().skillScale">
@@ -477,6 +454,47 @@
       </aside>
     </div>
 
+    <!-- Übersetzen-Panel: in der Editor-Leiste (breit) bzw. im Menü (schmal) -->
+    <ng-template #translatePanel>
+      <div class="translate-panel" role="group" [attr.aria-label]="copy.ui().translate" (keydown.escape)="$event.stopPropagation(); translateOpen.set(false)">
+        <div class="translate-head">
+          <h4>{{ copy.ui().translate }}</h4>
+          <span class="translate-count">
+            @if (translatableCount() > 0) {
+              {{ translatableCount() }} {{ copy.ui().translateTexts }}
+            }
+          </span>
+        </div>
+        <p class="translate-intro">{{ copy.ui().translateIntro }}</p>
+        <div class="translate-langs">
+          <label>
+            {{ copy.ui().translateFrom }}
+            <select (change)="chooseTranslateFrom($event)" [disabled]="state.busy()">
+              @for (language of languages; track language) {
+                <option [value]="language" [selected]="language === translateFrom()">{{ copy.ui().languageName[language] }}</option>
+              }
+            </select>
+          </label>
+          <span class="translate-arrow" aria-hidden="true">→</span>
+          <label>
+            {{ copy.ui().translateTo }}
+            <select (change)="chooseTranslateTo($event)" [disabled]="state.busy()">
+              @for (language of languages; track language) {
+                <option [value]="language" [selected]="language === translateTo()">{{ copy.ui().languageName[language] }}</option>
+              }
+            </select>
+          </label>
+        </div>
+        <p class="translate-hint">{{ translatableCount() > 0 ? copy.ui().translateReview : copy.ui().translateNothing }}</p>
+        <div class="translate-actions">
+          <button type="button" class="btn-ghost" (click)="translateOpen.set(false)" [disabled]="state.busy()">{{ copy.ui().cancel }}</button>
+          <button type="button" class="btn-solid" (click)="runTranslate()" [disabled]="state.busy() || translatableCount() === 0">
+            {{ state.translating() ? copy.ui().translating : copy.ui().translateStart }}
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
     <!-- Tabs für schmale Bildschirme (Handy/Tablet hochkant) -->
     @if (narrow()) {
       <nav class="tabbar" role="tablist" [attr.aria-label]="copy.ui().menu">
@@ -491,11 +509,74 @@
         <button type="button" role="tab" id="tab-preview" aria-controls="pane-preview" [attr.aria-selected]="tab() === 'preview'" (click)="tab.set('preview')">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="3" /></svg>
           {{ copy.ui().tabPreview }}
-          @if (pageCount() > 1) {
-            <span class="tab-badge">{{ pageCount() }}</span>
+          <!-- Gleiche Zahl und Farbe wie am Qualitätscheck (beide aus hints()) -->
+          @if (hints().length > 0) {
+            <span class="tab-badge" [class.warn]="hintWarnings() > 0" [attr.aria-label]="copy.ui().quality + ': ' + hints().length">{{ hints().length }}</span>
           }
         </button>
       </nav>
+    }
+
+    <!-- „⋯“-Menü auf schmalen Bildschirmen: Darstellung, Muster, Sprache, Übersetzen, Sicherung, Alle Daten löschen, Version -->
+    @if (narrow() && menuOpen()) {
+      <app-bottom-sheet [label]="copy.ui().menu" [closeLabel]="copy.ui().close" (closed)="closeMenu()">
+        @if (confirmingDelete()) {
+          <!-- Bestätigung vor dem Löschen aller Daten -->
+          <div class="confirm" role="alertdialog" aria-labelledby="confirm-delete-text">
+            <p id="confirm-delete-text">{{ copy.ui().confirmDeleteAll }}</p>
+            <div class="confirm-actions">
+              <button type="button" class="btn-ghost" (click)="confirmingDelete.set(false)">{{ copy.ui().cancel }}</button>
+              <button type="button" class="btn-danger" (click)="confirmDeleteAll()">{{ copy.ui().deleteAll }}</button>
+            </div>
+          </div>
+        } @else {
+          <div class="menu-group">
+            <span class="menu-label" id="menu-theme">{{ copy.ui().theme }}</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="menu-theme">
+              @for (mode of themeModes; track mode) {
+                <button type="button" role="radio" [attr.aria-checked]="theme.mode() === mode" [class.active]="theme.mode() === mode" (click)="theme.mode.set(mode)">
+                  {{ themeName(mode) }}
+                </button>
+              }
+            </div>
+          </div>
+          <button type="button" class="menu-row" role="switch" [attr.aria-checked]="state.sampleActive()" (click)="toggleSample()">
+            <span class="menu-text">
+              {{ copy.ui().sample }}
+              <small>{{ copy.ui().sampleSwitch }}</small>
+            </span>
+            <span class="switch" [class.on]="state.sampleActive()" aria-hidden="true"><span class="knob"></span></span>
+          </button>
+          <label class="menu-group">
+            <span class="menu-label">{{ copy.ui().language }}</span>
+            <select formControlName="language">
+              <option value="de">{{ copy.ui().languageName.de }}</option>
+              <option value="en">{{ copy.ui().languageName.en }}</option>
+              <option value="tr">{{ copy.ui().languageName.tr }}</option>
+            </select>
+          </label>
+          <button type="button" class="menu-row" [class.active]="translateOpen()" (click)="toggleTranslate()" [attr.aria-expanded]="translateOpen()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 5.5h9" /><path d="M8 3.5v2" /><path d="M10.5 5.5c-.8 3.6-3 6.6-6.5 8.5" /><path d="M5.8 9.2c1.2 1.9 2.9 3.4 4.9 4.3" /><path d="M12.5 20.5l4-9 4 9" /><path d="M14 17.3h5" /></svg>
+            <span class="menu-text">{{ copy.ui().translate }}</span>
+          </button>
+          @if (translateOpen()) {
+            <ng-container [ngTemplateOutlet]="translatePanel" />
+          }
+          <button type="button" class="menu-row" (click)="closeMenu(); importBackup()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10" /><path d="M8 9l4 4 4-4" /><path d="M5 15v4h14v-4" /></svg>
+            <span class="menu-text">{{ copy.ui().importJson }}</span>
+          </button>
+          <button type="button" class="menu-row" (click)="closeMenu(); exportBackup()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 13V3" /><path d="M8 7l4-4 4 4" /><path d="M5 15v4h14v-4" /></svg>
+            <span class="menu-text">{{ copy.ui().exportJson }}</span>
+          </button>
+          <button type="button" class="menu-row danger" (click)="confirmingDelete.set(true)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16" /><path d="M9 7V4.5h6V7" /><path d="M6.5 7l1 12.5h9l1-12.5" /><path d="M10 11v5M14 11v5" /></svg>
+            <span class="menu-text">{{ copy.ui().deleteAll }}</span>
+          </button>
+          <p class="menu-version">{{ copy.ui().version }} {{ appVersion }}</p>
+        }
+      </app-bottom-sheet>
     }
 
     <!-- Toasts: Fehler bleiben bis zum Schließen, Hinweise verschwinden von selbst -->

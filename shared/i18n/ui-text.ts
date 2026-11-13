@@ -94,6 +94,8 @@ export interface UiText {
   language: string;
   /** Bedienhilfe-Beschriftung des Trenners zwischen Editor und Vorschau. */
   resizePanes: string;
+  /** Überschrift der Vorlagen-Auswahl im Design-Bereich. */
+  templateLabel: string;
   accent: string;
   showPhoto: string;
   skillScale: string;
@@ -225,6 +227,10 @@ export interface UiText {
   tabDesign: string;
   tabPreview: string;
   menu: string;
+  /** Knopf „⋯“ auf schmalen Bildschirmen: öffnet das Menü mit den übrigen Funktionen. */
+  more: string;
+  /** Kurzbeschriftung des Muster-Schalters im Menü. */
+  sampleSwitch: string;
   /** Titel des Teilen-Dialogs auf Mobilgeräten. */
   shareTitle: string;
   pdfReady: string;
@@ -335,6 +341,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     showGender: 'Anzeigen',
     language: 'Sprache',
     resizePanes: 'Bereichsbreite',
+    templateLabel: 'Vorlage',
     accent: 'Akzentfarbe',
     showPhoto: 'Foto anzeigen',
     skillScale: 'Niveau',
@@ -452,6 +459,8 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     tabDesign: 'Design',
     tabPreview: 'Vorschau',
     menu: 'Menü',
+    more: 'Weitere Funktionen',
+    sampleSwitch: 'Muster-Lebenslauf anzeigen',
     shareTitle: 'Lebenslauf teilen',
     pdfReady: 'PDF erstellt.',
     backupReady: 'Sicherung erstellt.',
@@ -556,6 +565,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     showGender: 'Show',
     language: 'Language',
     resizePanes: 'Pane width',
+    templateLabel: 'Template',
     accent: 'Accent color',
     showPhoto: 'Show photo',
     skillScale: 'Level',
@@ -672,6 +682,8 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     tabDesign: 'Design',
     tabPreview: 'Preview',
     menu: 'Menu',
+    more: 'More',
+    sampleSwitch: 'Show sample CV',
     shareTitle: 'Share CV',
     pdfReady: 'PDF created.',
     backupReady: 'Backup created.',
@@ -777,6 +789,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     showGender: 'Göster',
     language: 'Dil',
     resizePanes: 'Alan genişliği',
+    templateLabel: 'Şablon',
     accent: 'Vurgu rengi',
     showPhoto: 'Fotoğrafı göster',
     skillScale: 'Seviye',
@@ -893,6 +906,8 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     tabDesign: 'Tasarım',
     tabPreview: 'Önizleme',
     menu: 'Menü',
+    more: 'Diğer işlevler',
+    sampleSwitch: 'Örnek özgeçmişi göster',
     shareTitle: 'Özgeçmişi paylaş',
     pdfReady: 'PDF oluşturuldu.',
     backupReady: 'Yedek oluşturuldu.',

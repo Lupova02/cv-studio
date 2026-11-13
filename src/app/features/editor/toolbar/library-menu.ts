@@ -223,6 +223,15 @@ const DATE_LOCALE: Record<CvLanguage, string> = { de: 'de-DE', en: 'en-GB', tr: 
     }
 
     @media (max-width: 640px) {
+      .switcher {
+        gap: 0.3rem;
+        padding: 0.3rem 0.45rem;
+      }
+
+      .switcher .doc {
+        display: none;
+      }
+
       .name {
         max-width: 8.5rem;
       }
@@ -233,7 +242,8 @@ const DATE_LOCALE: Record<CvLanguage, string> = { de: 'de-DE', en: 'en-GB', tr: 
         right: 0.75rem;
         width: auto;
         max-width: none;
-        top: 4rem;
+        top: calc(3.9rem + env(safe-area-inset-top));
+        max-height: calc(100dvh - 9.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       }
     }
   `,

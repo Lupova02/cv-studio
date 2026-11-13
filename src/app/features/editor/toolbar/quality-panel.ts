@@ -146,13 +146,19 @@ import { EditorCopy } from '../../../core/state/editor-copy';
     }
 
     @media (max-width: 640px) {
+      .trigger {
+        gap: 0.3rem;
+        padding: 0.3rem 0.45rem;
+      }
+
       .label {
         display: none;
       }
 
       .popover {
         position: fixed;
-        top: 4rem;
+        top: calc(3.9rem + env(safe-area-inset-top));
+        max-height: calc(100dvh - 9.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
         left: 0.75rem;
         right: 0.75rem;
         width: auto;

@@ -33,6 +33,15 @@ Branch: `redesign` (basiert auf `main` @ `aacf13c`). `main` ist unverändert.
 ### Icon
 - `scripts/generate-icons.mjs` (`npm run icons`) erzeugt aus einer SVG-Zeichnung: `assets/` (Quellen für `@capacitor/assets`: Android adaptiv + iOS + Splash hell/dunkel), `build/icon.png`, `build/icon.icns` (ohne `iconutil`, direkt geschrieben) und `public/favicon.svg`.
 
+### Mobile-Feinschliff (iPhone-Breite ~390 px)
+- **Werkzeugleiste**: schmal nur noch Logo, Lebenslauf-Auswahl, Rückgängig/Wiederholen, Qualitätscheck, PDF und „⋯“. Kompaktere Knöpfe; vorher konnte die Lebenslauf-Auswahl unter Rückgängig/Wiederholen rutschen (die Leiste war breiter als der Bildschirm).
+- **„⋯“-Menü als Bottom Sheet** (`src/app/ui/bottom-sheet/`): Darstellung (System/Hell/Dunkel), Muster-Schalter mit Beschriftung, Sprache, Übersetzen, Sicherung importieren/exportieren, „Alle Daten löschen“ mit eigener Rückfrage im Sheet, Versionszeile. Die Editor-Leiste gibt es nur noch auf breiten Bildschirmen.
+- **Datumsfelder** (`date`/`month`): volle Breite, schrumpfbar, `appearance: none` – liefen auf iOS rechts über den Rand.
+- **Design-Tab**: nur die Einstellungen, voll scrollbar; die Vorschau gibt es nur im Vorschau-Tab. Überschriften (Vorlage, Akzentfarbe, Niveau, Datum …) einheitlich und oben bündig; die Vorlagen-Auswahl hat jetzt eine Überschrift.
+- **Hinweiszähler**: Qualitätscheck und Vorschau-Tab zeigen dieselbe Zahl aus derselben Quelle (`hints()`) in derselben Farbe. Vorher zeigte der Tab die Seitenzahl, und im Bearbeiten-Tab war die Vorschau ausgeblendet (`display: none`) – dadurch rechnete die Seitenzählung mit 1 Seite und der Qualitätscheck zeigte je nach Tab unterschiedlich viele Hinweise. Die Vorschau läuft jetzt unsichtbar mit.
+- **Safe Areas**: Seitenränder von Editor, Design-Tab und Vorschau sowie die Position der Menüs berücksichtigen `env(safe-area-inset-*)`; Bottom Sheet mit Abstand zur Home-Leiste.
+- Desktop: Muster-Schalter behält seine Beschriftung auch bei mittlerer Fensterbreite.
+
 ## Gefundene Bugs und Fixes
 
 | Bug | Fix | Test |

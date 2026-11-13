@@ -1,4 +1,5 @@
 import { Component, DestroyRef, ElementRef, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { addressFields } from '@shared/format/address-format';
 import { countriesFor, countryDial } from '@shared/catalogs/country-data';
@@ -12,7 +13,7 @@ import { APP_VERSION } from '../../core/app-version';
 import { getCvApi } from '../../core/api/cv-api';
 import { EditorCopy } from '../../core/state/editor-copy';
 import { CvState } from '../../core/state/cv-state';
-import { ThemeService } from '../../core/state/theme';
+import { ThemeService, type ThemeMode } from '../../core/state/theme';
 import { toErrorMessage } from '../../core/errors';
 import { TemplateHost } from '../../templates/host/template-host';
 import { TEMPLATE_REGISTRY, findTemplate } from '../../templates/template-registry';
@@ -29,6 +30,7 @@ import { ProjectSection } from './sections/projects/project-section';
 import { ReferenceSection } from './sections/references/reference-section';
 import { SkillSection } from './sections/skills/skill-section';
 import { TrashIcon } from '../../ui/trash-icon/trash-icon';
+import { BottomSheet } from '../../ui/bottom-sheet/bottom-sheet';
 
 /**
  * Hauptseite der App: links der Editor (Werkzeugleiste, persönliche Daten, Abschnitte),
@@ -40,6 +42,7 @@ import { TrashIcon } from '../../ui/trash-icon/trash-icon';
   selector: 'app-editor-page',
   imports: [
     ReactiveFormsModule,
+    NgTemplateOutlet,
     TemplateHost,
     ExperienceSection,
     EducationSection,
@@ -52,6 +55,7 @@ import { TrashIcon } from '../../ui/trash-icon/trash-icon';
     EditorSection,
     LibraryMenu,
     QualityPanel,
+    BottomSheet,
   ],
   host: {
     '(document:keydown)': 'onShortcut($event)',
@@ -127,6 +131,11 @@ export class EditorPage {
   protected readonly narrow = signal(false);
   /** Aktiver Tab auf schmalen Bildschirmen. */
   protected readonly tab = signal<'edit' | 'design' | 'preview'>('edit');
+  /** Ob das „⋯“-Menü (Bottom Sheet, nur schmale Bildschirme) offen ist. */
+  protected readonly menuOpen = signal(false);
+  /** Ob das Menü gerade die Rückfrage „Alle Daten löschen?“ zeigt. */
+  protected readonly confirmingDelete = signal(false);
+  protected readonly themeModes: readonly ThemeMode[] = ['system', 'light', 'dark'];
   /** Schlüssel für die Vorschau: ändert sich nur beim Vorlagenwechsel, damit das Blatt dann neu einblendet. */
   protected readonly templateKey = computed(() => [this.state.data().template.templateId]);
   /** Seitenzahl laut Vorschau. */
@@ -139,6 +148,8 @@ export class EditorPage {
       photoShown: data.template.showPhoto && findTemplate(data.template.templateId).supportsPhoto,
     });
   });
+  /** Anzahl der Warnungen unter den Hinweisen (färbt den Zähler wie am Qualitätscheck). */
+  protected readonly hintWarnings = computed(() => this.hints().filter((hint) => hint.level === 'warning').length);
   /** Länge von „Über mich“ und empfohlene Höchstlänge. */
   protected readonly summaryLength = computed(() => this.state.data().summary.trim().length);
   protected readonly summaryMax = QUALITY_LIMITS.summary;
@@ -211,7 +222,13 @@ export class EditorPage {
     });
     // Schmale Bildschirme erkennen (gleiche Grenze wie im Stylesheet).
     const media = window.matchMedia('(max-width: 900px)');
-    const updateNarrow = () => this.narrow.set(media.matches);
+    const updateNarrow = () => {
+      this.narrow.set(media.matches);
+      // Das „⋯“-Menü gibt es nur schmal; beim Verbreitern schließen, damit es nicht später wieder aufspringt.
+      if (!media.matches) {
+        this.closeMenu();
+      }
+    };
     updateNarrow();
     media.addEventListener('change', updateNarrow);
     // Hinweise verschwinden nach einigen Sekunden von selbst; Fehler bleiben, bis sie geschlossen werden.
@@ -266,10 +283,20 @@ export class EditorPage {
 
   /** Beschriftung des Farbschema-Knopfs: aktuelle Wahl. */
   protected themeLabel(): string {
+    return `${this.copy.ui().theme}: ${this.themeName(this.theme.mode())}`;
+  }
+
+  /** Name eines Farbschemas (System, Hell, Dunkel). */
+  protected themeName(mode: ThemeMode): string {
     const ui = this.copy.ui();
-    const mode = this.theme.mode();
-    const name = mode === 'light' ? ui.themeLight : mode === 'dark' ? ui.themeDark : ui.themeSystem;
-    return `${ui.theme}: ${name}`;
+    return mode === 'light' ? ui.themeLight : mode === 'dark' ? ui.themeDark : ui.themeSystem;
+  }
+
+  /** Schließt das „⋯“-Menü samt Rückfrage und Übersetzen-Panel. */
+  protected closeMenu(): void {
+    this.menuOpen.set(false);
+    this.confirmingDelete.set(false);
+    this.translateOpen.set(false);
   }
 
   /** Springt aus dem Qualitätscheck zum betroffenen Abschnitt (klappt ihn auf und scrollt hin). */
@@ -612,6 +639,12 @@ export class EditorPage {
     if (!confirm(this.copy.ui().confirmDeleteAll)) {
       return;
     }
+    void this.state.deleteAll();
+  }
+
+  /** Löschen nach der Rückfrage im Menü (schmale Bildschirme). */
+  protected confirmDeleteAll(): void {
+    this.closeMenu();
     void this.state.deleteAll();
   }
 

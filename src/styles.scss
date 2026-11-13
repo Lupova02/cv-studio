@@ -337,6 +337,27 @@ input[type='radio'] {
   accent-color: var(--accent);
 }
 
+// Datumsfelder: iOS/WebKit gibt ihnen eine feste Mindestbreite und eigenes Aussehen – dadurch liefen sie
+// auf schmalen Bildschirmen über den Rand. Volle Breite, schrumpfbar, Inhalt links wie bei Textfeldern.
+input[type='date'],
+input[type='month'] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: left;
+}
+
+input[type='date']::-webkit-date-and-time-value,
+input[type='month']::-webkit-date-and-time-value {
+  min-height: 1.4em;
+  margin: 0;
+  text-align: left;
+}
+
 input[type='color'] {
   padding: 0.2rem;
   min-width: 3rem;

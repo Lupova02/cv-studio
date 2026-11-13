@@ -46,6 +46,10 @@ svg {
   min-width: 0;
 }
 
+.brand {
+  flex: 1 1 auto;
+}
+
 .toolbar-actions {
   flex: none;
 }
@@ -114,6 +118,12 @@ svg {
   height: 1.15rem;
 }
 
+// Drei Punkte des „⋯“-Knopfs gefüllt.
+.more svg circle {
+  fill: currentColor;
+  stroke: none;
+}
+
 // --- Muster-Schalter ---
 .sample-toggle {
   color: var(--text-muted);
@@ -147,11 +157,13 @@ svg {
   color: var(--success);
 }
 
-.sample-toggle.on .switch {
+.sample-toggle.on .switch,
+.switch.on {
   background: var(--success);
 }
 
-.sample-toggle.on .knob {
+.sample-toggle.on .knob,
+.switch.on .knob {
   transform: translateX(0.8rem);
 }
 
@@ -170,6 +182,7 @@ svg {
 
 // --- Arbeitsfläche ---
 .workspace {
+  position: relative;
   display: flex;
   flex: 1;
   min-height: 0;
@@ -247,7 +260,7 @@ svg {
   display: flex;
   flex-wrap: wrap;
   gap: 0.7rem 0.9rem;
-  align-items: end;
+  align-items: flex-start;
   padding: 0.7rem 1rem;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
@@ -264,12 +277,13 @@ svg {
   gap: 0.35rem;
 }
 
+// Gleiche Überschrift wie bei <label> (Schrift, Farbe, Abstand), damit alle Titel bündig stehen.
 .skill-scale {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.32rem;
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
@@ -289,6 +303,10 @@ svg {
 
 .skill-scale.muted {
   opacity: 0.5;
+}
+
+.skill-scale .design {
+  font-size: 0.75rem;
 }
 
 .design {
@@ -810,6 +828,140 @@ svg {
   font-size: 0.68rem;
 }
 
+// Zähler wie am Qualitätscheck: neutral, bei Warnungen in Warnfarbe.
+.tab-badge {
+  background: var(--surface-3);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.tab-badge.warn {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+// --- „⋯“-Menü (Bottom Sheet) ---
+.menu-group {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.6rem 0;
+}
+
+.menu-label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.segmented button {
+  min-height: var(--tap);
+  font-weight: 500;
+}
+
+.segmented button.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.55rem 0.25rem;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-weight: 500;
+}
+
+.menu-row:hover:not(:disabled),
+.menu-row.active {
+  background: var(--surface-2);
+}
+
+.menu-row svg {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--text-muted);
+}
+
+.menu-row.danger,
+.menu-row.danger svg {
+  color: var(--danger);
+}
+
+.menu-text {
+  display: grid;
+  flex: 1;
+  gap: 0.1rem;
+}
+
+.menu-text small {
+  color: var(--text-subtle);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.menu-row .switch {
+  width: 2.6rem;
+  height: 1.5rem;
+}
+
+.menu-row .knob {
+  top: 0.2rem;
+  left: 0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.menu-row .switch.on .knob {
+  transform: translateX(1.1rem);
+}
+
+app-bottom-sheet .translate-panel {
+  margin-bottom: 0.6rem;
+}
+
+.menu-version {
+  margin: 0;
+  padding: 0.75rem 0.25rem 0.25rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-subtle);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.confirm p {
+  margin: 0.25rem 0 1rem;
+  line-height: 1.45;
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.confirm-actions button {
+  min-height: var(--tap);
+  font-size: 0.9rem;
+}
+
 .toasts.above-tabs {
   right: 0.75rem;
   left: 0.75rem;
@@ -818,8 +970,7 @@ svg {
 }
 
 @media (max-width: 1180px) {
-  .wordmark,
-  .sample-label {
+  .wordmark {
     display: none;
   }
 }
@@ -827,26 +978,61 @@ svg {
 @media (max-width: 900px) {
   .workspace.narrow .editor {
     width: 100%;
-    padding: 0 0.85rem 2rem;
+    padding: 0 max(0.85rem, env(safe-area-inset-right)) 2rem max(0.85rem, env(safe-area-inset-left));
   }
 
-  .workspace.narrow .editor-bar {
-    margin: 0 -0.85rem;
-    padding: 0.6rem 0.85rem;
-  }
-
-  .workspace.narrow[data-tab='edit'] .preview,
   .workspace.narrow:not([data-tab='edit']) .editor {
     display: none;
+  }
+
+  // Die Vorschau bleibt unsichtbar gerendert, damit Seitenzahl und Hinweise in jedem Tab gleich sind.
+  .workspace.narrow[data-tab='edit'] .preview {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .workspace.narrow[data-tab='preview'] .preview-options {
     display: none;
   }
 
+  // Design-Tab: nur die Einstellungen, voll scrollbar; die Vorschau gibt es im Vorschau-Tab.
+  .workspace.narrow[data-tab='design'] .preview {
+    background: var(--bg);
+  }
+
   .workspace.narrow[data-tab='design'] .preview-options {
-    max-height: 55%;
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.15rem;
+    align-content: start;
     overflow: auto;
+    overscroll-behavior: contain;
+    padding: 1rem max(1rem, env(safe-area-inset-right)) 2rem max(1rem, env(safe-area-inset-left));
+    border-bottom: 0;
+    background: var(--bg);
+  }
+
+  .workspace.narrow[data-tab='design'] .preview-frame {
+    flex: 0 0 0;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  .workspace.narrow[data-tab='design'] .skill-scale div:not(.designs) {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+  }
+
+  .workspace.narrow[data-tab='preview'] .preview-frame {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 
   .workspace.narrow .preview {
@@ -864,7 +1050,12 @@ svg {
   }
 
   .toolbar-actions {
-    gap: 0.25rem;
+    gap: 0.2rem;
+  }
+
+  .logo {
+    width: 1.65rem;
+    height: 1.65rem;
   }
 }
 
@@ -886,8 +1077,26 @@ svg {
     height: 5.5rem;
   }
 
+  // iPhone-Breite: kompakte Knöpfe, damit Logo, Lebenslauf-Auswahl, Rückgängig/Wiederholen,
+  // Qualitätscheck, PDF und „⋯“ in eine Zeile passen.
+  .brand {
+    gap: 0.35rem;
+  }
+
+  .history .tool {
+    min-width: 2.4rem;
+  }
+
+  .more {
+    min-width: 2.4rem;
+  }
+
   .export {
-    padding: 0.3rem 0.55rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .export svg {
+    display: none;
   }
 }
 
