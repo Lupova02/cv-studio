@@ -107,6 +107,14 @@ body {
   margin: 0;
 }
 
+// Die App scrollt nur in ihren Bereichen (Editor, Vorschau, Menüs); das Dokument selbst bleibt fest,
+// sonst verschiebt iOS beim Fokussieren/scrollIntoView die ganze Seite samt Werkzeugleiste.
+html:not(.print-mode),
+html:not(.print-mode) body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
   font-family: var(--ui-font);
   color: var(--text);
@@ -663,13 +671,17 @@ textarea {
 }
 
 // Reduzierte Bewegung: Animationen und Übergänge praktisch abschalten (Zustände bleiben gleich).
+// Animationen behalten 1 ms, damit Angulars animate.leave sein animationend bekommt. Übergänge dagegen 0 s:
+// Mit 1 ms bekäme jedes Element einen Übergang (transition-property ist standardmäßig „all“), und synchron
+// gemessene Höhen wären veraltet – so berechnete paginate() auf Android zu große Seitenumbrüche.
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 1ms !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
     scroll-behavior: auto !important;
   }
 }

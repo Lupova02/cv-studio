@@ -70,7 +70,8 @@ function pushDown(block: Block, target: number, offset: (element: HTMLElement, e
   const spacer = document.createElement('div');
   spacer.className = 'page-spacer';
   spacer.setAttribute('aria-hidden', 'true');
-  spacer.style.cssText = 'display:block;height:0;margin:0;padding:0;border:0';
+  // Ohne Übergang: Höhenänderungen müssen sofort messbar sein (siehe pushDown-Schleife).
+  spacer.style.cssText = 'display:block;height:0;margin:0;padding:0;border:0;transition:none';
   const timeline = block.anchor.parentElement?.closest<HTMLElement>('.timeline');
   if (timeline) {
     // Überdeckt die Zeitleisten-Linie, damit sie über den Seitenumbruch hinweg unterbrochen ist.

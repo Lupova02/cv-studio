@@ -42,6 +42,15 @@ Branch: `redesign` (basiert auf `main` @ `aacf13c`). `main` ist unverändert.
 - **Safe Areas**: Seitenränder von Editor, Design-Tab und Vorschau sowie die Position der Menüs berücksichtigen `env(safe-area-inset-*)`; Bottom Sheet mit Abstand zur Home-Leiste.
 - Desktop: Muster-Schalter behält seine Beschriftung auch bei mittlerer Fensterbreite.
 
+### Geräte-Test (iOS-Simulator iPhone 18 Pro, OnePlus per USB)
+Beide Apps gebaut, installiert und in Hell/Dunkel durchgesehen; Screenshots in `docs/screenshots/` (`ios-*`, `android-*`). PDF-Export auf beiden Geräten geprüft (natives Plugin → Teilen-Dialog, 3 Seiten A4). Dabei gefunden und behoben:
+- **Android: falsche Seitenumbrüche in Vorschau und PDF** – große Lücken am Seitenanfang und mitten auf der Seite. Ursache: Bei „Bewegung reduzieren“ (auf dem Gerät: Animationen aus) setzte die globale Regel `transition-duration: 1ms` auf *alle* Elemente; dadurch bekam jeder Abstandshalter einen Übergang, `paginate()` maß synchron die alte Höhe und addierte die Korrektur dreimal. Jetzt `0s` (keine Übergänge) und die Abstandshalter selbst mit `transition: none`. Test: `theme-contrast.test.ts`.
+- **iOS: Seite verschob sich beim Scrollen zu einem Feld** um ~55 px samt Werkzeugleiste. Ursache: Screenreader-Beschriftungen (`.sr`, absolut positioniert) hatten keinen positionierten Vorfahren und verlängerten das Dokument. Shell und Editor sind jetzt Bezugsrahmen, das Dokument selbst scrollt nicht mehr.
+- **Lebenslauf-Name in der Werkzeugleiste** war bei 384 px auf „Mein …“ gekürzt: Der Hinweiszähler sitzt schmal jetzt als Badge am Qualitätscheck-Symbol.
+- Tab-Markierung liegt innerhalb der Tab-Leiste statt auf der Kante zum Inhalt.
+- Android-Build: braucht JDK 21 (siehe README).
+- Erwartete Konsolenmeldungen auf iOS: `OS-PLUG-FILE-0008 … does not exist` beim ersten Start – das ist die Existenzprüfung vor dem Lesen, kein Fehler.
+
 ## Gefundene Bugs und Fixes
 
 | Bug | Fix | Test |
@@ -57,18 +66,13 @@ Branch: `redesign` (basiert auf `main` @ `aacf13c`). `main` ist unverändert.
 
 ## Offene Punkte (bitte prüfen)
 
-Meine Umgebung (Sandbox + deine globalen Regeln) hat einige Schritte verhindert:
-
-1. **Commits/Push**: `git commit` steht in `~/.claude/settings.json` auf *deny*. Alle Änderungen sind vorgemerkt (`git add`), aber **nicht committet**. Befehle siehe unten.
-2. **Android-Build/Start auf dem Handy** nicht ausgeführt: Das Android-SDK liegt unter `~/Library` (Lesen gesperrt), Gradle braucht `~/.gradle`, `adb` darf keinen Port öffnen. Der Java-Code des Plugins ist daher **nicht kompiliert** worden.
-3. **iOS-Simulator-Build** nicht ausgeführt (Swift-Paket-Cache und Simulator-Dienste unter `~/Library` gesperrt). `CvPrintPlugin.swift` ist syntaktisch geprüft, aber nicht gegen das SDK kompiliert.
-4. **macOS**: `.app` wurde mit electron-builder gebaut und geprüft (Icon, Bundle-ID, Inhalt); nur der **DMG-Schritt** scheiterte an `hdiutil` in der Sandbox.
-5. **Sichtprüfung der Oberfläche** war nicht möglich (kein lokaler Port, Electron startet in der Sandbox nicht, Playwright ohne Chrome). Bitte Hell/Dunkel, Handy-Breite und die Popover einmal ansehen.
-6. Android-PDF: Die direkte Dateierzeugung nutzt eine verbreitete Technik (Klasse im Paket `android.print`). Falls ein Gerät sie blockiert, öffnet sich automatisch der System-Druckdialog („Als PDF speichern“).
-7. Das APK/IPA enthält die Übersetzungsmodelle (~110 MB), damit die Übersetzung offline funktioniert.
-8. Prüfmeldungen aus `migrate` (z. B. bei beschädigter Datei beim Start) sind weiterhin nur deutsch; beim Import werden sie für EN/TR durch eine allgemeine Meldung ersetzt (wie bisher).
-9. Optionaler Anschreiben-Editor wurde nicht umgesetzt (zugunsten der übrigen Punkte).
-10. `npm audit` meldet Schwachstellen in Entwicklungs-Abhängigkeiten (u. a. `zod` über `@angular/forms`, ohne verfügbaren Fix); nichts davon wird in die App ausgeliefert, die Laufzeit bleibt offline mit strenger CSP.
+1. **macOS**: `.app` wurde mit electron-builder gebaut und geprüft (Icon, Bundle-ID, Inhalt); der **DMG-Schritt** (`npm run dist:mac`) scheiterte damals an `hdiutil` in der Sandbox – bitte einmal lokal ausführen.
+2. **Desktop-Sichtprüfung**: Mobile ist mit Screenshots geprüft (`docs/screenshots/`); das Electron-Fenster bitte einmal selbst ansehen.
+3. Android-PDF: Die direkte Dateierzeugung nutzt eine verbreitete Technik (Klasse im Paket `android.print`); auf dem OnePlus funktioniert sie. Falls ein Gerät sie blockiert, öffnet sich automatisch der System-Druckdialog („Als PDF speichern“).
+4. Das APK/IPA enthält die Übersetzungsmodelle (~110 MB), damit die Übersetzung offline funktioniert.
+5. Prüfmeldungen aus `migrate` (z. B. bei beschädigter Datei beim Start) sind weiterhin nur deutsch; beim Import werden sie für EN/TR durch eine allgemeine Meldung ersetzt (wie bisher).
+6. Optionaler Anschreiben-Editor wurde nicht umgesetzt (zugunsten der übrigen Punkte).
+7. `npm audit` meldet Schwachstellen in Entwicklungs-Abhängigkeiten (u. a. `zod` über `@angular/forms`, ohne verfügbaren Fix); nichts davon wird in die App ausgeliefert, die Laufzeit bleibt offline mit strenger CSP.
 
 ## So testest du es
 
@@ -100,16 +104,3 @@ npm run ios              # oder: npm run build:mobile && npx cap open ios → in
 ```
 
 Mobile-Checkliste: Foto wählen, PDF → Teilen-Dialog, Sicherung exportieren/importieren, App in den Hintergrund schicken und beenden → Daten sind da.
-
-## Commits (von dir auszuführen)
-
-Alle Änderungen sind vorgemerkt. Vorschlag (ein Commit, da sich die Dateien überschneiden):
-
-```bash
-git switch redesign
-git add -A
-git commit -m "feat: Redesign mit Dunkelmodus, mehreren Lebensläufen, Qualitätscheck und Mobile-Apps" \
-  -m "Design-Tokens, Hell/Dunkel, responsives Tab-Layout, Animationen; Rückgängig/Wiederholen; zwei neue Vorlagen; Capacitor 8 für Android/iOS mit PDF und Teilen; neues App-Symbol; Bugfixes siehe CHANGES-REDESIGN.md" \
-  -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
-git push -u origin redesign
-```

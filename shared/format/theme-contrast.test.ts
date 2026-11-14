@@ -62,3 +62,13 @@ describe('Farbschema', () => {
     });
   }
 });
+
+describe('Reduzierte Bewegung', () => {
+  it('erzeugt keine Übergänge (sonst misst paginate() veraltete Höhen)', () => {
+    const start = styles.indexOf('@media (prefers-reduced-motion: reduce)');
+    assert.ok(start >= 0, 'Regel für reduzierte Bewegung fehlt');
+    const block = styles.slice(start, styles.indexOf('\n}', start));
+    const duration = /transition-duration:\s*([^;!]+)/.exec(block)?.[1]?.trim();
+    assert.equal(duration, '0s');
+  });
+});

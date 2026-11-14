@@ -23,6 +23,7 @@ Offline-App zum Erstellen von Lebensläufen für macOS, Windows, Android und iOS
 - Node.js 22 oder neuer und npm 10 oder neuer
 - macOS oder Windows (Desktop)
 - Android Studio mit Android-SDK bzw. Xcode 16 oder neuer (Mobile)
+- JDK 21 für den Android-Build (Capacitor 8). Liegt ein älteres Java im `PATH`, vorher `export JAVA_HOME=$(/usr/libexec/java_home -v 21)` setzen, sonst bricht Gradle mit `invalid source release: 21` ab.
 
 ## Installation und Start
 

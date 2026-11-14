@@ -146,9 +146,29 @@ import { EditorCopy } from '../../../core/state/editor-copy';
     }
 
     @media (max-width: 640px) {
+      /* Schmal: nur das Symbol, der Zähler sitzt als Badge an dessen Ecke. */
       .trigger {
-        gap: 0.3rem;
-        padding: 0.3rem 0.45rem;
+        position: relative;
+        justify-content: center;
+        min-width: 2.6rem;
+        padding: 0;
+        border-color: transparent;
+        background: transparent;
+      }
+
+      .trigger svg {
+        width: 1.3rem;
+        height: 1.3rem;
+      }
+
+      .count {
+        position: absolute;
+        top: 0.1rem;
+        right: 0;
+        min-width: 1.15rem;
+        padding: 0 0.25rem;
+        font-size: 0.68rem;
+        line-height: 1.15rem;
       }
 
       .label {

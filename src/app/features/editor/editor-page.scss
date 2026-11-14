@@ -10,10 +10,14 @@
   padding: 0 1.5rem;
 }
 
+// Bezugsrahmen für absolut positionierte Elemente (z. B. .sr-Beschriftungen): sonst richten sie sich am
+// Dokument aus, verlängern es und iOS verschiebt beim Scrollen zu einem Feld die ganze Seite.
 .shell {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
 svg {
@@ -195,6 +199,7 @@ svg {
 }
 
 .editor {
+  position: relative;
   flex: none;
   overflow: auto;
   overscroll-behavior: contain;
@@ -808,7 +813,7 @@ svg {
 .tabbar button[aria-selected='true']::before {
   content: '';
   position: absolute;
-  top: -0.25rem;
+  top: 0;
   left: 30%;
   right: 30%;
   height: 3px;
