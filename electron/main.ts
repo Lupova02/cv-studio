@@ -3,7 +3,8 @@
 import { app, BrowserWindow, Menu, nativeTheme, protocol, session } from 'electron';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { registerCloseGuard, registerIpcHandlers, securePreferences } from './ipc/handlers';
+import { registerCloseGuard, registerIpcHandlers, securePreferences, sendMenuCommand } from './ipc/handlers';
+import type { MenuCommand } from '../shared/ipc/ipc-api';
 import { DEVELOPMENT_CSP, PRODUCTION_CSP, appUrl, devServerFromEnv, isNavigationAllowed } from './security';
 
 app.setName('CV-Studio');
@@ -168,13 +169,72 @@ function createMainWindow(): void {
   void win.loadURL(appUrl(devServerUrl, '/'));
 }
 
-/** Minimales Anwendungsmenü: auf macOS App-, Bearbeiten- und Fenstermenü, sonst nur Bearbeiten (Kopieren/Einfügen). */
+/** Beschriftungen der Menüleiste je Systemsprache (Deutsch, Englisch, Türkisch). */
+const MENU_TEXT = {
+  de: { file: 'Ablage', pdf: 'Als PDF exportieren …', exportBackup: 'Sicherung exportieren …', importBackup: 'Sicherung importieren …', edit: 'Bearbeiten', undo: 'Rückgängig', redo: 'Wiederholen', view: 'Ansicht', quality: 'Qualitätscheck', sample: 'Muster ein/aus', theme: 'Farbschema wechseln' },
+  en: { file: 'File', pdf: 'Export as PDF …', exportBackup: 'Export backup …', importBackup: 'Import backup …', edit: 'Edit', undo: 'Undo', redo: 'Redo', view: 'View', quality: 'Quality check', sample: 'Sample on/off', theme: 'Switch colour scheme' },
+  tr: { file: 'Dosya', pdf: 'PDF olarak dışa aktar …', exportBackup: 'Yedeği dışa aktar …', importBackup: 'Yedeği içe aktar …', edit: 'Düzen', undo: 'Geri al', redo: 'Yinele', view: 'Görünüm', quality: 'Kalite kontrolü', sample: 'Örnek aç/kapat', theme: 'Renk şemasını değiştir' },
+} as const;
+
+/**
+ * Menüleiste mit denselben Aktionen wie die Werkzeugleiste. Die Kürzel (⌘P, ⌘S, ⌘O, ⌘Z, ⇧⌘Z) werden nur
+ * angezeigt (`registerAccelerator: false`): Die Oberfläche verarbeitet die Tasten selbst – so löst ein Tastendruck
+ * die Aktion genau einmal aus und funktioniert auch im Browser.
+ */
 function installMenu(): void {
-  const template: Electron.MenuItemConstructorOptions[] =
-    process.platform === 'darwin'
-      ? [{ role: 'appMenu' }, { role: 'editMenu' }, { role: 'windowMenu' }]
-      : [{ role: 'editMenu' }];
+  const locale = app.getLocale().slice(0, 2);
+  const text = MENU_TEXT[locale === 'en' || locale === 'tr' ? locale : 'de'];
+  const command = (label: string, name: MenuCommand, accelerator?: string): Electron.MenuItemConstructorOptions => ({
+    label,
+    accelerator,
+    registerAccelerator: false,
+    click: () => sendMenuCommand(mainWindow, name),
+  });
+  const mac = process.platform === 'darwin';
+  const template: Electron.MenuItemConstructorOptions[] = [
+    ...(mac ? [{ role: 'appMenu' } as const] : []),
+    {
+      label: text.file,
+      submenu: [
+        command(text.pdf, 'export-pdf', 'CmdOrCtrl+P'),
+        { type: 'separator' },
+        command(text.exportBackup, 'export-backup', 'CmdOrCtrl+S'),
+        command(text.importBackup, 'import-backup', 'CmdOrCtrl+O'),
+        ...(mac ? [] : [{ type: 'separator' } as const, { role: 'quit' } as const]),
+      ],
+    },
+    {
+      label: text.edit,
+      submenu: [
+        command(text.undo, 'undo', 'CmdOrCtrl+Z'),
+        command(text.redo, 'redo', 'Shift+CmdOrCtrl+Z'),
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'selectAll' },
+      ],
+    },
+    {
+      label: text.view,
+      submenu: [
+        command(text.quality, 'quality', 'Shift+CmdOrCtrl+K'),
+        command(text.sample, 'toggle-sample'),
+        command(text.theme, 'cycle-theme'),
+        { type: 'separator' },
+        { role: 'togglefullscreen' },
+      ],
+    },
+    ...(mac ? [{ role: 'windowMenu' } as const] : []),
+  ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
+/** Unverpackt (npm start) zeigt das Dock sonst das Electron-Symbol; verpackt kommt es aus build/icon.icns. */
+function installDockIcon(): void {
+  if (process.platform === 'darwin' && !app.isPackaged) {
+    app.dock?.setIcon(path.join(app.getAppPath(), 'build', 'icon.png'));
+  }
 }
 
 // Nur eine laufende Instanz zulassen, damit nicht zwei Prozesse gleichzeitig cv-data.json schreiben.
@@ -198,6 +258,7 @@ if (!gotLock) {
     installContentSecurityPolicy();
     registerAppProtocol();
     installMenu();
+    installDockIcon();
     registerIpcHandlers({
       userData: app.getPath('userData'),
       devServerUrl,

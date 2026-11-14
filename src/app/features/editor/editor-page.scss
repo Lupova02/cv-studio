@@ -184,6 +184,41 @@ svg {
   box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
+// --- Banner im Muster-Modus ---
+.sample-banner {
+  position: relative;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem max(1rem, env(safe-area-inset-right)) 0.45rem max(1rem, env(safe-area-inset-left));
+  border-bottom: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: 0.86rem;
+  font-weight: 600;
+  animation: pane-in var(--medium) var(--ease);
+}
+
+.sample-banner svg {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.sample-banner-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sample-banner .btn-ghost {
+  flex: none;
+  min-height: var(--tap);
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+  background: var(--surface);
+  color: var(--text);
+}
+
 // --- Arbeitsfläche ---
 .workspace {
   position: relative;
@@ -214,7 +249,7 @@ svg {
   transition: none;
 }
 
-.editor > :not(.editor-bar) {
+.editor > :not(.editor-bar, .section-nav) {
   display: block;
   margin-top: 1.1rem;
   padding: 1rem 1.05rem 1.1rem;
@@ -222,6 +257,57 @@ svg {
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
+}
+
+// --- Schnellnavigation der Abschnitte (waagerecht scrollbar) ---
+.section-nav {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.9rem -1.35rem 0;
+  padding: 0.1rem 1.35rem 0.2rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.section-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: var(--tap);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chip:hover:not(:disabled) {
+  color: var(--text);
+}
+
+// Ausfüllstand: Ring = leer, halb gefüllt = angefangen, voll mit Häkchen-Farbe = fertig.
+.chip-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid var(--border-strong);
+  border-radius: 50%;
+}
+
+.chip[data-state='partial'] .chip-dot {
+  border-color: var(--warning);
+  background: linear-gradient(90deg, var(--warning) 50%, transparent 50%);
+}
+
+.chip[data-state='done'] .chip-dot {
+  border-color: var(--success);
+  background: var(--success);
 }
 
 // --- Trenner zwischen Editor und Vorschau ---
@@ -376,17 +462,139 @@ svg {
     #fff;
 }
 
-.accent-pick input {
+// --- Akzentfarbe: Vorgaben und eigener Farbwähler ---
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.swatch {
+  position: relative;
+  // Mit Maus etwas kleiner (spart Platz in der Design-Leiste), mit Touch volle 44 px.
+  width: calc(var(--tap) * 0.85);
+  height: calc(var(--tap) * 0.85);
+  padding: 0;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: 0 0 0 1px var(--border-strong);
+}
+
+@media (pointer: coarse) {
+  .swatch {
+    width: var(--tap);
+    height: var(--tap);
+  }
+}
+
+.swatch:hover:not(:disabled) {
+  border-color: var(--surface);
+  box-shadow: 0 0 0 2px var(--border-strong);
+}
+
+.swatch[aria-checked='true'] {
+  box-shadow: 0 0 0 2px var(--text);
+}
+
+// Häkchen auf der gewählten Farbe (weiß, Kontrast per Test gesichert).
+.swatch[aria-checked='true']::after {
+  content: '';
+  position: absolute;
+  top: 28%;
+  left: 36%;
+  width: 22%;
+  height: 36%;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+.swatch-custom {
+  margin: 0;
+}
+
+.swatch-custom input {
   width: 3.25rem;
   height: var(--tap);
 }
 
 // --- Skalierte Vorschau ---
+.preview {
+  position: relative;
+}
+
+// Gezoomt auch waagerecht scrollbar; Pinch übernimmt die App selbst (touch-action), nicht der Browser.
 .preview-frame {
   flex: 1;
   overflow: hidden auto;
   overscroll-behavior: contain;
-  padding: 1.25rem 0 2rem;
+  padding: 1.25rem 0 4.25rem;
+  touch-action: pan-x pan-y;
+}
+
+.preview-frame.zoomed {
+  overflow: auto;
+}
+
+.preview-frame.pinching .scale-slot,
+.preview-frame.pinching .scale-inner {
+  transition: none;
+}
+
+// --- Seitenanzeige und Zoom-Knöpfe über der Vorschau ---
+.preview-hud {
+  position: absolute;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: 0.75rem;
+  left: max(0.75rem, env(safe-area-inset-left));
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.page-indicator,
+.zoom-controls {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}
+
+.page-indicator {
+  padding: 0.35rem 0.8rem;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  padding: 0.15rem;
+}
+
+.zoom-controls .tool {
+  border-radius: 999px;
+}
+
+.zoom-value {
+  min-width: 4.2rem;
+  min-height: var(--tap);
+  padding: 0 0.4rem;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .scale-slot {
@@ -576,7 +784,7 @@ svg {
 
 .group {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--field-gap);
   padding: 0.95rem 1rem 1.05rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -592,14 +800,14 @@ svg {
 .identity {
   display: grid;
   grid-template-columns: 7.25rem minmax(0, 1fr);
-  gap: 0.85rem 1rem;
+  gap: var(--field-gap) 1rem;
   align-items: start;
 }
 
 .name-fields {
   display: grid;
   align-content: start;
-  gap: 0.15rem;
+  gap: var(--field-gap);
 }
 
 .name-fields label,
@@ -612,7 +820,7 @@ svg {
 
 .identity .fields {
   grid-column: 1 / -1;
-  gap: 0.7rem 0.75rem;
+  gap: var(--field-gap) 0.75rem;
 }
 
 .fields {
@@ -620,7 +828,7 @@ svg {
 }
 
 .group .fields {
-  gap: 0.7rem 0.75rem;
+  gap: var(--field-gap) 0.75rem;
 }
 
 .group.links .fields {
@@ -706,8 +914,8 @@ svg {
 .phone-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.65rem 0.75rem;
-  padding-bottom: 0.85rem;
+  gap: var(--field-gap) 0.75rem;
+  padding-bottom: var(--field-gap);
   border-bottom: 1px solid var(--border);
 }
 
@@ -983,7 +1191,20 @@ app-bottom-sheet .translate-panel {
 @media (max-width: 900px) {
   .workspace.narrow .editor {
     width: 100%;
-    padding: 0 max(0.85rem, env(safe-area-inset-right)) 2rem max(0.85rem, env(safe-area-inset-left));
+    // Unten Platz für die Bildschirmtastatur (--keyboard-inset setzt keepFieldsAboveKeyboard).
+    padding: 0 max(0.85rem, env(safe-area-inset-right)) calc(2rem + var(--keyboard-inset, 0px)) max(0.85rem, env(safe-area-inset-left));
+  }
+
+  // Schmal klebt die Schnellnavigation oben im Editor.
+  .workspace.narrow .section-nav {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    margin: 0 calc(-1 * max(0.85rem, env(safe-area-inset-left))) 0;
+    padding: 0.55rem max(0.85rem, env(safe-area-inset-right)) 0.55rem max(0.85rem, env(safe-area-inset-left));
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(10px);
   }
 
   .workspace.narrow:not([data-tab='edit']) .editor {
@@ -999,7 +1220,8 @@ app-bottom-sheet .translate-panel {
     pointer-events: none;
   }
 
-  .workspace.narrow[data-tab='preview'] .preview-options {
+  .workspace.narrow[data-tab='preview'] .preview-options,
+  .workspace.narrow:not([data-tab='preview']) .preview-hud {
     display: none;
   }
 
@@ -1016,7 +1238,7 @@ app-bottom-sheet .translate-panel {
     align-content: start;
     overflow: auto;
     overscroll-behavior: contain;
-    padding: 1rem max(1rem, env(safe-area-inset-right)) 2rem max(1rem, env(safe-area-inset-left));
+    padding: 1rem max(1rem, env(safe-area-inset-right)) calc(2rem + var(--keyboard-inset, 0px)) max(1rem, env(safe-area-inset-left));
     border-bottom: 0;
     background: var(--bg);
   }
@@ -1029,7 +1251,7 @@ app-bottom-sheet .translate-panel {
     visibility: hidden;
   }
 
-  .workspace.narrow[data-tab='design'] .skill-scale div:not(.designs) {
+  .workspace.narrow[data-tab='design'] .skill-scale div:not(.designs):not(.swatches) {
     display: grid;
     grid-auto-columns: minmax(0, 1fr);
     grid-auto-flow: column;
@@ -1108,5 +1330,17 @@ app-bottom-sheet .translate-panel {
 @keyframes pane-in {
   from {
     opacity: 0;
+  }
+}
+
+// Sprungziele nicht unter der klebenden Editor-Leiste bzw. Schnellnavigation verstecken.
+.editor [id^='sec-'] {
+  scroll-margin-top: 4.25rem;
+}
+
+// Touch: Beim Tippen braucht die Tab-Leiste keinen Platz über der Bildschirmtastatur.
+@media (pointer: coarse) {
+  .shell:has(.editor :is(input:not([type='checkbox'], [type='color']), textarea):focus) .tabbar {
+    display: none;
   }
 }

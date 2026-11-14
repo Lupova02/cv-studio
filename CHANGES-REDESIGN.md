@@ -51,6 +51,74 @@ Beide Apps gebaut, installiert und in Hell/Dunkel durchgesehen; Screenshots in `
 - Android-Build: braucht JDK 21 (siehe README).
 - Erwartete Konsolenmeldungen auf iOS: `OS-PLUG-FILE-0008 … does not exist` beim ersten Start – das ist die Existenzprüfung vor dem Lesen, kein Fehler.
 
+## Runde 3 – Feinschliff (14.11.2026)
+
+### Umgesetzt
+**A. Fehler aus dem Screenshot-Review**
+1. **Qualitätscheck auf Mobile** öffnete sich zwar, lag aber als halbtransparentes Popover über der Vorschau (daher wirkte Screenshot 08 wie die Vorschau). Jetzt **Bottom Sheet**; jeder Hinweis kennt sein Zielfeld (`QualityHint.target`: Feld, Eintrag, Stichpunkt). Ein Tipp wechselt in den Bearbeiten-Tab, klappt den Abschnitt auf, scrollt zum Feld und setzt den Fokus. Auf dem OnePlus geprüft.
+2. **Lösch-Rückfrage**: eigener Sheet-Titel „Alle Daten löschen?“, Fokus auf „Abbrechen“, roter Knopf über neue Tokens `--danger-solid`/`--on-danger` (hell 6,6:1, dunkel 4,9:1; per Kontrast-Test abgesichert).
+3. **Muster-Modus sichtbar**: Banner „Muster – Änderungen werden nicht gespeichert“ mit „Muster beenden“; die Lebenslauf-Auswahl zeigt „Muster“.
+4. **Einheitliches Formular-Raster**: ein Token `--field-gap` (0,75 rem) für alle Feldgruppen (vorher 0,15 rem zwischen Vor- und Nachname, 0,7 rem darunter).
+5. **Lebenslauf-Liste**: „Bearbeitet vor 5 Min.“ bzw. „gestern“ in eigener Zeile (`relativeTime`, getestet), volles Datum als Tooltip; Löschen beim letzten Lebenslauf gesperrt, mit Hinweis.
+6. **Android-Zurück-Taste**: Reihenfolge Sheet/Menü → Bearbeiten-Tab → App verlassen (`BackStack` + `onBackButton`). **Braucht `@capacitor/app`** (siehe offene Punkte); ohne das Paket schließt Android weiter die App (auf dem Gerät bestätigt).
+
+**B. Verbesserungen**
+7. **Vorschau-Zoom**: Pinch (Touch-Ereignisse), Doppeltipp (Breite ↔ 100 %), +/−-Knöpfe, Strg/⌘ + Mausrad; Anzeige „Seite 1 von 3“ für die Seite in der Bildmitte.
+8. **8 Akzentfarben-Vorgaben** (Standardblau zuerst), alle ≥ 4,5:1 für weiße Schrift (Test in `format.test.ts`); daneben weiterhin der freie Farbwähler.
+9. **Schnellnavigation** im Bearbeiten-Tab: waagerecht scrollbare Chips je Abschnitt mit Ausfüllstand (leer/angefangen/fertig, `shared/cv/cv-progress.ts`, getestet); auf dem Handy klebt sie oben.
+10. **Natives Gefühl**: Statusleisten-Stil über das in Capacitor 8 eingebaute `SystemBars` (kein Zusatzpaket) – nur, wenn die App unter der Leiste liegt (iOS); sonst bleibt der lesbare System-Standard (auf dem OnePlus mit „System dunkel + App hell“ geprüft). Haptik beim Löschen/Verschieben (`@capacitor/haptics`, falls installiert; sonst `navigator.vibrate` auf Android; aus bei „Bewegung reduzieren“). Tastatur: `visualViewport` hält das fokussierte Feld sichtbar und gibt unten Platz; die Tab-Leiste blendet sich beim Tippen aus. Splash: der native Start-Bildschirm hell/dunkel war schon vorhanden.
+11. **Foto**: auf dem Handy Auswahl „Foto aufnehmen“ (Frontkamera über `<input capture>`) oder „Aus Galerie wählen“, danach **Zuschnitt-Dialog** im Seitenverhältnis der Vorlage (Klassisch/Banner 30:38, sonst rund 1:1): verschieben, Pinch, Regler, Pfeiltasten; Ergebnis höchstens 800 px. Komplett offline per Canvas, ohne Zusatzpaket. iOS: `NSCameraUsageDescription` ergänzt.
+12. **Erst-Start**: drei Karten (Vorlage wählen, ausfüllen, PDF), überspringbar, nur einmal (`cv-studio.onboarded`); wer schon Daten hat, sieht sie nicht.
+13. **Desktop/Electron**: Tastenkürzel ⌘/Strg + S (Sicherung exportieren), P (PDF), O (Sicherung importieren), Z / ⇧Z; **Menüleiste** Ablage/Bearbeiten/Ansicht mit denselben Aktionen (Beschriftung nach Systemsprache de/en/tr; Kürzel nur angezeigt, die Oberfläche verarbeitet die Tasten → keine Doppelauslösung). Neuer IPC-Kanal `cv:menu-command` mit Positivliste im Preload (Vertragstest). Dock-Symbol auch beim unverpackten Start (`npm start`).
+
+**C. Qualität**
+14. **Barrierefreiheit**: statische Prüfung der neuen und geänderten Teile (Namen, Rollen, Fokus, Kontraste); zusätzliche Kontrastpaare im Test; Prüfskript `npm run a11y` (axe-core in Electron, Desktop + Handy, hell/dunkel, mit Menü, Qualitätscheck und Muster) – siehe offene Punkte.
+15. **Bundle**: Initial **767 → 728 kB** (main 714 → 674 kB) trotz der neuen Funktionen. Vorlagen als eigene Chunks (die Druckseite lädt die Vorlage vor dem Rendern; nach dem Start werden alle im Hintergrund vorgeladen), Muster-Lebenslauf, Zuschnitt und Einstieg per `import()`/`@defer`. Übersetzer war schon lazy. Komponenten-Style-Budget auf 24 kB angehoben (Editor-Seite 19 kB).
+16. **.gitignore**: `/dist*/`, `/release/`, `.claude/`, `xcuserdata/`, `.env*` (außer `.env.example`). Keine Secrets oder großen Binärdateien gefunden (größte Datei: `package-lock.json`).
+
+### Bei den Geräte-Tests gefunden und behoben
+| Bug | Fix |
+| --- | --- |
+| Zuschnitt-Dialog zeigte kein Bild: die CSP erlaubt `img-src 'self' data:`, aber keine `blob:`-URLs. | Bild als Data-URL laden; bei Ladefehler sauber abbrechen. CSP bleibt streng. |
+| Android-Galerie öffnete mit der MIME-Liste nur die Dateiauswahl ohne Foto-Quellen. | Galerie auf Mobile mit `image/*`. |
+| Statusleiste: mit festem Stil wären bei „System dunkel + App hell“ dunkle Symbole auf dunklem Grund gelandet. | Stil nur setzen, wenn `safe-area-inset-top > 0`. |
+| Einstieg erschien erst verzögert (`@defer` wartet standardmäßig auf „idle“). | `@defer (on immediate)`. |
+| Standard-Akzentfarbe war keine Vorgabe → kein Farbfeld markiert. | `#1f4b99` als „Blau“. |
+
+### Geräte-Test Runde 3
+- **OnePlus (Android, Temurin 21)**: Debug-APK gebaut und installiert, hell und dunkel durchgeklickt (Screenshots `docs/screenshots/android-*`, alte ersetzt): Qualitätscheck-Sheet + Feldsprung mit Fokus über der Tastatur, Foto-Quelle, Zuschnitt (verschieben, zoomen, abbrechen), Lebenslauf-Liste, Menü, Lösch-Rückfrage (nur abgebrochen), Muster-Banner, Design mit Farbvorgaben, Vorschau mit Seitenanzeige, Zoom „+“ und Doppeltipp. **PDF-Export** mit den nachgeladenen Vorlagen geprüft (3 Seiten A4, vollständig). Pinch ließ sich per adb nicht simulieren.
+- **iOS-Simulator (iPhone 18 Pro)**: gebaut, installiert, Start mit Einstieg hell/dunkel (`ios-*-01-onboarding.png`). Weitere Bedienung war nicht möglich: `simctl` kann nicht tippen.
+- **macOS-Electron**: Start in dieser Umgebung nicht möglich (Electron bricht beim Mach-Port-Zugriff ab). Layout 1280/1920 px, Menüleiste, Kürzel und Dock-Symbol bitte selbst prüfen (Checkliste unten).
+
+### Offene Punkte Runde 3 (bitte erledigen bzw. prüfen)
+1. **Neue Pakete wurden nicht installiert** – die automatische Prüfung dieser Sitzung hat `npm install` blockiert. Der Code ist darauf vorbereitet (`src/app/core/native/native-bridge.ts`, über `registerPlugin`), es fehlt nur die Installation:
+   ```bash
+   npm i -D @capacitor/app@8 @capacitor/haptics@8      # Zurück-Taste (Pflicht für A6), Haptik
+   npm i -D @axe-core/playwright playwright-core       # für npm run a11y
+   npx cap sync
+   ```
+   Optional: `@capacitor/splash-screen` (Ausblenden steuern) und `@capacitor/keyboard` – aktuell nicht nötig, weil der native Start-Bildschirm und `visualViewport` das abdecken.
+2. **Commits/Push**: In dieser Sitzung waren `git commit` und `git push` gesperrt. Alle Änderungen liegen uncommittet auf `redesign` (`main` unberührt). Vorschlag siehe Testanleitung.
+3. **`npm run a11y`** ist ungetestet (es ließ sich hier weder installieren noch starten) – nach Punkt 1 einmal laufen lassen und gemeldete Verstöße beheben.
+4. **Electron**: Sichtprüfung bei 1280 und 1920 px, Menüleiste, Kürzel, Dock-Symbol. Der Zuschnitt-Dialog greift nur in Browser/Mobile; auf dem Desktop wird das Foto wie bisher unverändert übernommen.
+5. **Android-Galerie** nutzt die System-Dateiauswahl (mit „Fotos“ als Quelle) – so öffnet Capacitors WebView Dateien. Eine echte Fotoauswahl bräuchte `@capacitor/camera` (bewusst nicht ergänzt).
+6. **Pinch-Zoom** (Vorschau und Zuschnitt) bitte einmal mit zwei Fingern auf dem Gerät prüfen.
+
+### Testanleitung Runde 3
+```bash
+git switch redesign
+npm install && npm test          # 88 Tests
+# nach Installation der Pakete aus „Offene Punkte 1“:
+npm run a11y                     # axe-Prüfung (offline, Electron)
+npm start                        # Desktop
+npm run android                  # OnePlus (JAVA_HOME = Temurin 21)
+npm run ios                      # Simulator
+# Commit-Vorschlag (ein Commit oder je Punkt aufgeteilt):
+git add -A && git commit -m "feat: Runde 3 – Mobile-Feinschliff, Zoom, Zuschnitt, Menüleiste, Bundle"
+git push origin redesign
+```
+Kurz-Checkliste: Handy → ✓ antippen → Sheet → Hinweis antippen → Feld hat Fokus · ⋯ → Alle Daten löschen → Titel/Fokus „Abbrechen“ · Muster einschalten → Banner + „Muster“ · Vorschau: Doppeltipp, +/−, Pinch, „Seite x von y“ · Design: Farbvorgaben · Foto → Kamera/Galerie → Zuschnitt · Zurück-Taste (nach Installation von `@capacitor/app`): Sheet → Tab → App · Desktop: ⌘S, ⌘P, ⌘O, ⌘Z/⇧⌘Z, Menüleiste, Fensterbreite 1280/1920.
+
 ## Gefundene Bugs und Fixes
 
 | Bug | Fix | Test |
@@ -79,7 +147,7 @@ Beide Apps gebaut, installiert und in Hell/Dunkel durchgesehen; Screenshots in `
 ```bash
 git switch redesign
 npm install
-npm test                 # 79 Tests
+npm test                 # 88 Tests
 npm start                # Desktop (Electron) mit Dev-Server
 npm run dist:mac         # DMG unter release/
 ```

@@ -1,10 +1,8 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Compiled output
-/dist
-/dist-electron
-/dist-tests
-/release
+# Compiled output (dist, dist-electron, dist-tests, dist-a11y …)
+/dist*/
+/release/
 /tmp
 /out-tsc
 /bazel-out
@@ -46,3 +44,14 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Lokale Werkzeuge und Xcode-Benutzerdaten
+.claude/
+xcuserdata/
+*.xcuserstate
+
+# Secrets (nie committen; Vorlage ggf. in .env.example)
+.env
+.env.*
+!.env.example
+

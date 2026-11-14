@@ -25,6 +25,16 @@ export type QualitySection =
   | 'projects'
   | 'layout';
 
+/**
+ * Feld, zu dem ein Hinweis im Editor springt: `field` ist der formControlName, `entry` der Eintrag
+ * (Zahl = Position in der Liste, Text = Kennung, z. B. der Sprache) und `bullet` der Stichpunkt.
+ */
+export interface QualityTarget {
+  field: string;
+  entry?: number | string;
+  bullet?: number;
+}
+
 /** Ein Hinweis: `warning` = sollte man beheben, `info` = Empfehlung. */
 export interface QualityHint {
   /** Stabile Kennung, z. B. für `track` in Listen. */
@@ -32,6 +42,8 @@ export interface QualityHint {
   level: 'warning' | 'info';
   section: QualitySection;
   text: string;
+  /** Betroffenes Feld; ohne Angabe springt der Editor nur zum Abschnitt. */
+  target?: QualityTarget;
 }
 
 /** Zusatzangaben, die nicht in den Daten stehen. */
@@ -59,6 +71,10 @@ function monthOf(date: Date): string {
 /** Ein datierter Listeneintrag in vereinheitlichter Form. */
 interface DatedEntry {
   title: string;
+  /** Feldnamen im Editor für Titel, Beginn und Ende. */
+  titleField: string;
+  fromField: string;
+  untilField: string;
   from: string;
   until: string;
   current: boolean;
@@ -73,31 +89,34 @@ export function checkCv(data: CvData, context: QualityContext = {}): QualityHint
   const labels = labelsFor(language);
   const today = monthOf(context.today ?? new Date());
   const hints: QualityHint[] = [];
-  const add = (id: string, level: QualityHint['level'], section: QualitySection, text: string) => hints.push({ id, level, section, text });
+  const add = (id: string, level: QualityHint['level'], section: QualitySection, text: string, target?: QualityTarget) =>
+    hints.push(target ? { id, level, section, text, target } : { id, level, section, text });
 
   // --- Persönliches ---
   const person = data.personal;
   if (!person.firstName.trim() || !person.lastName.trim()) {
-    add('name', 'warning', 'personal', ui.qMissingName);
+    add('name', 'warning', 'personal', ui.qMissingName, { field: person.firstName.trim() ? 'lastName' : 'firstName' });
   }
   if (!person.email.trim()) {
-    add('email', 'warning', 'personal', ui.qMissingEmail);
+    add('email', 'warning', 'personal', ui.qMissingEmail, { field: 'email' });
   } else if (!EMAIL.test(person.email.trim())) {
-    add('email-invalid', 'warning', 'personal', ui.qInvalidEmail);
+    add('email-invalid', 'warning', 'personal', ui.qInvalidEmail, { field: 'email' });
   }
   if (!person.phones.some((phone) => phone.number.trim())) {
-    add('phone', 'info', 'personal', ui.qMissingPhone);
+    add('phone', 'info', 'personal', ui.qMissingPhone, { field: 'number' });
   }
   if (context.photoShown && !person.photoFile) {
-    add('photo', 'info', 'personal', ui.qMissingPhoto);
+    add('photo', 'info', 'personal', ui.qMissingPhoto, { field: 'photo' });
   }
 
   // --- Über mich ---
   const summary = data.summary.trim();
   if (!summary) {
-    add('summary', 'info', 'summary', ui.qMissingSummary);
+    add('summary', 'info', 'summary', ui.qMissingSummary, { field: 'summary' });
   } else if (summary.length > QUALITY_LIMITS.summary) {
-    add('summary-long', 'warning', 'summary', fill(ui.qLongSummary, { count: summary.length, max: QUALITY_LIMITS.summary }));
+    add('summary-long', 'warning', 'summary', fill(ui.qLongSummary, { count: summary.length, max: QUALITY_LIMITS.summary }), {
+      field: 'summary',
+    });
   }
 
   // --- Datierte Einträge ---
@@ -105,32 +124,40 @@ export function checkCv(data: CvData, context: QualityContext = {}): QualityHint
     entries.forEach((entry, index) => {
       const entryLabel = entry.title ? `${sectionLabel} „${entry.title}“` : `${sectionLabel} ${index + 1}`;
       const key = `${section}-${index}`;
+      const at = (field: string, bullet?: number): QualityTarget => (bullet === undefined ? { field, entry: index } : { field, entry: index, bullet });
       if (!entry.title) {
-        add(`${key}-title`, 'warning', section, fill(ui.qEntryTitle, { entry: entryLabel }));
+        add(`${key}-title`, 'warning', section, fill(ui.qEntryTitle, { entry: entryLabel }), at(entry.titleField));
       }
       if (needsDates && !entry.from) {
-        add(`${key}-dates`, 'info', section, fill(ui.qEntryDates, { entry: entryLabel }));
+        add(`${key}-dates`, 'info', section, fill(ui.qEntryDates, { entry: entryLabel }), at(entry.fromField));
       }
       if (entry.from && entry.until && !entry.current && entry.until < entry.from) {
-        add(`${key}-order`, 'warning', section, fill(ui.qEntryOrder, { entry: entryLabel }));
+        add(`${key}-order`, 'warning', section, fill(ui.qEntryOrder, { entry: entryLabel }), at(entry.untilField));
       }
       if (entry.from && entry.from > today) {
-        add(`${key}-future`, 'info', section, fill(ui.qEntryFuture, { entry: entryLabel }));
+        add(`${key}-future`, 'info', section, fill(ui.qEntryFuture, { entry: entryLabel }), at(entry.fromField));
       }
       const description = entry.description.trim();
       if (description.length > QUALITY_LIMITS.description) {
-        add(`${key}-long`, 'info', section, fill(ui.qEntryLong, { entry: entryLabel, count: description.length }));
+        add(`${key}-long`, 'info', section, fill(ui.qEntryLong, { entry: entryLabel, count: description.length }), at('description'));
       }
       entry.bullets.forEach((bullet, bulletIndex) => {
         const text = bullet.trim();
         if (!text) {
-          add(`${key}-bullet-${bulletIndex}-empty`, 'info', section, fill(ui.qBulletEmpty, { entry: entryLabel, bullet: bulletIndex + 1 }));
+          add(
+            `${key}-bullet-${bulletIndex}-empty`,
+            'info',
+            section,
+            fill(ui.qBulletEmpty, { entry: entryLabel, bullet: bulletIndex + 1 }),
+            at('bullets', bulletIndex),
+          );
         } else if (text.length > QUALITY_LIMITS.bullet) {
           add(
             `${key}-bullet-${bulletIndex}-long`,
             'info',
             section,
             fill(ui.qBulletLong, { entry: entryLabel, bullet: bulletIndex + 1, count: text.length }),
+            at('bullets', bulletIndex),
           );
         }
       });
@@ -143,7 +170,7 @@ export function checkCv(data: CvData, context: QualityContext = {}): QualityHint
   checkEntries(
     'experience',
     labels.experience,
-    data.experience.map((item) => ({ ...item, title: (item.position || item.company).trim() })),
+    data.experience.map((item) => ({ ...item, title: (item.position || item.company).trim(), titleField: 'position', fromField: 'from', untilField: 'until' })),
     true,
   );
   if (data.education.length === 0) {
@@ -152,19 +179,36 @@ export function checkCv(data: CvData, context: QualityContext = {}): QualityHint
   checkEntries(
     'education',
     labels.education,
-    data.education.map((item) => ({ ...item, title: (item.degree || item.institution).trim(), bullets: [] })),
+    data.education.map((item) => ({
+      ...item,
+      title: (item.degree || item.institution).trim(),
+      titleField: 'degree',
+      fromField: 'from',
+      untilField: 'until',
+      bullets: [],
+    })),
     true,
   );
   checkEntries(
     'certificates',
     labels.certificates,
-    data.certificates.map((item) => ({ title: item.name.trim(), from: item.date, until: '', current: false, description: item.description, bullets: [] })),
+    data.certificates.map((item) => ({
+      title: item.name.trim(),
+      titleField: 'name',
+      from: item.date,
+      fromField: 'date',
+      until: '',
+      untilField: 'date',
+      current: false,
+      description: item.description,
+      bullets: [],
+    })),
     false,
   );
   checkEntries(
     'projects',
     labels.projects,
-    data.projects.map((item) => ({ ...item, title: item.name.trim(), current: false })),
+    data.projects.map((item) => ({ ...item, title: item.name.trim(), titleField: 'name', fromField: 'from', untilField: 'until', current: false })),
     false,
   );
 
@@ -178,7 +222,10 @@ export function checkCv(data: CvData, context: QualityContext = {}): QualityHint
   const names = new Map(languageCatalog(language).map((item) => [item.id, item.name]));
   for (const item of data.languages) {
     if (!item.level) {
-      add(`language-${item.id}`, 'info', 'languages', fill(ui.qLanguageLevel, { name: names.get(item.id) ?? item.id }));
+      add(`language-${item.id}`, 'info', 'languages', fill(ui.qLanguageLevel, { name: names.get(item.id) ?? item.id }), {
+        field: 'level',
+        entry: item.id,
+      });
     }
   }
 

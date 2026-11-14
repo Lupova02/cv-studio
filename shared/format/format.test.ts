@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { contrastRatio, onAccentColor } from './color';
+import { ACCENT_PRESETS } from '../catalogs/accent-presets';
 import { suggestFileBase } from './file-name';
-import { addressLine, addressLines, contactEntries, formatPageNumber, formatRange, formatYearMonth, linkEntries, nationalityLine } from './format';
+import { addressLine, addressLines, contactEntries, formatPageNumber, formatRange, formatYearMonth, linkEntries, nationalityLine, relativeTime } from './format';
 import { emptyPersonal } from '../cv/cv-data';
 import { parsePrintJob } from '../ipc/ipc-parse';
 import { sampleCv } from '../cv/sample-cv';
@@ -151,3 +152,36 @@ describe('Format und Exportauftrag', () => {
     assert.throws(() => parsePrintJob({ templateId: 'fremd', options: {}, data: {} }));
   });
 });
+
+describe('Relative Zeitangabe', () => {
+  const now = new Date(2026, 10, 14, 15, 30);
+  const ago = (minutes: number) => new Date(now.getTime() - minutes * 60_000).toISOString();
+
+  it('nennt Minuten, Stunden, gestern und Tage kurz', () => {
+    assert.equal(relativeTime(ago(0), now, 'de'), 'jetzt');
+    assert.equal(relativeTime(ago(5), now, 'de'), 'vor 5 Min.');
+    assert.equal(relativeTime(ago(180), now, 'de'), 'vor 3 Std.');
+    assert.equal(relativeTime(ago(24 * 60), now, 'de'), 'gestern');
+    assert.equal(relativeTime(ago(3 * 24 * 60), now, 'de'), 'vor 3 Tagen');
+    assert.equal(relativeTime(ago(5), now, 'en'), '5 min ago');
+  });
+
+  it('zeigt ab einer Woche das Datum und bleibt bei ungültigen Werten leer', () => {
+    assert.equal(relativeTime(new Date(2026, 9, 1).toISOString(), now, 'de'), '01.10.2026');
+    assert.equal(relativeTime('', now, 'de'), '');
+    assert.equal(relativeTime(new Date(0).toISOString(), now, 'de'), '');
+  });
+});
+
+describe('Akzentfarben-Vorgaben', () => {
+  it('hat acht verschiedene Farben, alle mit AA-Kontrast für weiße Schrift', () => {
+    assert.equal(ACCENT_PRESETS.length, 8);
+    assert.equal(new Set(ACCENT_PRESETS.map((preset) => preset.color)).size, 8);
+    for (const preset of ACCENT_PRESETS) {
+      const ratio = contrastRatio('#ffffff', preset.color) ?? 0;
+      assert.ok(ratio >= 4.5, `${preset.name.de} (${preset.color}) = ${ratio.toFixed(2)}:1`);
+      assert.equal(onAccentColor(preset.color), '#ffffff');
+    }
+  });
+});
+

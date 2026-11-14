@@ -33,11 +33,16 @@ const TEXT_PAIRS: [string, string][] = [
   ['on-accent', 'accent-hover'],
   ['danger', 'surface'],
   ['danger', 'danger-soft'],
+  ['on-danger', 'danger-solid'],
   ['success', 'surface'],
   ['success', 'success-soft'],
   ['warning', 'surface'],
   ['warning', 'warning-soft'],
   ['text', 'toolbar'],
+  // Lebenslauf-Liste (aktiver Eintrag), Zähler-Badges, Muster-Banner.
+  ['text-subtle', 'accent-soft'],
+  ['text', 'surface-3'],
+  ['text-muted', 'bg'],
   ['text-muted', 'toolbar'],
 ];
 
@@ -57,6 +62,10 @@ describe('Farbschema', () => {
     });
 
     it(`grenzt im ${name} Modus Bedienelemente sichtbar ab (3:1)`, () => {
+      for (const token of ['accent', 'danger-solid']) {
+        const ratio = contrastRatio(theme.get(token) ?? '', theme.get('surface') ?? '') ?? 0;
+        assert.ok(ratio >= 3, `${name}: ${token} auf Fläche = ${ratio.toFixed(2)}:1`);
+      }
       const ratio = contrastRatio(theme.get('accent') ?? '', theme.get('bg') ?? '') ?? 0;
       assert.ok(ratio >= 3, `${name}: Akzent auf Hintergrund = ${ratio.toFixed(2)}:1`);
     });

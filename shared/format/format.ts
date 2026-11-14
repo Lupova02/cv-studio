@@ -301,3 +301,35 @@ export function formatPageNumber(style: PageNumberStyle, page: number, total: nu
 export function joinMeta(parts: string[]): string {
   return parts.map((part) => part.trim()).filter((part) => part.length > 0).join(' · ');
 }
+
+const RELATIVE_LOCALE: Record<CvLanguage, string> = { de: 'de-DE', en: 'en-GB', tr: 'tr-TR' };
+
+/**
+ * Kurze Zeitangabe „vor 5 Min.“, „vor 3 Std.“, „gestern“, „vor 4 Tagen“; ab einer Woche das Datum.
+ * Leer bei ungültigem oder fehlendem Zeitpunkt.
+ */
+export function relativeTime(value: string, now: Date, language: CvLanguage): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime()) || date.getTime() === 0) {
+    return '';
+  }
+  const locale = RELATIVE_LOCALE[language];
+  const format = new Intl.RelativeTimeFormat(locale, { numeric: 'auto', style: 'short' });
+  const minutes = Math.max(0, Math.floor((now.getTime() - date.getTime()) / 60_000));
+  if (minutes < 1) {
+    return format.format(0, 'second');
+  }
+  if (minutes < 60) {
+    return format.format(-minutes, 'minute');
+  }
+  if (minutes < 24 * 60 && date.getDate() === now.getDate()) {
+    return format.format(-Math.floor(minutes / 60), 'hour');
+  }
+  // Kalendertage, damit „gestern“ auch kurz nach Mitternacht stimmt.
+  const startOf = (day: Date) => new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime();
+  const days = Math.round((startOf(now) - startOf(date)) / 86_400_000);
+  if (days < 7) {
+    return format.format(-days, 'day');
+  }
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
+}

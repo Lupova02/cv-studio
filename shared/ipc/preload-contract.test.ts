@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, it } from 'node:test';
+import { MENU_COMMANDS } from './ipc-api';
 import { IpcChannels } from './ipc-channels';
 
 const root = path.resolve(__dirname, '..', '..', '..');
@@ -16,5 +17,12 @@ describe('IPC-Vertrag', () => {
     }
     assert.equal(preload.includes('ipcRenderer.invoke('), true);
     assert.equal(preload.includes('invoke(channel'), false);
+  });
+
+  it('lässt im Preload genau die Menübefehle der Oberfläche durch', () => {
+    const preload = readFileSync(path.join(root, 'electron', 'preload.ts'), 'utf8');
+    const list = /const MENU_COMMANDS: readonly string\[\] = \[([^\]]*)\]/.exec(preload)?.[1] ?? '';
+    const commands = Array.from(list.matchAll(/'([^']+)'/g), (match) => match[1]);
+    assert.deepEqual(commands, [...MENU_COMMANDS]);
   });
 });

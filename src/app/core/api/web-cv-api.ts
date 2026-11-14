@@ -5,7 +5,7 @@ import { MAX_BACKUP_BYTES, backupFileName, createBackup, parseBackup, serializeB
 import type { CvLanguage } from '@shared/cv/cv-data';
 import { CvLibraryService, DEFAULT_CV_ID, type CvDocumentStore } from '@shared/cv/cv-library';
 import { migrate } from '@shared/cv/cv-migrate';
-import type { BackupImport, CvApi, PhotoImportResult, PrintJob } from '@shared/ipc/ipc-api';
+import type { BackupImport, CvApi, PhotoImportOptions, PhotoImportResult, PrintJob } from '@shared/ipc/ipc-api';
 import { uiText } from '@shared/i18n/ui-text';
 import type { BrowserStore } from './browser-store';
 import { dataUrlToBlob } from './data-url';
@@ -44,12 +44,25 @@ function cvKey(id: string): string {
   return id === DEFAULT_CV_ID ? CV_KEY : `cv:${id}`;
 }
 
-/** Öffnet die Dateiauswahl; `null`, wenn abgebrochen wurde. */
-function pickFile(accept: string): Promise<File | null> {
+/** Zuschnitt-Dialog der Oberfläche; liefert das zugeschnittene Bild oder `null` (abgebrochen). */
+export type PhotoCropper = (image: Blob, options: PhotoImportOptions) => Promise<Blob | null>;
+
+let photoCropper: PhotoCropper | null = null;
+
+/** Meldet den Zuschnitt-Dialog an (vom Editor); ohne Anmeldung wird das Bild unverändert übernommen. */
+export function setPhotoCropper(cropper: PhotoCropper | null): void {
+  photoCropper = cropper;
+}
+
+/** Öffnet die Dateiauswahl (mit `capture` direkt die Kamera); `null`, wenn abgebrochen wurde. */
+function pickFile(accept: string, capture?: 'user'): Promise<File | null> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = accept;
+    if (capture) {
+      input.setAttribute('capture', capture);
+    }
     input.addEventListener('change', () => resolve(input.files?.[0] ?? null), { once: true });
     input.addEventListener('cancel', () => resolve(null), { once: true });
     input.click();
@@ -179,12 +192,21 @@ export function createWebCvApi(platform: WebPlatform): CvApi {
       const contents = new Blob([serializeBackup(createBackup(data, photo))], { type: 'application/json' });
       return platform.deliverFile(backupFileName(data.template.language), contents, data.template.language);
     },
-    importPhoto: async (): Promise<PhotoImportResult | null> => {
-      const file = await pickFile('image/jpeg,image/png,image/webp');
+    importPhoto: async (options: PhotoImportOptions = {}): Promise<PhotoImportResult | null> => {
+      // Kamera: Frontkamera direkt öffnen. Galerie (Mobile): `image/*`, sonst zeigt Android nur die Dateiauswahl.
+      // Ohne Quelle (Browser): die Formate, die sich sicher einlesen lassen.
+      const file =
+        options.source === 'camera'
+          ? await pickFile('image/*', 'user')
+          : await pickFile(options.source === 'library' ? 'image/*' : 'image/jpeg,image/png,image/webp');
       if (!file) {
         return null;
       }
-      return storePhoto(await toPngDataUrl(file, await currentLanguage()));
+      const image = photoCropper ? await photoCropper(file, options) : file;
+      if (!image) {
+        return null;
+      }
+      return storePhoto(await toPngDataUrl(image, await currentLanguage()));
     },
     readPhoto,
     removePhoto: async (fileName) => {

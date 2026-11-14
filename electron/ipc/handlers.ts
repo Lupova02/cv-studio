@@ -5,7 +5,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { MAX_BACKUP_BYTES, backupFileName, createBackup, parseBackup, serializeBackup } from '../../shared/cv/backup';
 import type { CvLanguage } from '../../shared/cv/cv-data';
 import { CvValidationError, migrate } from '../../shared/cv/cv-migrate';
-import type { BackupImport, PhotoImportResult } from '../../shared/ipc/ipc-api';
+import type { BackupImport, MenuCommand, PhotoImportResult } from '../../shared/ipc/ipc-api';
 import { IpcChannels } from '../../shared/ipc/ipc-channels';
 import { parsePhotoFileName, parsePrintJob } from '../../shared/ipc/ipc-parse';
 import { uiText } from '../../shared/i18n/ui-text';
@@ -25,6 +25,13 @@ export interface IpcHost {
   preloadPath: string;
   /** Liefert das aktuelle Hauptfenster als Eltern für modale Dialoge. */
   getParentWindow: () => BrowserWindow | null;
+}
+
+/** Schickt einen Befehl der Menüleiste an die Oberfläche des Fensters. */
+export function sendMenuCommand(win: BrowserWindow | null, command: MenuCommand): void {
+  if (win && !win.isDestroyed()) {
+    win.webContents.send(IpcChannels.menuCommand, command);
+  }
 }
 
 /** Öffnen-Dialog, modal zum Elternfenster, falls vorhanden. */

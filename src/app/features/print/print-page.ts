@@ -3,6 +3,7 @@ import type { TemplateOptions } from '@shared/cv/cv-data';
 import type { PrintJob } from '@shared/ipc/ipc-api';
 import { getCvApi } from '../../core/api/cv-api';
 import { TemplateHost } from '../../templates/host/template-host';
+import { loadTemplate } from '../../templates/template-registry';
 
 /**
  * Route `#/print` für den PDF-Export: holt den Druckauftrag ab, rendert die Vorlage
@@ -39,6 +40,8 @@ export class PrintPage {
     }
     const fileName = job.data.personal.photoFile;
     const photoDataUrl = fileName ? await getCvApi().readPhoto(fileName) : null;
+    // Vorlage vorher laden, damit sie gleich beim ersten Rendern dasteht (sie liegt in einem eigenen Chunk).
+    await loadTemplate(job.templateId);
     this.options.set({ ...job.options, photoDataUrl });
     this.job.set(job);
     afterNextRender(() => {

@@ -3,7 +3,7 @@
 
 /**
  * Alle IPC-Kanalnamen. Die meisten sind Anfrage/Antwort-Kanäle (`invoke`/`handle`).
- * `prepareClose` schickt der Hauptprozess an das Fenster, `prepareCloseDone` ist die Antwort der Oberfläche.
+ * `prepareClose` und `menuCommand` schickt der Hauptprozess an das Fenster, `prepareCloseDone` ist die Antwort der Oberfläche.
  * electron/preload.ts schreibt die Namen direkt aus; Änderungen müssen dort nachgezogen werden.
  */
 export const IpcChannels = {
@@ -27,4 +27,6 @@ export const IpcChannels = {
   printReady: 'cv:print-ready',
   prepareClose: 'cv:prepare-close',
   prepareCloseDone: 'cv:prepare-close-done',
+  /** Menüleiste → Oberfläche: ein Befehl aus `MenuCommand`. */
+  menuCommand: 'cv:menu-command',
 } as const;

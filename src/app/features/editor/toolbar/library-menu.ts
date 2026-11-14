@@ -1,6 +1,8 @@
 import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import type { CvLanguage } from '@shared/cv/cv-data';
 import type { CvLibraryEntry } from '@shared/cv/cv-library';
+import { relativeTime } from '@shared/format/format';
+import { BackStack } from '../../../core/state/back-stack';
 import { CvState } from '../../../core/state/cv-state';
 import { EditorCopy } from '../../../core/state/editor-copy';
 import { TrashIcon } from '../../../ui/trash-icon/trash-icon';
@@ -56,13 +58,15 @@ const DATE_LOCALE: Record<CvLanguage, string> = { de: 'de-DE', en: 'en-GB', tr: 
                 </form>
               } @else {
                 <button type="button" class="open" (click)="openCv(entry)" [disabled]="state.busy()" [attr.aria-current]="entry.id === activeId() ? 'true' : null">
-                  <span class="title">{{ entry.name }}</span>
-                  <span class="meta">
+                  <span class="title-row">
+                    <span class="title">{{ entry.name }}</span>
                     @if (entry.id === activeId()) {
                       <span class="badge">{{ copy.ui().cvOpen }}</span>
                     }
-                    {{ copy.ui().lastEdited }}: {{ formatDate(entry.updatedAt) }}
                   </span>
+                  @if (relative(entry.updatedAt); as when) {
+                    <span class="meta" [attr.title]="copy.ui().lastEdited + ': ' + formatDate(entry.updatedAt)">{{ copy.ui().editedAgo }} {{ when }}</span>
+                  }
                 </button>
                 <div class="row-actions">
                   <button type="button" class="icon-btn" (click)="startRename(entry)" [attr.aria-label]="copy.ui().renameCv + ': ' + entry.name" [attr.title]="copy.ui().renameCv">
@@ -71,14 +75,27 @@ const DATE_LOCALE: Record<CvLanguage, string> = { de: 'de-DE', en: 'en-GB', tr: 
                   <button type="button" class="icon-btn" (click)="duplicate(entry)" [disabled]="state.busy()" [attr.aria-label]="copy.ui().duplicateCv + ': ' + entry.name" [attr.title]="copy.ui().duplicateCv">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
                   </button>
-                  <button type="button" class="icon-btn danger" (click)="remove(entry)" [disabled]="state.busy() || entries().length < 2" [attr.aria-label]="copy.ui().deleteCv + ': ' + entry.name" [attr.title]="copy.ui().deleteCv">
-                    <app-trash-icon />
-                  </button>
+                  <!-- Der letzte Lebenslauf lässt sich nicht löschen; der Hinweis steht am Rahmen, weil gesperrte Knöpfe keinen Tooltip zeigen. -->
+                  <span class="delete-slot" [attr.title]="entries().length < 2 ? copy.ui().deleteCvLast : copy.ui().deleteCv">
+                    <button
+                      type="button"
+                      class="icon-btn danger"
+                      (click)="remove(entry)"
+                      [disabled]="state.busy() || entries().length < 2"
+                      [attr.aria-label]="copy.ui().deleteCv + ': ' + entry.name"
+                      [attr.aria-describedby]="entries().length < 2 ? 'delete-last-hint' : null"
+                    >
+                      <app-trash-icon />
+                    </button>
+                  </span>
                 </div>
               }
             </li>
           }
         </ul>
+        @if (entries().length < 2) {
+          <p class="last-hint" id="delete-last-hint">{{ copy.ui().deleteCvLast }}</p>
+        }
       </div>
     }
   `,
@@ -190,6 +207,13 @@ const DATE_LOCALE: Record<CvLanguage, string> = { de: 'de-DE', en: 'en-GB', tr: 
       background: transparent;
     }
 
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-width: 0;
+    }
+
     .title {
       overflow: hidden;
       font-weight: 600;
@@ -198,13 +222,27 @@ const DATE_LOCALE: Record<CvLanguage, string> = { de: 'de-DE', en: 'en-GB', tr: 
     }
 
     .meta {
+      overflow: hidden;
+      color: var(--text-subtle);
+      font-size: 0.76rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .delete-slot {
+      display: inline-flex;
+    }
+
+    .last-hint {
+      margin: 0.5rem 0.25rem 0;
       color: var(--text-subtle);
       font-size: 0.76rem;
     }
 
     .badge {
-      margin-right: 0.3rem;
+      flex: none;
       padding: 0 0.4rem;
+      font-size: 0.72rem;
       border-radius: 999px;
       background: var(--accent);
       color: var(--on-accent);
@@ -256,12 +294,20 @@ export class LibraryMenu {
   protected readonly renaming = signal<string | null>(null);
   protected readonly entries = computed(() => this.state.library()?.entries ?? []);
   protected readonly activeId = computed(() => this.state.library()?.activeId ?? '');
-  protected readonly activeName = computed(
-    () => this.entries().find((entry) => entry.id === this.activeId())?.name ?? this.copy.ui().cvDefaultName,
+  /** Name in der Werkzeugleiste; im Muster-Modus „Muster“, damit klar ist, dass nicht der eigene Lebenslauf offen ist. */
+  protected readonly activeName = computed(() =>
+    this.state.sampleActive()
+      ? this.copy.ui().sampleName
+      : (this.entries().find((entry) => entry.id === this.activeId())?.name ?? this.copy.ui().cvDefaultName),
   );
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly renameInput = viewChild<ElementRef<HTMLInputElement>>('renameInput');
+
+  constructor() {
+    // Android-Zurück-Taste schließt die Liste.
+    inject(BackStack).track(this.open, () => this.close());
+  }
 
   protected toggle(): void {
     this.open.update((value) => !value);
@@ -278,6 +324,11 @@ export class LibraryMenu {
     if (this.open() && event.target instanceof Node && !this.host.contains(event.target)) {
       this.close();
     }
+  }
+
+  /** Kurze Angabe „vor 5 Min.“ bzw. Datum; leer ohne gültigen Zeitpunkt. */
+  protected relative(value: string): string {
+    return relativeTime(value, new Date(), this.copy.language());
   }
 
   protected formatDate(value: string): string {

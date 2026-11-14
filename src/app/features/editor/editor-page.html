@@ -34,7 +34,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5" /><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" /></svg>
           </button>
         </div>
-        <app-quality-panel [hints]="hints()" (jump)="jumpTo($event)" />
+        <app-quality-panel [hints]="hints()" [sheet]="narrow()" (jump)="jumpTo($event)" />
         @if (!narrow()) {
           <button type="button" class="tool" (click)="theme.cycle()" [attr.aria-label]="themeLabel()" [attr.title]="themeLabel()">
             @switch (theme.mode()) {
@@ -78,6 +78,15 @@
       </div>
     </header>
 
+    <!-- Muster-Modus: deutlich sichtbar, weil Änderungen nicht gespeichert werden -->
+    @if (state.sampleActive()) {
+      <div class="sample-banner" role="status">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5v5.5" /><path d="M12 16.3v.2" /></svg>
+        <span class="sample-banner-text">{{ copy.ui().sampleBanner }}</span>
+        <button type="button" class="btn-ghost" (click)="toggleSample()">{{ copy.ui().sampleEnd }}</button>
+      </div>
+    }
+
     <!-- Arbeitsfläche: Editor | Trenner | Vorschau; auf schmalen Bildschirmen als Tabs -->
     <div class="workspace" #workspace [class.resizing]="resizing()" [class.narrow]="narrow()" [attr.data-tab]="tab()">
       <!-- Linke Spalte: Editor -->
@@ -110,14 +119,14 @@
                   <path d="M14 17.3h5" />
                 </svg>
               </button>
-              <button type="button" class="icon-button" (click)="importBackup()" [attr.aria-label]="copy.ui().importJson" [attr.title]="copy.ui().importJson">
+              <button type="button" class="icon-button" (click)="importBackup()" [attr.aria-label]="copy.ui().importJson" [attr.title]="copy.ui().importJson + ' (Strg/⌘ + O)'">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 3v10" />
                   <path d="M8 9l4 4 4-4" />
                   <path d="M5 15v4h14v-4" />
                 </svg>
               </button>
-              <button type="button" class="icon-button" (click)="exportBackup()" [attr.aria-label]="copy.ui().exportJson" [attr.title]="copy.ui().exportJson">
+              <button type="button" class="icon-button" (click)="exportBackup()" [attr.aria-label]="copy.ui().exportJson" [attr.title]="copy.ui().exportJson + ' (Strg/⌘ + S)'">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 13V3" />
                   <path d="M8 7l4-4 4 4" />
@@ -139,6 +148,21 @@
             }
           </div>
         }
+        <!-- Schnellnavigation: ein Chip je Abschnitt mit Ausfüllstand (leer, angefangen, fertig) -->
+        <nav class="section-nav" [attr.aria-label]="copy.ui().sectionNav">
+          @for (section of progressSections; track section) {
+            <button
+              type="button"
+              class="chip"
+              [attr.data-state]="progress()[section]"
+              [attr.aria-label]="copy.cv()[section] + ': ' + progressLabel(progress()[section])"
+              (click)="goToSection(section)"
+            >
+              <span class="chip-dot" aria-hidden="true"></span>
+              {{ copy.cv()[section] }}
+            </button>
+          }
+        </nav>
         <!-- Persönliche Daten -->
         <app-editor-section section="personal" [title]="copy.cv().personal">
           <div class="personal" formGroupName="personal">
@@ -371,7 +395,28 @@
               }
             </div>
           </div>
-          <label class="accent-pick">{{ copy.ui().accent }} <input type="color" formControlName="accentColor" /></label>
+          <!-- Akzentfarbe: kuratierte Vorgaben (alle mit gut lesbarer weißer Schrift) oder eigene Farbe -->
+          <div class="skill-scale accent-pick">
+            <span id="accent-heading">{{ copy.ui().accent }}</span>
+            <div class="swatches" role="radiogroup" aria-labelledby="accent-heading">
+              @for (preset of accentPresets; track preset.color) {
+                <button
+                  type="button"
+                  role="radio"
+                  class="swatch"
+                  [style.--swatch]="preset.color"
+                  [attr.aria-checked]="isAccent(preset.color)"
+                  [attr.aria-label]="preset.name[cvForm.controls.language.value]"
+                  [attr.title]="preset.name[cvForm.controls.language.value]"
+                  (click)="chooseAccent(preset.color)"
+                ></button>
+              }
+              <label class="swatch-custom" [title]="copy.ui().accentCustom">
+                <span class="sr">{{ copy.ui().accentCustom }}</span>
+                <input type="color" formControlName="accentColor" />
+              </label>
+            </div>
+          </div>
           <div class="skill-scale" role="group" [attr.aria-label]="copy.ui().skillScale">
             <span aria-hidden="true">{{ copy.ui().skillScale }}</span>
             <div>
@@ -431,7 +476,19 @@
           </div>
         </div>
         <!-- Vorschau: skaliertes A4-Blatt; Streifen markieren die Seitenumbrüche. Beim Vorlagenwechsel blendet das Blatt neu ein. -->
-        <div class="preview-frame" #previewFrame>
+        <div
+          class="preview-frame"
+          #previewFrame
+          [class.pinching]="pinching()"
+          [class.zoomed]="zoom() !== null"
+          (scroll)="updateCurrentPage()"
+          (touchstart)="onPreviewTouchStart($event)"
+          (touchmove)="onPreviewTouchMove($event)"
+          (touchend)="onPreviewTouchEnd($event)"
+          (touchcancel)="onPreviewTouchEnd($event)"
+          (dblclick)="onPreviewDoubleClick($event)"
+          (wheel)="onPreviewWheel($event)"
+        >
           <div class="scale-slot" [style.width.px]="scaledWidth()" [style.height.px]="scaledHeight()">
             <div class="scale-inner" #previewSheet [style.transform]="'scale(' + scale() + ')'">
               @for (key of templateKey(); track key) {
@@ -449,6 +506,21 @@
                 </div>
               }
             </div>
+          </div>
+        </div>
+        <!-- Seitenanzeige und Zoom (Pinch, Doppeltipp, Strg/⌘ + Mausrad oder die Knöpfe) -->
+        <div class="preview-hud">
+          <span class="page-indicator">{{ pageOf() }}</span>
+          <div class="zoom-controls" role="group" [attr.aria-label]="copy.ui().zoom">
+            <button type="button" class="tool" (click)="zoomBy(1 / 1.25)" [disabled]="scale() <= 0.26" [attr.aria-label]="copy.ui().zoomOut" [attr.title]="copy.ui().zoomOut">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12" /></svg>
+            </button>
+            <button type="button" class="zoom-value" (click)="toggleZoom()" [attr.aria-label]="copy.ui().zoomToggle + ' (' + zoomPercent() + ' %)'" [attr.title]="copy.ui().zoomToggle">
+              {{ zoom() === null ? copy.ui().zoomFit : zoomPercent() + ' %' }}
+            </button>
+            <button type="button" class="tool" (click)="zoomBy(1.25)" [disabled]="scale() >= 1.99" [attr.aria-label]="copy.ui().zoomIn" [attr.title]="copy.ui().zoomIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12M12 6v12" /></svg>
+            </button>
           </div>
         </div>
       </aside>
@@ -519,13 +591,13 @@
 
     <!-- „⋯“-Menü auf schmalen Bildschirmen: Darstellung, Muster, Sprache, Übersetzen, Sicherung, Alle Daten löschen, Version -->
     @if (narrow() && menuOpen()) {
-      <app-bottom-sheet [label]="copy.ui().menu" [closeLabel]="copy.ui().close" (closed)="closeMenu()">
+      <app-bottom-sheet [label]="confirmingDelete() ? copy.ui().deleteAllTitle : copy.ui().menu" [closeLabel]="copy.ui().close" (closed)="closeMenu()">
         @if (confirmingDelete()) {
-          <!-- Bestätigung vor dem Löschen aller Daten -->
-          <div class="confirm" role="alertdialog" aria-labelledby="confirm-delete-text">
+          <!-- Bestätigung vor dem Löschen aller Daten; der Fokus steht auf „Abbrechen“ -->
+          <div class="confirm" role="alertdialog" [attr.aria-label]="copy.ui().deleteAllTitle" aria-describedby="confirm-delete-text">
             <p id="confirm-delete-text">{{ copy.ui().confirmDeleteAll }}</p>
             <div class="confirm-actions">
-              <button type="button" class="btn-ghost" (click)="confirmingDelete.set(false)">{{ copy.ui().cancel }}</button>
+              <button type="button" class="btn-ghost" id="confirm-delete-cancel" (click)="cancelDeleteAll()">{{ copy.ui().cancel }}</button>
               <button type="button" class="btn-danger" (click)="confirmDeleteAll()">{{ copy.ui().deleteAll }}</button>
             </div>
           </div>
@@ -570,13 +642,41 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 13V3" /><path d="M8 7l4-4 4 4" /><path d="M5 15v4h14v-4" /></svg>
             <span class="menu-text">{{ copy.ui().exportJson }}</span>
           </button>
-          <button type="button" class="menu-row danger" (click)="confirmingDelete.set(true)">
+          <button type="button" class="menu-row danger" id="menu-delete-all" (click)="askDeleteAll()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16" /><path d="M9 7V4.5h6V7" /><path d="M6.5 7l1 12.5h9l1-12.5" /><path d="M10 11v5M14 11v5" /></svg>
             <span class="menu-text">{{ copy.ui().deleteAll }}</span>
           </button>
           <p class="menu-version">{{ copy.ui().version }} {{ appVersion }}</p>
         }
       </app-bottom-sheet>
+    }
+
+    <!-- Foto-Quelle auf dem Handy: Kamera oder Galerie -->
+    @if (photoSourceOpen()) {
+      <app-bottom-sheet [label]="copy.ui().photo" [closeLabel]="copy.ui().close" (closed)="photoSourceOpen.set(false)">
+        <button type="button" class="menu-row" (click)="importPhoto('camera')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg>
+          <span class="menu-text">{{ copy.ui().photoCamera }}</span>
+        </button>
+        <button type="button" class="menu-row" (click)="importPhoto('library')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2" /><circle cx="9" cy="10" r="1.8" /><path d="m4 18 5-5 4 4 2.5-2.5L20 18" /></svg>
+          <span class="menu-text">{{ copy.ui().photoLibrary }}</span>
+        </button>
+      </app-bottom-sheet>
+    }
+
+    <!-- Einstieg beim ersten Start -->
+    @if (showOnboarding()) {
+      @defer (on immediate) {
+        <app-onboarding (done)="showOnboarding.set(false)" />
+      }
+    }
+
+    <!-- Zuschnitt eines neuen Fotos (Browser/Mobile) -->
+    @if (cropOpen()) {
+      @defer (on immediate) {
+        <app-photo-cropper />
+      }
     }
 
     <!-- Toasts: Fehler bleiben bis zum Schließen, Hinweise verschwinden von selbst -->

@@ -2,7 +2,10 @@
 // genau die typisierten Funktionen aus `CvApi` als `window.cvApi` bereit – kein direkter IPC-Zugriff.
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron';
 import type { CvData, TemplateSettings } from '../shared/cv/cv-data';
-import type { CvApi, PrintJob } from '../shared/ipc/ipc-api';
+import type { CvApi, MenuCommand, PrintJob } from '../shared/ipc/ipc-api';
+
+/** Erlaubte Menübefehle; bewusst hier wiederholt, weil der Preload in der Sandbox nur `electron` laden kann. */
+const MENU_COMMANDS: readonly string[] = ['export-pdf', 'export-backup', 'import-backup', 'undo', 'redo', 'quality', 'toggle-sample', 'cycle-theme'];
 
 /**
  * Implementierung von `CvApi`: jede Methode ruft fest einen einzelnen IPC-Kanal auf.
@@ -35,6 +38,14 @@ const api: CvApi = {
         .finally(() => {
           ipcRenderer.send('cv:prepare-close-done');
         });
+    });
+  },
+  // Menüleiste: nur bekannte Befehle weiterreichen.
+  onMenuCommand: (listener: (command: MenuCommand) => void) => {
+    ipcRenderer.on('cv:menu-command', (_event: IpcRendererEvent, command: unknown) => {
+      if (typeof command === 'string' && MENU_COMMANDS.includes(command)) {
+        listener(command as MenuCommand);
+      }
     });
   },
 };

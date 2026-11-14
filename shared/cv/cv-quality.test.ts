@@ -66,4 +66,22 @@ describe('Qualitätscheck', () => {
     assert.equal(hints.find((hint) => hint.id === 'pages')?.text, 'The CV has 3 pages – 1–2 are common.');
     assert.match(hints.find((hint) => hint.id === 'language-fr')?.text ?? '', /^French: level is missing\.$/);
   });
+
+  it('nennt für Sprünge das betroffene Feld samt Eintrag und Stichpunkt', () => {
+    const data = emptyCv();
+    data.personal.firstName = 'Ada';
+    data.experience = [
+      { id: 'a', company: '', position: '', country: '', city: '', from: '2020-01', until: '2019-01', current: false, description: '', bullets: ['ok', ''] },
+    ];
+    data.languages = [{ id: 'fr', level: '' }];
+    const hints = new Map(checkCv(data, { today: TODAY, photoShown: true }).map((hint) => [hint.id, hint.target]));
+    assert.deepEqual(hints.get('name'), { field: 'lastName' });
+    assert.deepEqual(hints.get('email'), { field: 'email' });
+    assert.deepEqual(hints.get('photo'), { field: 'photo' });
+    assert.deepEqual(hints.get('experience-0-title'), { field: 'position', entry: 0 });
+    assert.deepEqual(hints.get('experience-0-order'), { field: 'until', entry: 0 });
+    assert.deepEqual(hints.get('experience-0-bullet-1-empty'), { field: 'bullets', entry: 0, bullet: 1 });
+    assert.deepEqual(hints.get('language-fr'), { field: 'level', entry: 'fr' });
+    assert.ok(hints.has('skills') && hints.get('skills') === undefined, 'Abschnittshinweise haben kein Feld');
+  });
 });

@@ -12,6 +12,13 @@ export interface PrintJob {
 }
 
 /** Ein gespeichertes Foto: Dateiname im Fotospeicher und Bild als Data-URL zur Anzeige. */
+/** Wünsche an die Fotoauswahl: Quelle und Seitenverhältnis (Breite/Höhe) des Zuschnitts, rund oder eckig. */
+export interface PhotoImportOptions {
+  source?: 'camera' | 'library';
+  aspect?: number;
+  round?: boolean;
+}
+
 export interface PhotoImportResult {
   fileName: string;
   dataUrl: string;
@@ -48,8 +55,11 @@ export interface CvApi {
   importBackup(): Promise<BackupImport | null>;
   /** Schreibt eine Sicherung inklusive Foto; `false` = abgebrochen. */
   exportBackup(data: CvData): Promise<boolean>;
-  /** Lässt ein Bild auswählen und legt es als PNG im Fotospeicher ab; `null` = abgebrochen. */
-  importPhoto(): Promise<PhotoImportResult | null>;
+  /**
+   * Lässt ein Bild auswählen und legt es als PNG im Fotospeicher ab; `null` = abgebrochen.
+   * Browser/Mobile berücksichtigen `options` (Kamera oder Galerie, Zuschneiden); Electron nutzt den Dateidialog.
+   */
+  importPhoto(options?: PhotoImportOptions): Promise<PhotoImportResult | null>;
   /** Liefert ein gespeichertes Foto als Data-URL; `null` = nicht vorhanden oder ungültiger Name. */
   readPhoto(fileName: string): Promise<string | null>;
   /** Löscht ein gespeichertes Foto. */
@@ -62,6 +72,12 @@ export interface CvApi {
   signalPrintReady(): Promise<void>;
   /** Registriert eine Speicherfunktion, die beim Schließen des Fensters noch ausgeführt wird (Electron wartet höchstens 3 s). */
   prepareForClose(save: () => Promise<void>): void;
+  /** Nur Electron: Befehle aus der Menüleiste (PDF, Sicherung, Rückgängig …) an die Oberfläche melden. */
+  onMenuCommand?(listener: (command: MenuCommand) => void): void;
 }
+
+/** Befehle der Menüleiste (Electron); die Oberfläche führt sie wie die gleichnamigen Knöpfe aus. */
+export const MENU_COMMANDS = ['export-pdf', 'export-backup', 'import-backup', 'undo', 'redo', 'quality', 'toggle-sample', 'cycle-theme'] as const;
+export type MenuCommand = (typeof MENU_COMMANDS)[number];
 
 export type { CvLanguage, CvLibrary };

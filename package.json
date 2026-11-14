@@ -13,6 +13,7 @@
     "models": "node scripts/fetch-translation-models.mjs",
     "build": "npm run models && ng build && tsc -p tsconfig.electron.json",
     "test": "tsc -p tsconfig.tests.json && node --test \"dist-tests/**/*.test.js\"",
+    "a11y": "ng build --configuration development --output-path dist-a11y && node scripts/a11y/check.mjs",
     "dist:mac": "npm run build && electron-builder --mac --arm64",
     "dist:win": "npm run build && electron-builder --win --x64",
     "icons": "node scripts/generate-icons.mjs && capacitor-assets generate --android --ios --iconBackgroundColor '#2a55ad' --iconBackgroundColorDark '#2a55ad' --splashBackgroundColor '#1f4288' --splashBackgroundColorDark '#0e1015'",
@@ -32,6 +33,7 @@
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
+    "@axe-core/playwright": "^4.14.0",
     "@capacitor/android": "^8.6.2",
     "@capacitor/assets": "^4.0.0",
     "@capacitor/cli": "^8.6.2",
@@ -52,11 +54,16 @@
     "electron": "^44.5.1",
     "electron-builder": "^26.16.1",
     "i18n-iso-countries": "^7.14.0",
+    "playwright-core": "^1.65.1",
     "prettier": "^3.8.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.8.1",
     "typescript": "~6.0.2",
     "wait-on": "^8.0.5",
     "zone.js": "~0.15.1"
+  },
+  "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/haptics": "^8.0.2"
   }
 }

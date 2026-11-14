@@ -1,4 +1,5 @@
-import { Injectable, effect, signal } from '@angular/core';
+import { Injectable, computed, effect, signal } from '@angular/core';
+import { setSystemBarsDark } from '../native/native-bridge';
 
 /** Farbschema der Oberfläche: dem System folgen oder fest hell/dunkel. */
 export type ThemeMode = 'system' | 'light' | 'dark';
@@ -13,8 +14,21 @@ const MODES: readonly ThemeMode[] = ['system', 'light', 'dark'];
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   readonly mode = signal<ThemeMode>(ThemeService.read());
+  /** Ob das System gerade dunkel ist (für „System“). */
+  private readonly systemDark = signal(false);
+  /** Tatsächlich angezeigtes Schema. */
+  readonly dark = computed(() => (this.mode() === 'system' ? this.systemDark() : this.mode() === 'dark'));
 
   constructor() {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    this.systemDark.set(media.matches);
+    media.addEventListener('change', () => this.systemDark.set(media.matches));
+    // Statusleiste (Mobile) und Browserleiste passend zum Schema färben.
+    effect(() => {
+      const dark = this.dark();
+      setSystemBarsDark(dark);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#13161c' : '#ffffff');
+    });
     effect(() => {
       const mode = this.mode();
       const root = document.documentElement;

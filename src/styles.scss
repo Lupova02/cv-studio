@@ -25,6 +25,8 @@
   --on-accent: #ffffff;
   --danger: #b42318;
   --danger-soft: #fdecea;
+  --danger-solid: #b42318;
+  --on-danger: #ffffff;
   --success: #12733a;
   --success-soft: #e6f6ec;
   --warning: #8a4b00;
@@ -45,6 +47,8 @@
   --fast: 140ms;
   --medium: 220ms;
   --tap: 2.25rem;
+  /** Einheitlicher vertikaler Abstand zwischen Formularfeldern (Raster für alle Feldgruppen). */
+  --field-gap: 0.75rem;
 }
 
 @mixin dark-tokens {
@@ -64,6 +68,8 @@
   --on-accent: #0b1020;
   --danger: #ff8a80;
   --danger-soft: #3a1d1c;
+  --danger-solid: #d4322a;
+  --on-danger: #ffffff;
   --success: #6fdc96;
   --success-soft: #16301f;
   --warning: #ffc266;
@@ -195,10 +201,15 @@ button:disabled {
 }
 
 .btn-danger {
-  border-color: var(--danger);
-  background: var(--danger);
-  color: var(--surface);
-  font-weight: 600;
+  border-color: var(--danger-solid);
+  background: var(--danger-solid);
+  color: var(--on-danger);
+  font-weight: 650;
+}
+
+.btn-danger:hover:not(:disabled) {
+  border-color: var(--danger-solid);
+  filter: brightness(1.08);
 }
 
 // --- Tastatur-Fokus ---
@@ -304,7 +315,7 @@ label {
   display: flex;
   flex-direction: column;
   gap: 0.32rem;
-  margin-top: 0.7rem;
+  margin-top: var(--field-gap);
   color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
@@ -394,7 +405,7 @@ textarea {
 .grid-2,
 .grid-3 {
   display: grid;
-  gap: 0 0.7rem;
+  gap: 0 0.75rem;
 }
 
 .grid-2 {
@@ -442,7 +453,7 @@ textarea {
 }
 
 .entry-card > .btn-ghost {
-  margin-top: 0.7rem;
+  margin-top: var(--field-gap);
 }
 
 .item-actions,

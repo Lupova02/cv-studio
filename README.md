@@ -17,6 +17,9 @@ Offline-App zum Erstellen von Lebensläufen für macOS, Windows, Android und iOS
 - **Muster-Lebenslauf** mit erfundenen Daten zum Ausprobieren der Vorlagen. Im Muster-Modus wird nichts gespeichert.
 - **Hell- und Dunkelmodus** (folgt dem System oder fest gewählt), Kontraste nach WCAG AA, dezente Animationen (abschaltbar über „Bewegung reduzieren“).
 - **Handy und Tablet**: Auf schmalen Bildschirmen sind Bearbeiten, Design und Vorschau Tabs; Bedienelemente sind touch-tauglich.
+- **Vorschau-Zoom**: Pinch, Doppeltipp (Breite ↔ 100 %), +/− und Strg/⌘ + Mausrad, mit Seitenanzeige „Seite 1 von 3“.
+- **Schnellnavigation** mit Ausfüllstand je Abschnitt, **Akzentfarben-Vorgaben** (alle gut lesbar mit weißer Schrift) und **Foto-Zuschnitt** im Seitenverhältnis der Vorlage (Mobile: Kamera oder Galerie).
+- **Tastenkürzel und Menüleiste** (Desktop): Strg/⌘ + S Sicherung, P PDF, O Import, Z/Umschalt+Z Rückgängig/Wiederholen.
 
 ## Voraussetzungen
 
@@ -46,6 +49,7 @@ Im Browser speichert die App Daten und Fotos in IndexedDB, und der PDF-Export l�
 
 ```bash
 npm test
+npm run a11y   # Barrierefreiheit mit axe-core (offline in Electron; einmalig: npm i -D playwright-core @axe-core/playwright)
 ```
 
 Die Tests laufen mit dem eingebauten Test-Runner von Node (`node --test`). Sie decken Datenmodell und Migration, Sicherung, Lebenslauf-Verwaltung, Qualitätscheck, Rückgängig/Speichern, Formatierung, Farbkontraste des Designs, Kataloge und den Vertrag zwischen Electron und Oberfläche ab.

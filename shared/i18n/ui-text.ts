@@ -235,6 +235,47 @@ export interface UiText {
   shareTitle: string;
   pdfReady: string;
   backupReady: string;
+  /** Titel der Rückfrage vor dem Löschen aller Daten. */
+  deleteAllTitle: string;
+  /** Banner im Muster-Modus. */
+  sampleBanner: string;
+  sampleEnd: string;
+  /** Name in der Lebenslauf-Auswahl, solange das Muster angezeigt wird. */
+  sampleName: string;
+  /** Vor der relativen Zeitangabe in der Lebenslauf-Liste, z. B. „Bearbeitet vor 5 Min.“. */
+  editedAgo: string;
+  deleteCvLast: string;
+  /** Vorschau-Zoom (Gruppe, Knöpfe, Anzeige „Breite“). */
+  zoom: string;
+  zoomIn: string;
+  zoomOut: string;
+  zoomFit: string;
+  zoomToggle: string;
+  /** `{page}` und `{total}` werden ersetzt. */
+  pageOf: string;
+  /** Eigener Farbwähler neben den Vorgaben. */
+  accentCustom: string;
+  /** Schnellnavigation der Abschnitte und Ausfüllstand. */
+  sectionNav: string;
+  progressDone: string;
+  progressPartial: string;
+  progressEmpty: string;
+  /** Foto-Quelle und Zuschnitt. */
+  photoCamera: string;
+  photoLibrary: string;
+  cropTitle: string;
+  cropHint: string;
+  cropApply: string;
+  /** Einstieg beim ersten Start (drei Karten). */
+  onboarding1Title: string;
+  onboarding1Text: string;
+  onboarding2Title: string;
+  onboarding2Text: string;
+  onboarding3Title: string;
+  onboarding3Text: string;
+  onboardingSkip: string;
+  onboardingNext: string;
+  onboardingStart: string;
   // --- Namen von Vorlagen und Sprachen ---
   design: Record<TemplateId, string>;
   languageName: Record<CvLanguage, string>;
@@ -254,7 +295,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
       'Muster-Lebenslauf ist aktiv. Klicken, um ihn zu entfernen und die eigenen Eingaben zurückzuholen.',
     sampleOffHint: 'Muster-Lebenslauf einblenden. Die eigenen Eingaben bleiben erhalten.',
     sampleStatus: 'Muster aktiv · wird nicht gespeichert',
-    pdfHint: 'Lebenslauf als PDF herunterladen',
+    pdfHint: 'Lebenslauf als PDF herunterladen (Strg/⌘ + P)',
     pdf: 'PDF',
     importJson: 'Sicherung (JSON) importieren',
     exportJson: 'Sicherung (JSON) exportieren',
@@ -465,6 +506,37 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     pdfReady: 'PDF erstellt.',
     backupReady: 'Sicherung erstellt.',
     backupFileBase: 'lebenslauf-sicherung',
+    deleteAllTitle: 'Alle Daten löschen?',
+    sampleBanner: 'Muster – Änderungen werden nicht gespeichert',
+    sampleEnd: 'Muster beenden',
+    sampleName: 'Muster',
+    editedAgo: 'Bearbeitet',
+    deleteCvLast: 'Der letzte Lebenslauf kann nicht gelöscht werden.',
+    zoom: 'Zoom',
+    zoomIn: 'Vergrößern',
+    zoomOut: 'Verkleinern',
+    zoomFit: 'Breite',
+    zoomToggle: 'Seite auf Breite / 100 % (auch Doppeltipp)',
+    pageOf: 'Seite {page} von {total}',
+    accentCustom: 'Eigene Farbe',
+    sectionNav: 'Abschnitte',
+    progressDone: 'ausgefüllt',
+    progressPartial: 'teilweise ausgefüllt',
+    progressEmpty: 'leer',
+    photoCamera: 'Foto aufnehmen',
+    photoLibrary: 'Aus Galerie wählen',
+    cropTitle: 'Foto zuschneiden',
+    cropHint: 'Verschieben und mit zwei Fingern oder dem Regler vergrößern. Der Rahmen entspricht der gewählten Vorlage.',
+    cropApply: 'Übernehmen',
+    onboarding1Title: 'Vorlage wählen',
+    onboarding1Text: 'Fünf Vorlagen, Akzentfarbe und Schrift findest du unter „Design“. Mit „Muster“ siehst du sie gefüllt.',
+    onboarding2Title: 'Ausfüllen',
+    onboarding2Text: 'Trag deine Angaben unter „Bearbeiten“ ein. Alles wird automatisch auf diesem Gerät gespeichert; der Qualitätscheck gibt Tipps.',
+    onboarding3Title: 'Als PDF teilen',
+    onboarding3Text: 'Ein Tipp auf „PDF“ erzeugt den fertigen Lebenslauf im A4-Format – offline, ohne Konto.',
+    onboardingSkip: 'Überspringen',
+    onboardingNext: 'Weiter',
+    onboardingStart: 'Los geht’s',
     design: { classic: 'Klassisch', modern: 'Modern', minimal: 'Minimal', elegant: 'Elegant', banner: 'Banner' },
     languageName: { de: 'Deutsch', en: 'Englisch', tr: 'Türkisch' },
   },
@@ -479,7 +551,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     sampleOnHint: 'The sample CV is active. Click to remove it and bring back your own entries.',
     sampleOffHint: 'Show the sample CV. Your own entries are kept.',
     sampleStatus: 'Sample active · not saved',
-    pdfHint: 'Download the CV as PDF',
+    pdfHint: 'Download the CV as PDF (Ctrl/⌘ + P)',
     pdf: 'PDF',
     importJson: 'Import backup (JSON)',
     exportJson: 'Export backup (JSON)',
@@ -688,6 +760,37 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     pdfReady: 'PDF created.',
     backupReady: 'Backup created.',
     backupFileBase: 'cv-backup',
+    deleteAllTitle: 'Delete all data?',
+    sampleBanner: 'Sample – changes are not saved',
+    sampleEnd: 'Exit sample',
+    sampleName: 'Sample',
+    editedAgo: 'Edited',
+    deleteCvLast: 'The last CV cannot be deleted.',
+    zoom: 'Zoom',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+    zoomFit: 'Fit',
+    zoomToggle: 'Fit width / 100 % (or double-tap)',
+    pageOf: 'Page {page} of {total}',
+    accentCustom: 'Custom colour',
+    sectionNav: 'Sections',
+    progressDone: 'complete',
+    progressPartial: 'partly complete',
+    progressEmpty: 'empty',
+    photoCamera: 'Take photo',
+    photoLibrary: 'Choose from library',
+    cropTitle: 'Crop photo',
+    cropHint: 'Drag to move; pinch or use the slider to zoom. The frame matches the selected template.',
+    cropApply: 'Use photo',
+    onboarding1Title: 'Pick a template',
+    onboarding1Text: 'Five templates, accent colour and font are under “Design”. “Sample” shows them filled in.',
+    onboarding2Title: 'Fill it in',
+    onboarding2Text: 'Enter your details under “Edit”. Everything is saved automatically on this device; the quality check gives tips.',
+    onboarding3Title: 'Share as PDF',
+    onboarding3Text: 'Tap “PDF” to create the finished CV in A4 – offline, no account needed.',
+    onboardingSkip: 'Skip',
+    onboardingNext: 'Next',
+    onboardingStart: 'Get started',
     design: { classic: 'Classic', modern: 'Modern', minimal: 'Minimal', elegant: 'Elegant', banner: 'Banner' },
     languageName: { de: 'German', en: 'English', tr: 'Turkish' },
   },
@@ -703,7 +806,7 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
       'Örnek özgeçmiş etkin. Kaldırmak ve kendi girişlerinizi geri getirmek için tıklayın.',
     sampleOffHint: 'Örnek özgeçmişi göster. Kendi girişleriniz korunur.',
     sampleStatus: 'Örnek etkin · kaydedilmiyor',
-    pdfHint: 'Özgeçmişi PDF olarak indir',
+    pdfHint: 'Özgeçmişi PDF olarak indir (Ctrl/⌘ + P)',
     pdf: 'PDF',
     importJson: 'Yedeği (JSON) içe aktar',
     exportJson: 'Yedeği (JSON) dışa aktar',
@@ -912,6 +1015,37 @@ const UI_TEXT: Record<CvLanguage, UiText> = {
     pdfReady: 'PDF oluşturuldu.',
     backupReady: 'Yedek oluşturuldu.',
     backupFileBase: 'ozgecmis-yedek',
+    deleteAllTitle: 'Tüm veriler silinsin mi?',
+    sampleBanner: 'Örnek – değişiklikler kaydedilmez',
+    sampleEnd: 'Örnekten çık',
+    sampleName: 'Örnek',
+    editedAgo: 'Düzenlendi:',
+    deleteCvLast: 'Son özgeçmiş silinemez.',
+    zoom: 'Yakınlaştırma',
+    zoomIn: 'Yakınlaştır',
+    zoomOut: 'Uzaklaştır',
+    zoomFit: 'Sığdır',
+    zoomToggle: 'Genişliğe sığdır / %100 (çift dokunma da olur)',
+    pageOf: 'Sayfa {page} / {total}',
+    accentCustom: 'Özel renk',
+    sectionNav: 'Bölümler',
+    progressDone: 'tamamlandı',
+    progressPartial: 'kısmen dolduruldu',
+    progressEmpty: 'boş',
+    photoCamera: 'Fotoğraf çek',
+    photoLibrary: 'Galeriden seç',
+    cropTitle: 'Fotoğrafı kırp',
+    cropHint: 'Sürükleyerek taşıyın, iki parmakla veya kaydırıcıyla yakınlaştırın. Çerçeve seçili şablona uyar.',
+    cropApply: 'Kullan',
+    onboarding1Title: 'Şablon seçin',
+    onboarding1Text: 'Beş şablon, vurgu rengi ve yazı tipi “Tasarım” altında. “Örnek” ile dolu hâlini görürsünüz.',
+    onboarding2Title: 'Doldurun',
+    onboarding2Text: 'Bilgilerinizi “Düzenle” altında girin. Her şey bu cihazda otomatik kaydedilir; kalite kontrolü ipuçları verir.',
+    onboarding3Title: 'PDF olarak paylaşın',
+    onboarding3Text: '“PDF”e dokunun; özgeçmişiniz A4 olarak hazırlanır – çevrimdışı, hesap gerekmez.',
+    onboardingSkip: 'Geç',
+    onboardingNext: 'İleri',
+    onboardingStart: 'Başlayalım',
     design: { classic: 'Klasik', modern: 'Modern', minimal: 'Minimal', elegant: 'Zarif', banner: 'Bant' },
     languageName: { de: 'Almanca', en: 'İngilizce', tr: 'Türkçe' },
   },

@@ -8,6 +8,7 @@ import {
   output,
   viewChild,
 } from '@angular/core';
+import { BackStack } from '../../core/state/back-stack';
 
 /**
  * Menü als Bottom Sheet (schmale Bildschirme): Fläche am unteren Rand über einem abgedunkelten Hintergrund.
@@ -69,7 +70,7 @@ import {
       display: flex;
       flex-direction: column;
       max-height: calc(100% - 2.5rem - env(safe-area-inset-top));
-      padding: 0 max(1rem, env(safe-area-inset-right)) calc(1rem + env(safe-area-inset-bottom))
+      padding: 0 max(1rem, env(safe-area-inset-right)) calc(1rem + env(safe-area-inset-bottom) + var(--keyboard-inset, 0px))
         max(1rem, env(safe-area-inset-left));
       border-top: 1px solid var(--border);
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -144,7 +145,12 @@ export class BottomSheet {
   constructor() {
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     afterNextRender(() => this.panel().nativeElement.focus());
+    // Android-Zurück-Taste schließt das Sheet.
+    const release = inject(BackStack).push(() => this.closed.emit());
     // Beim Schließen den Fokus an den auslösenden Knopf zurückgeben.
-    inject(DestroyRef).onDestroy(() => opener?.focus({ preventScroll: true }));
+    inject(DestroyRef).onDestroy(() => {
+      release();
+      opener?.focus({ preventScroll: true });
+    });
   }
 }

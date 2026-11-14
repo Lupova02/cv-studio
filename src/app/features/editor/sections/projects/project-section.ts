@@ -6,6 +6,7 @@ import { EditorCopy } from '../../../../core/state/editor-copy';
 import { TrashIcon } from '../../../../ui/trash-icon/trash-icon';
 import { bulletControl, createProjectGroup, type ProjectGroup } from '../../form/cv-form';
 import { dropFormItem, moveFormItem } from '../../form/form-array';
+import { haptic } from '../../../../core/native/native-bridge';
 import { ItemActions } from '../../list-chrome/item-actions';
 import { EditorSection } from '../../list-chrome/editor-section';
 
@@ -47,6 +48,7 @@ export class ProjectSection {
 
   protected removeBullet(group: ProjectGroup, index: number): void {
     group.controls.bullets.removeAt(index);
+    haptic('warning');
   }
 
   /** Stichpunkt um eine Position nach oben (-1) oder unten (+1) schieben. */

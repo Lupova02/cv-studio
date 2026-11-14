@@ -2,6 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { FormArray, ReactiveFormsModule } from '@angular/forms';
 import { languageCatalog, languageLevels, levelWhen } from '@shared/catalogs/language-catalog';
 import { LIMITS } from '@shared/cv/cv-data';
+import { haptic } from '../../../../core/native/native-bridge';
 import { EditorCopy } from '../../../../core/state/editor-copy';
 import { EditorSection } from '../../list-chrome/editor-section';
 import { TrashIcon } from '../../../../ui/trash-icon/trash-icon';
@@ -70,6 +71,7 @@ export class LanguageSection {
     const index = this.items().controls.findIndex((group) => group.controls.id.value === id);
     if (index >= 0) {
       this.items().removeAt(index);
+      haptic('warning');
     }
   }
 }

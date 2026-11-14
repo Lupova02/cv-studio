@@ -1,10 +1,10 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, DestroyRef, ElementRef, afterRenderEffect, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterRenderEffect, computed, effect, inject, input, signal } from '@angular/core';
 import { cvFontStack, type CvData, type TemplateId, type TemplateOptions } from '@shared/cv/cv-data';
 import { prepareForDisplay } from '@shared/cv/cv-display';
 import { formatPageNumber } from '@shared/format/format';
 import { PAGE_HEIGHT, paginate } from './paginate';
-import { findTemplate } from '../template-registry';
+import { findTemplate, loadTemplate, loadedTemplate } from '../template-registry';
 
 /** Abstand der Seitenzahl-Mitte vom unteren Seitenrand: 8 mm in CSS-Pixeln. */
 const NUMBER_CENTER = (8 * 96) / 25.4;
@@ -21,7 +21,9 @@ const NUMBER_CENTER = (8 * 96) / 25.4;
     '[style.--page-accent]': 'options().accentColor',
   },
   template: `
-    <ng-container [ngComponentOutlet]="definition().component" [ngComponentOutletInputs]="outletInputs()" />
+    @if (component(); as component) {
+      <ng-container [ngComponentOutlet]="component" [ngComponentOutletInputs]="outletInputs()" />
+    }
     @for (item of pageNumbers(); track item.page) {
       <div
         class="page-number"
@@ -111,6 +113,13 @@ export class TemplateHost {
 
   protected readonly fontStack = computed(() => cvFontStack(this.options().font));
   protected readonly definition = computed(() => findTemplate(this.templateId()));
+  /** Zählt fertig nachgeladene Vorlagen, damit `component` neu ausgewertet wird. */
+  private readonly loads = signal(0);
+  /** Komponente der Vorlage; `null`, solange sie noch geladen wird (die Druckseite lädt sie vorher). */
+  protected readonly component = computed(() => {
+    this.loads();
+    return loadedTemplate(this.definition().id);
+  });
   protected readonly outletInputs = computed(() => ({
     data: prepareForDisplay(this.data(), this.options()),
     options: this.options(),
@@ -133,10 +142,17 @@ export class TemplateHost {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   constructor() {
+    // Noch nicht geladene Vorlage nachladen.
+    effect(() => {
+      const id = this.definition().id;
+      if (!loadedTemplate(id)) {
+        void loadTemplate(id).then(() => this.loads.update((value) => value + 1));
+      }
+    });
     // Nach jedem Rendern mit geänderten Daten, Vorlage oder Abstand neu paginieren.
     afterRenderEffect(() => {
       this.outletInputs();
-      this.definition();
+      this.component();
       this.gap();
       this.repaginate();
     });

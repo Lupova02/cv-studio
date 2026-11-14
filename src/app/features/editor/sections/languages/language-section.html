@@ -17,7 +17,7 @@
   <!-- Gewählte Sprachen, alphabetisch; je Sprache Niveau + Erklärung des Niveaus -->
   <ul>
     @for (group of ordered(); track group.controls.id.value) {
-      <li [formGroup]="group">
+      <li [formGroup]="group" [attr.data-item]="group.controls.id.value">
         <div class="row-head">
           <strong>{{ nameOf(group.controls.id.value) }}</strong>
           <button type="button" class="icon-btn danger" (click)="remove(group.controls.id.value)" [attr.aria-label]="copy.ui().remove + ': ' + nameOf(group.controls.id.value)" [attr.title]="copy.ui().remove"><app-trash-icon /></button>

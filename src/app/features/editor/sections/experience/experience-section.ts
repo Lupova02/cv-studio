@@ -6,6 +6,7 @@ import { countriesFor } from '@shared/catalogs/country-data';
 import { LIMITS } from '@shared/cv/cv-data';
 import { bulletControl, createExperienceGroup, type ExperienceGroup } from '../../form/cv-form';
 import { dropFormItem, moveFormItem } from '../../form/form-array';
+import { haptic } from '../../../../core/native/native-bridge';
 import { ItemActions } from '../../list-chrome/item-actions';
 import { EditorSection } from '../../list-chrome/editor-section';
 import { TrashIcon } from '../../../../ui/trash-icon/trash-icon';
@@ -59,6 +60,7 @@ export class ExperienceSection {
 
   protected removeBullet(group: ExperienceGroup, index: number): void {
     group.controls.bullets.removeAt(index);
+    haptic('warning');
   }
 
   /** Stichpunkt um eine Position nach oben (-1) oder unten (+1) schieben. */
